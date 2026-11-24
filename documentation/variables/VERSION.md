@@ -8,6 +8,6 @@
 
 > `const` **VERSION**: `string` = `packageVersion`
 
-Defined in: client.ts:63
+Defined in: [client.ts:64](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L64)
 
 Library version.

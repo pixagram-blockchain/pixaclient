@@ -6,7 +6,7 @@
 
 # Class: Signature
 
-Defined in: crypto.ts:446
+Defined in: [crypto.ts:447](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L447)
 
 ECDSA (secp256k1) signature.
 
@@ -16,7 +16,7 @@ ECDSA (secp256k1) signature.
 
 > **new Signature**(`data`, `recovery`): `Signature`
 
-Defined in: crypto.ts:450
+Defined in: [crypto.ts:451](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L451)
 
 #### Parameters
 
@@ -38,7 +38,7 @@ Defined in: crypto.ts:450
 
 > **data**: `BBuffer`
 
-Defined in: crypto.ts:447
+Defined in: [crypto.ts:448](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L448)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: crypto.ts:447
 
 > **recovery**: `number`
 
-Defined in: crypto.ts:448
+Defined in: [crypto.ts:449](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L449)
 
 ## Methods
 
@@ -54,7 +54,7 @@ Defined in: crypto.ts:448
 
 > **recover**(`message`, `prefix?`): [`PublicKey`](PublicKey.md)
 
-Defined in: crypto.ts:484
+Defined in: [crypto.ts:485](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L485)
 
 Recover public key from signature by providing original signed message.
 
@@ -88,7 +88,7 @@ compact sig. Same shape, different byte values — we just rebuild it.
 
 > **toBuffer**(): `BBuffer`
 
-Defined in: crypto.ts:494
+Defined in: [crypto.ts:495](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L495)
 
 #### Returns
 
@@ -100,7 +100,7 @@ Defined in: crypto.ts:494
 
 > **toString**(): `string`
 
-Defined in: crypto.ts:501
+Defined in: [crypto.ts:502](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L502)
 
 #### Returns
 
@@ -112,7 +112,7 @@ Defined in: crypto.ts:501
 
 > `static` **fromBuffer**(`buffer`): `Signature`
 
-Defined in: crypto.ts:461
+Defined in: [crypto.ts:462](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L462)
 
 #### Parameters
 
@@ -130,7 +130,7 @@ Defined in: crypto.ts:461
 
 > `static` **fromString**(`string`): `Signature`
 
-Defined in: crypto.ts:468
+Defined in: [crypto.ts:469](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L469)
 
 #### Parameters
 

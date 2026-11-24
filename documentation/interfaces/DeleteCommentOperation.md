@@ -6,7 +6,7 @@
 
 # Interface: DeleteCommentOperation
 
-Defined in: chain/operation.ts:408
+Defined in: [chain/operation.ts:446](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L446)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"delete_comment"`
 
-Defined in: chain/operation.ts:409
+Defined in: [chain/operation.ts:447](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L447)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:409
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:410
+Defined in: [chain/operation.ts:448](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L448)
 
 #### author
 

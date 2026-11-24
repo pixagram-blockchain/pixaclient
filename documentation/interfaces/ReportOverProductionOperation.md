@@ -6,7 +6,7 @@
 
 # Interface: ReportOverProductionOperation
 
-Defined in: chain/operation.ts:674
+Defined in: [chain/operation.ts:721](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L721)
 
 This operation is used to report a miner who signs two blocks
 at the same time. To be valid, the violation must be reported within
@@ -30,7 +30,7 @@ of the block producer to the reporter.
 
 > **0**: `"report_over_production"`
 
-Defined in: chain/operation.ts:675
+Defined in: [chain/operation.ts:722](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L722)
 
 #### Overrides
 
@@ -42,7 +42,7 @@ Defined in: chain/operation.ts:675
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:676
+Defined in: [chain/operation.ts:723](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L723)
 
 #### first\_block
 

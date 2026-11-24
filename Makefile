@@ -42,11 +42,15 @@ test: node_modules
 # Subset that doesn't need network. Fast, deterministic, safe to run anywhere.
 # test/compat.ts checks byte-for-byte output (keys, signatures, digests,
 # memos, RPC request bodies) against test/fixtures/compat.json.
+# test/nft.ts checks the NFT operation against bytes printed by the node itself;
+# test/hf32.ts checks client.nft, the Pixamind additions and the voting bar
+# against a mocked node.
 .PHONY: test-unit
 test-unit: node_modules
 	mocha --exit --require ts-node/register \
 		test/crypto.ts test/serializers.ts test/asset.ts test/memo.ts \
-		test/misc.ts test/iterator-stream.ts test/fetch.ts test/lite.ts test/compat.ts
+		test/misc.ts test/iterator-stream.ts test/fetch.ts test/lite.ts test/compat.ts \
+		test/nft.ts test/hf32.ts
 
 .PHONY: coverage
 coverage: node_modules
@@ -64,11 +68,11 @@ node_modules:
 	npm ci
 
 docs: $(SRC_FILES) node_modules
-	typedoc --gitRevision master --out docs src --plugin typedoc-material-theme --themeColor '#666666'
+	typedoc --gitRevision main --out docs src --plugin typedoc-material-theme --themeColor '#666666'
 	find docs -name "*.html" | xargs perl -i -pe's~$(shell pwd)~.~g'
 	echo "Served at <https://pixagram.com/dpixa>" > docs/README.md
 	touch docs
-	typedoc --gitRevision master --out documentation src --plugin typedoc-plugin-markdown
+	typedoc --gitRevision main --out documentation src --plugin typedoc-plugin-markdown
 
 .PHONY: clean
 clean:

@@ -45,17 +45,23 @@ import * as utils from './utils'
 export { utils }
 
 export * from './helpers/blockchain'
+export * from './helpers/broadcast'
 export * from './helpers/database'
 export * from './helpers/rc'
 export * from './helpers/key'
+export * from './helpers/nft'
 export * from './helpers/pixamind'
+export * from './helpers/transaction'
 
 export * from './chain/account'
 export * from './chain/asset'
 export * from './chain/block'
 export * from './chain/comment'
 export * from './chain/misc'
+export * from './chain/nft'
+export * from './chain/normalize'
 export * from './chain/operation'
+export * from './chain/rc'
 export * from './chain/transaction'
 export * from './chain/pixamind'
 

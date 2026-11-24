@@ -6,7 +6,7 @@
 
 # Interface: UpdateProposalVotesOperation
 
-Defined in: chain/operation.ts:946
+Defined in: [chain/operation.ts:980](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L980)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"update_proposal_votes"`
 
-Defined in: chain/operation.ts:947
+Defined in: [chain/operation.ts:981](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L981)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:947
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:948
+Defined in: [chain/operation.ts:982](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L982)
 
 #### approve
 

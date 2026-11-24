@@ -6,7 +6,7 @@
 
 # Class: Blockchain
 
-Defined in: helpers/blockchain.ts:67
+Defined in: [helpers/blockchain.ts:67](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/blockchain.ts#L67)
 
 ## Constructors
 
@@ -14,7 +14,7 @@ Defined in: helpers/blockchain.ts:67
 
 > **new Blockchain**(`client`): `Blockchain`
 
-Defined in: helpers/blockchain.ts:68
+Defined in: [helpers/blockchain.ts:68](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/blockchain.ts#L68)
 
 #### Parameters
 
@@ -32,7 +32,7 @@ Defined in: helpers/blockchain.ts:68
 
 > `readonly` **client**: [`Client`](Client.md)
 
-Defined in: helpers/blockchain.ts:68
+Defined in: [helpers/blockchain.ts:68](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/blockchain.ts#L68)
 
 ## Methods
 
@@ -40,7 +40,7 @@ Defined in: helpers/blockchain.ts:68
 
 > **getBlockNumbers**(`options?`): `AsyncGenerator`\<`number`, `void`, `unknown`\>
 
-Defined in: helpers/blockchain.ts:103
+Defined in: [helpers/blockchain.ts:103](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/blockchain.ts#L103)
 
 Return a asynchronous block number iterator.
 
@@ -62,7 +62,7 @@ Feed options, can also be a block number to start from.
 
 > **getBlockNumberStream**(`options?`): `ReadableStream`
 
-Defined in: helpers/blockchain.ts:134
+Defined in: [helpers/blockchain.ts:134](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/blockchain.ts#L134)
 
 Return a stream of block numbers, accepts same parameters as [getBlockNumbers](#getblocknumbers).
 
@@ -82,7 +82,7 @@ Return a stream of block numbers, accepts same parameters as [getBlockNumbers](#
 
 > **getBlocks**(`options?`): `AsyncGenerator`\<[`SignedBlock`](../interfaces/SignedBlock.md), `void`, `unknown`\>
 
-Defined in: helpers/blockchain.ts:141
+Defined in: [helpers/blockchain.ts:141](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/blockchain.ts#L141)
 
 Return a asynchronous block iterator, accepts same parameters as [getBlockNumbers](#getblocknumbers).
 
@@ -102,7 +102,7 @@ Return a asynchronous block iterator, accepts same parameters as [getBlockNumber
 
 > **getBlockStream**(`options?`): `ReadableStream`
 
-Defined in: helpers/blockchain.ts:150
+Defined in: [helpers/blockchain.ts:150](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/blockchain.ts#L150)
 
 Return a stream of blocks, accepts same parameters as [getBlockNumbers](#getblocknumbers).
 
@@ -122,7 +122,7 @@ Return a stream of blocks, accepts same parameters as [getBlockNumbers](#getbloc
 
 > **getCurrentBlock**(`mode?`): `Promise`\<[`SignedBlock`](../interfaces/SignedBlock.md)\>
 
-Defined in: helpers/blockchain.ts:95
+Defined in: [helpers/blockchain.ts:95](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/blockchain.ts#L95)
 
 Get latest block.
 
@@ -142,7 +142,7 @@ Get latest block.
 
 > **getCurrentBlockHeader**(`mode?`): `Promise`\<[`BlockHeader`](../interfaces/BlockHeader.md)\>
 
-Defined in: helpers/blockchain.ts:86
+Defined in: [helpers/blockchain.ts:86](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/blockchain.ts#L86)
 
 Get latest block header.
 
@@ -162,7 +162,7 @@ Get latest block header.
 
 > **getCurrentBlockNum**(`mode?`): `Promise`\<`number`\>
 
-Defined in: helpers/blockchain.ts:73
+Defined in: [helpers/blockchain.ts:73](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/blockchain.ts#L73)
 
 Get latest block number.
 
@@ -182,7 +182,7 @@ Get latest block number.
 
 > **getOperations**(`options?`): `AsyncGenerator`\<[`AppliedOperation`](../interfaces/AppliedOperation.md), `void`, `unknown`\>
 
-Defined in: helpers/blockchain.ts:157
+Defined in: [helpers/blockchain.ts:157](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/blockchain.ts#L157)
 
 Return a asynchronous operation iterator, accepts same parameters as [getBlockNumbers](#getblocknumbers).
 
@@ -202,7 +202,7 @@ Return a asynchronous operation iterator, accepts same parameters as [getBlockNu
 
 > **getOperationsStream**(`options?`): `ReadableStream`
 
-Defined in: helpers/blockchain.ts:169
+Defined in: [helpers/blockchain.ts:169](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/blockchain.ts#L169)
 
 Return a stream of operations, accepts same parameters as [getBlockNumbers](#getblocknumbers).
 

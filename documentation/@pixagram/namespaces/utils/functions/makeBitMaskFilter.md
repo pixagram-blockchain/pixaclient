@@ -8,7 +8,7 @@
 
 > **makeBitMaskFilter**(`allowedOperations`): (`string` \| `null`)[]
 
-Defined in: utils.ts:427
+Defined in: [utils.ts:444](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/utils.ts#L444)
 
 Make bitmask filter to be used with getAccountHistory call
 

@@ -21,10 +21,28 @@ export interface WitnessProps {
   key: PublicKey | string
   maximum_block_size?: number // uint32_t
   new_signing_key?: PublicKey | string | null
+  /** PXS price feed: PXS per PIXA. Written as the node's `hbd_exchange_rate` property. */
   pxs_exchange_rate?: PriceType
+  /** Fixed at 0 on Pixa. Written as the node's `hbd_interest_rate` property. */
   pxs_interest_rate?: number // uint16_t
+  /** Same as `pxs_exchange_rate`, under the node's name. */
+  hbd_exchange_rate?: PriceType
+  /** Same as `pxs_interest_rate`, under the node's name. */
+  hbd_interest_rate?: number // uint16_t
   url?: string
 }
+
+/**
+ * Property names the node reads (hive_evaluator.cpp looks props up by these names and skips any
+ * other): dpixa's PXS names are written under them, or the node would ignore the value.
+ */
+const NODE_PROP_NAMES: { [name: string]: string } = {
+  pxs_exchange_rate: 'hbd_exchange_rate',
+  pxs_interest_rate: 'hbd_interest_rate'
+}
+
+/** Byte order of the property names, the order of the node's flat_map. */
+const byteOrder = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
 
 const serialize = (serializer: Serializer, data: any) => {
   const buffer = new ByteBuffer(
@@ -46,7 +64,11 @@ export const buildWitnessUpdateOp = (
     owner,
     props: []
   }
+  const written = new Set<string>()
   for (const key of Object.keys(props)) {
+    if (props[key] === undefined) {
+      continue
+    }
     let type: Serializer
     switch (key) {
       case 'key':
@@ -59,12 +81,14 @@ export const buildWitnessUpdateOp = (
         type = Types.UInt32
         break
       case 'pxs_interest_rate':
+      case 'hbd_interest_rate':
         type = Types.UInt16
         break
       case 'url':
         type = Types.String
         break
       case 'pxs_exchange_rate':
+      case 'hbd_exchange_rate':
         type = Types.Price
         break
       case 'account_creation_fee':
@@ -73,8 +97,13 @@ export const buildWitnessUpdateOp = (
       default:
         throw new Error(`Unknown witness prop: ${key}`)
     }
-    data.props.push([key, serialize(type, props[key])])
+    const name = NODE_PROP_NAMES[key] || key
+    if (written.has(name)) {
+      throw new Error(`Witness prop given twice: ${name}`)
+    }
+    written.add(name)
+    data.props.push([name, serialize(type, props[key])])
   }
-  data.props.sort((a, b) => a[0].localeCompare(b[0]))
+  data.props.sort((a, b) => byteOrder(a[0], b[0]))
   return ['witness_set_properties', data]
 }

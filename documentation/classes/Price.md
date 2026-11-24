@@ -6,7 +6,7 @@
 
 # Class: Price
 
-Defined in: chain/asset.ts:224
+Defined in: [chain/asset.ts:267](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L267)
 
 Represents quotation of the relative value of asset against another asset.
 Similar to 'currency pair' used to determine value of currencies.
@@ -24,7 +24,7 @@ Similar to 'currency pair' used to determine value of currencies.
 
 > **new Price**(`base`, `quote`): `Price`
 
-Defined in: chain/asset.ts:233
+Defined in: [chain/asset.ts:276](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L276)
 
 #### Parameters
 
@@ -54,7 +54,7 @@ Both base and quote shall have different symbol defined.
 
 > `readonly` **base**: [`Asset`](Asset.md)
 
-Defined in: chain/asset.ts:233
+Defined in: [chain/asset.ts:276](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L276)
 
 represents a value of the price object to be expressed relatively to quote
                asset. Cannot have amount == 0 if you want to build valid price.
@@ -65,7 +65,7 @@ represents a value of the price object to be expressed relatively to quote
 
 > `readonly` **quote**: [`Asset`](Asset.md)
 
-Defined in: chain/asset.ts:233
+Defined in: [chain/asset.ts:276](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L276)
 
 represents an relative asset. Cannot have amount == 0, otherwise
                asertion fail.
@@ -78,7 +78,7 @@ Both base and quote shall have different symbol defined.
 
 > **convert**(`asset`): [`Asset`](Asset.md)
 
-Defined in: chain/asset.ts:266
+Defined in: [chain/asset.ts:309](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L309)
 
 Return a new Asset with the price converted between the symbols in the pair.
 Throws if passed asset symbol is not base or quote.
@@ -99,7 +99,7 @@ Throws if passed asset symbol is not base or quote.
 
 > **toString**(): `string`
 
-Defined in: chain/asset.ts:258
+Defined in: [chain/asset.ts:301](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L301)
 
 Return a string representation of this price pair.
 
@@ -113,7 +113,7 @@ Return a string representation of this price pair.
 
 > `static` **from**(`value`): `Price`
 
-Defined in: chain/asset.ts:247
+Defined in: [chain/asset.ts:290](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L290)
 
 Convenience to create new Price.
 

@@ -8,7 +8,7 @@
 
 > `const` **operationOrders**: `object`
 
-Defined in: utils.ts:333
+Defined in: [utils.ts:336](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/utils.ts#L336)
 
 ## Type Declaration
 
@@ -72,6 +72,10 @@ Defined in: utils.ts:333
 
 > **collateralized\_convert**: `number` = `48`
 
+### collateralized\_convert\_immediate\_conversion
+
+> **collateralized\_convert\_immediate\_conversion**: `number` = `88`
+
 ### comment
 
 > **comment**: `number` = `1`
@@ -128,6 +132,10 @@ Defined in: utils.ts:333
 
 > **decline\_voting\_rights**: `number` = `36`
 
+### declined\_voting\_rights
+
+> **declined\_voting\_rights**: `number` = `92`
+
 ### delayed\_voting
 
 > **delayed\_voting**: `number` = `70`
@@ -140,6 +148,14 @@ Defined in: utils.ts:333
 
 > **delete\_comment**: `number` = `17`
 
+### dhf\_conversion
+
+> **dhf\_conversion**: `number` = `74`
+
+### dhf\_funding
+
+> **dhf\_funding**: `number` = `67`
+
 ### effective\_comment\_vote
 
 > **effective\_comment\_vote**: `number` = `72`
@@ -148,9 +164,17 @@ Defined in: utils.ts:333
 
 > **escrow\_approve**: `number` = `31`
 
+### escrow\_approved
+
+> **escrow\_approved**: `number` = `89`
+
 ### escrow\_dispute
 
 > **escrow\_dispute**: `number` = `28`
+
+### escrow\_rejected
+
+> **escrow\_rejected**: `number` = `90`
 
 ### escrow\_release
 
@@ -200,6 +224,14 @@ Defined in: utils.ts:333
 
 > **hardfork**: `number` = `60`
 
+### hardfork\_hive
+
+> **hardfork\_hive**: `number` = `68`
+
+### hardfork\_hive\_restore
+
+> **hardfork\_hive\_restore**: `number` = `69`
+
 ### hardfork\_pixa
 
 > **hardfork\_pixa**: `number` = `68`
@@ -220,6 +252,10 @@ Defined in: utils.ts:333
 
 > **limit\_order\_cancel**: `number` = `6`
 
+### limit\_order\_cancelled
+
+> **limit\_order\_cancelled**: `number` = `85`
+
 ### limit\_order\_create
 
 > **limit\_order\_create**: `number` = `5`
@@ -231,6 +267,18 @@ Defined in: utils.ts:333
 ### liquidity\_reward
 
 > **liquidity\_reward**: `number` = `54`
+
+### nft
+
+> **nft**: `number` = `37`
+
+### nft\_royalty
+
+> **nft\_royalty**: `number` = `94`
+
+### nft\_sold
+
+> **nft\_sold**: `number` = `93`
 
 ### pow
 
@@ -244,13 +292,25 @@ Defined in: utils.ts:333
 
 > **pow2**: `number` = `30`
 
+### producer\_missed
+
+> **producer\_missed**: `number` = `86`
+
 ### producer\_reward
 
 > **producer\_reward**: `number` = `64`
 
+### proposal\_fee
+
+> **proposal\_fee**: `number` = `87`
+
 ### proposal\_pay
 
 > **proposal\_pay**: `number` = `66`
+
+### proxy\_cleared
+
+> **proxy\_cleared**: `number` = `91`
 
 ### recover\_account
 
@@ -271,10 +331,6 @@ Defined in: utils.ts:333
 ### request\_account\_recovery
 
 > **request\_account\_recovery**: `number` = `24`
-
-### reset\_account
-
-> **reset\_account**: `number` = `37`
 
 ### return\_vesting\_delegation
 

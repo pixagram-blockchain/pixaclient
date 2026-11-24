@@ -8,7 +8,7 @@
 
 > **buildWitnessUpdateOp**(`owner`, `props`): [`WitnessSetPropertiesOperation`](../../../../interfaces/WitnessSetPropertiesOperation.md)
 
-Defined in: utils.ts:327
+Defined in: [utils.ts:330](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/utils.ts#L330)
 
 Build a `witness_set_properties` operation with hex-serialized props.
 

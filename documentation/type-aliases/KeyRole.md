@@ -8,4 +8,4 @@
 
 > **KeyRole** = `"owner"` \| `"active"` \| `"posting"` \| `"memo"`
 
-Defined in: crypto.ts:294
+Defined in: [crypto.ts:295](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L295)

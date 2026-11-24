@@ -6,7 +6,7 @@
 
 # Class: PublicKey
 
-Defined in: crypto.ts:219
+Defined in: [crypto.ts:220](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L220)
 
 ECDSA (secp256k1) public key.
 
@@ -16,7 +16,7 @@ ECDSA (secp256k1) public key.
 
 > **new PublicKey**(`key`, `prefix?`): `PublicKey`
 
-Defined in: crypto.ts:223
+Defined in: [crypto.ts:224](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L224)
 
 #### Parameters
 
@@ -38,7 +38,7 @@ Defined in: crypto.ts:223
 
 > `readonly` **key**: `any`
 
-Defined in: crypto.ts:224
+Defined in: [crypto.ts:225](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L225)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: crypto.ts:224
 
 > `readonly` **prefix**: `string` = `DEFAULT_ADDRESS_PREFIX`
 
-Defined in: crypto.ts:225
+Defined in: [crypto.ts:226](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L226)
 
 ***
 
@@ -54,7 +54,7 @@ Defined in: crypto.ts:225
 
 > `readonly` **uncompressed**: `BBuffer`
 
-Defined in: crypto.ts:221
+Defined in: [crypto.ts:222](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L222)
 
 ## Methods
 
@@ -62,7 +62,7 @@ Defined in: crypto.ts:221
 
 > **inspect**(): `string`
 
-Defined in: crypto.ts:289
+Defined in: [crypto.ts:290](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L290)
 
 Used by `utils.inspect` and `console.log` in node.js.
 
@@ -76,7 +76,7 @@ Used by `utils.inspect` and `console.log` in node.js.
 
 > **toJSON**(): `string`
 
-Defined in: crypto.ts:282
+Defined in: [crypto.ts:283](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L283)
 
 Return JSON representation of this key, same as toString().
 
@@ -90,7 +90,7 @@ Return JSON representation of this key, same as toString().
 
 > **toString**(): `string`
 
-Defined in: crypto.ts:275
+Defined in: [crypto.ts:276](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L276)
 
 Return a WIF-encoded representation of the key.
 
@@ -104,7 +104,7 @@ Return a WIF-encoded representation of the key.
 
 > **verify**(`message`, `signature`): `boolean`
 
-Defined in: crypto.ts:265
+Defined in: [crypto.ts:266](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L266)
 
 Verify a 32-byte signature.
 
@@ -132,7 +132,7 @@ Signature to verify.
 
 > `static` **from**(`value`): `PublicKey`
 
-Defined in: crypto.ts:252
+Defined in: [crypto.ts:253](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L253)
 
 Create a new instance.
 
@@ -152,7 +152,7 @@ Create a new instance.
 
 > `static` **fromBuffer**(`key`): `object`
 
-Defined in: crypto.ts:236
+Defined in: [crypto.ts:237](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L237)
 
 #### Parameters
 
@@ -174,7 +174,7 @@ Defined in: crypto.ts:236
 
 > `static` **fromString**(`wif`): `PublicKey`
 
-Defined in: crypto.ts:244
+Defined in: [crypto.ts:245](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L245)
 
 Create a new instance from a WIF-encoded key.
 

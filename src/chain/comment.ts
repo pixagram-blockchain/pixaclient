@@ -66,7 +66,9 @@ export interface Comment {
     net_votes: number // int32_t
     root_comment: number // comment_id_type
     max_accepted_payout: string // asset
-    percent_pxs: number // uint16_t
+    /** Share of the payout paid in PXS, basis points. An API node writes it `percent_pxs` or `percent_hbd`. */
+    percent_pxs?: number // uint16_t
+    percent_hbd?: number // uint16_t
     allow_replies: boolean
     allow_votes: boolean
     allow_curation_rewards: boolean
@@ -84,7 +86,17 @@ export interface Discussion extends Comment {
     active_votes: any[] // vote_state[]
     replies: string[] // / author/slug mapping
     author_reputation: number // share_type
+    /**
+     * PXS burned to promote the post, `"0.000 PXS"` when none (Pixamind); see
+     * `PixamindAPI.getPromotedPosts` and `BroadcastAPI.promote`.
+     */
     promoted: Asset | string
+    /**
+     * True when the post is minted as an NFT (hardfork 32); every post Pixamind returns carries it.
+     * A minted post can no longer be edited or deleted. Its NFT: `client.nft.getNft(author, permlink)`
+     * or `client.pixamind.getNft(author, permlink)`.
+     */
+    nft_minted?: boolean
     body_length: string // Bignum
     reblogged_by: any[] // account_name_type[]
     first_reblogged_by?: any // account_name_type

@@ -6,7 +6,7 @@
 
 # Interface: LimitOrderCreateOperation
 
-Defined in: chain/operation.ts:547
+Defined in: [chain/operation.ts:594](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L594)
 
 This operation creates a limit order and matches it against existing open orders.
 
@@ -20,7 +20,7 @@ This operation creates a limit order and matches it against existing open orders
 
 > **0**: `"limit_order_create"`
 
-Defined in: chain/operation.ts:548
+Defined in: [chain/operation.ts:595](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L595)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:548
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:549
+Defined in: [chain/operation.ts:596](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L596)
 
 #### amount\_to\_sell
 

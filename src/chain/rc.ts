@@ -51,5 +51,16 @@ export interface RCAccount {
 export interface Manabar {
     current_mana: number
     max_mana: number
+    /** Fill of the bar in basis points: 10000 is full. */
     percentage: number
+}
+
+/** What a vote costs (`RCAPI.calculateVoteCost`). */
+export interface VoteCost {
+    /** Mana the vote uses, in millionths of VESTS (the unit of `voting_manabar`). */
+    mana: number
+    /** That mana as a percentage of a full bar, two decimals: 3 is 3%. */
+    percentage: number
+    /** What a 100% vote costs, as a percentage of a full bar: 3 from hardfork 32, 2 before. */
+    full_vote_percentage: number
 }

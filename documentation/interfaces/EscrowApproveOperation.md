@@ -6,7 +6,7 @@
 
 # Interface: EscrowApproveOperation
 
-Defined in: chain/operation.ts:421
+Defined in: [chain/operation.ts:459](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L459)
 
 The agent and to accounts must approve an escrow transaction for it to be valid on
 the blockchain. Once a part approves the escrow, the cannot revoke their approval.
@@ -22,7 +22,7 @@ Subsequent escrow approve operations, regardless of the approval, will be reject
 
 > **0**: `"escrow_approve"`
 
-Defined in: chain/operation.ts:422
+Defined in: [chain/operation.ts:460](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L460)
 
 #### Overrides
 
@@ -34,7 +34,7 @@ Defined in: chain/operation.ts:422
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:423
+Defined in: [chain/operation.ts:461](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L461)
 
 #### agent
 

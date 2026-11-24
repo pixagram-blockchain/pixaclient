@@ -6,9 +6,13 @@
 
 # Interface: ClaimRewardBalanceOperation
 
-Defined in: chain/operation.ts:264
+Defined in: [chain/operation.ts:287](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L287)
 
-Generic operation.
+Moves pending rewards to the account's balances. Signed with the posting key.
+
+The node names the first two fields `reward_hive` and `reward_hbd`; dpixa also accepts
+`reward_pixa` and `reward_pxs`, and writes both names when it signs, so the node reads the
+amounts that were signed. Give each amount under one of its names.
 
 ## Extends
 
@@ -20,7 +24,7 @@ Generic operation.
 
 > **0**: `"claim_reward_balance"`
 
-Defined in: chain/operation.ts:265
+Defined in: [chain/operation.ts:288](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L288)
 
 #### Overrides
 
@@ -32,19 +36,31 @@ Defined in: chain/operation.ts:265
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:266
+Defined in: [chain/operation.ts:289](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L289)
 
 #### account
 
 > **account**: `string`
 
-#### reward\_pixa
+#### reward\_hbd?
 
-> **reward\_pixa**: `string` \| [`Asset`](../classes/Asset.md)
+> `optional` **reward\_hbd?**: `string` \| [`Asset`](../classes/Asset.md)
 
-#### reward\_pxs
+#### reward\_hive?
 
-> **reward\_pxs**: `string` \| [`Asset`](../classes/Asset.md)
+> `optional` **reward\_hive?**: `string` \| [`Asset`](../classes/Asset.md)
+
+#### reward\_pixa?
+
+> `optional` **reward\_pixa?**: `string` \| [`Asset`](../classes/Asset.md)
+
+PIXA to claim (node name: `reward_hive`).
+
+#### reward\_pxs?
+
+> `optional` **reward\_pxs?**: `string` \| [`Asset`](../classes/Asset.md)
+
+PXS to claim (node name: `reward_hbd`).
 
 #### reward\_vests
 

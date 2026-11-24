@@ -6,7 +6,7 @@
 
 # Interface: ChangeRecoveryAccountOperation
 
-Defined in: chain/operation.ts:246
+Defined in: [chain/operation.ts:262](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L262)
 
 Each account lists another account as their recovery account.
 The recovery account has the ability to create account_recovery_requests
@@ -35,7 +35,7 @@ witness according to stake.
 
 > **0**: `"change_recovery_account"`
 
-Defined in: chain/operation.ts:247
+Defined in: [chain/operation.ts:263](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L263)
 
 #### Overrides
 
@@ -47,7 +47,7 @@ Defined in: chain/operation.ts:247
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:248
+Defined in: [chain/operation.ts:264](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L264)
 
 #### account\_to\_recover
 

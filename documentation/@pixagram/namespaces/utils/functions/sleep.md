@@ -8,7 +8,7 @@
 
 > **sleep**(`ms`): `Promise`\<`void`\>
 
-Defined in: utils.ts:69
+Defined in: [utils.ts:72](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/utils.ts#L72)
 
 Sleep for N milliseconds.
 

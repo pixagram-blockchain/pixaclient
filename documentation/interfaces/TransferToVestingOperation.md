@@ -6,7 +6,7 @@
 
 # Interface: TransferToVestingOperation
 
-Defined in: chain/operation.ts:830
+Defined in: [chain/operation.ts:864](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L864)
 
 This operation converts PIXA into VFS (Vesting Fund Shares) at
 the current exchange rate. With this operation it is possible to
@@ -24,7 +24,7 @@ pre-fund new accounts with vesting shares.
 
 > **0**: `"transfer_to_vesting"`
 
-Defined in: chain/operation.ts:831
+Defined in: [chain/operation.ts:865](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L865)
 
 #### Overrides
 
@@ -36,7 +36,7 @@ Defined in: chain/operation.ts:831
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:832
+Defined in: [chain/operation.ts:866](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L866)
 
 #### amount
 

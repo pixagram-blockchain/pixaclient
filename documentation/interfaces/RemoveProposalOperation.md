@@ -6,7 +6,7 @@
 
 # Interface: RemoveProposalOperation
 
-Defined in: chain/operation.ts:956
+Defined in: [chain/operation.ts:990](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L990)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"remove_proposal"`
 
-Defined in: chain/operation.ts:957
+Defined in: [chain/operation.ts:991](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L991)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:957
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:958
+Defined in: [chain/operation.ts:992](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L992)
 
 #### extensions
 

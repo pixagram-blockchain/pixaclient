@@ -6,7 +6,7 @@
 
 # Interface: AccountCreateOperation
 
-Defined in: chain/operation.ts:158
+Defined in: [chain/operation.ts:174](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L174)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"account_create"`
 
-Defined in: chain/operation.ts:159
+Defined in: [chain/operation.ts:175](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L175)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:159
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:160
+Defined in: [chain/operation.ts:176](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L176)
 
 #### active
 

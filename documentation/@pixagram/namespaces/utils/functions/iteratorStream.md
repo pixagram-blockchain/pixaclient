@@ -8,7 +8,7 @@
 
 > **iteratorStream**\<`T`\>(`iterator`): `ReadableStream`
 
-Defined in: utils.ts:102
+Defined in: [utils.ts:105](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/utils.ts#L105)
 
 Return a stream that emits iterator values.
 

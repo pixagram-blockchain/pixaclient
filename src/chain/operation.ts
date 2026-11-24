@@ -43,7 +43,8 @@ import { ChainProperties, HexBuffer } from './misc'
 
 /**
  * Operation name.
- * Ref: https://gitlab.syncad.com/pixa/pixa/-/blob/master/libraries/protocol/include/pixa/protocol/operations.hpp
+ * Ref: libraries/protocol/include/hive/protocol/operations.hpp in
+ * https://github.com/pixagram-blockchain/pixagram
  */
 export type OperationName =  // <id>
   | 'vote' // 0
@@ -83,7 +84,7 @@ export type OperationName =  // <id>
   | 'cancel_transfer_from_savings' // 34
   | 'custom_binary' // 35
   | 'decline_voting_rights' // 36
-  | 'reset_account' // 37
+  | 'nft' // 37 (hardfork 32; the number of reset_account, a placeholder no block ever contained)
   | 'set_reset_account' // 38
   | 'claim_reward_balance' // 39
   | 'delegate_vesting_shares' // 40
@@ -98,7 +99,12 @@ export type OperationName =  // <id>
   | 'recurrent_transfer' // 49
 
 /**
- * Virtual operation name.
+ * Virtual operation name. The last regular operation is recurrent_transfer (49), so
+ * `last_regular + 1` is 50; {@link utils.operationOrders} has every number.
+ *
+ * Four operations have two names here: the node writes `dhf_funding`, `hardfork_hive`,
+ * `hardfork_hive_restore` and `dhf_conversion`; `sps_fund`, `hardfork_pixa`,
+ * `hardfork_pixa_restore` and `sps_convert` are the names earlier dpixa versions used.
  */
 export type VirtualOperationName =  // <id>
   | 'fill_convert_request' // last_regular + 1
@@ -118,14 +124,14 @@ export type VirtualOperationName =  // <id>
   | 'producer_reward' // last_regular + 15
   | 'clear_null_account_balance' // last_regular + 16
   | 'proposal_pay' // last_regular + 17
-  | 'sps_fund' // last_regular + 18
-  | 'hardfork_pixa' // last_regular + 19
-  | 'hardfork_pixa_restore' // last_regular + 20
+  | 'dhf_funding' | 'sps_fund' // last_regular + 18
+  | 'hardfork_hive' | 'hardfork_pixa' // last_regular + 19
+  | 'hardfork_hive_restore' | 'hardfork_pixa_restore' // last_regular + 20
   | 'delayed_voting' // last_regular + 21
   | 'consolidate_treasury_balance' // last_regular + 22
   | 'effective_comment_vote' // last_regular + 23
   | 'ineffective_delete_comment' // last_regular + 24
-  | 'sps_convert' // last_regular + 25
+  | 'dhf_conversion' | 'sps_convert' // last_regular + 25
   | 'expired_account_notification' // last_regular + 26
   | 'changed_recovery_account' // last_regular + 27
   | 'transfer_to_vesting_completed' // last_regular + 28
@@ -136,6 +142,16 @@ export type VirtualOperationName =  // <id>
   | 'system_warning' // last_regular + 33,
   | 'fill_recurrent_transfer' // last_regular + 34
   | 'failed_recurrent_transfer' // last_regular + 35
+  | 'limit_order_cancelled' // last_regular + 36
+  | 'producer_missed' // last_regular + 37
+  | 'proposal_fee' // last_regular + 38
+  | 'collateralized_convert_immediate_conversion' // last_regular + 39
+  | 'escrow_approved' // last_regular + 40
+  | 'escrow_rejected' // last_regular + 41
+  | 'proxy_cleared' // last_regular + 42
+  | 'declined_voting_rights' // last_regular + 43
+  | 'nft_sold' // last_regular + 44 (93, hardfork 32)
+  | 'nft_royalty' // last_regular + 45 (94, hardfork 32)
 
 /**
  * Generic operation.
@@ -261,12 +277,23 @@ export interface ChangeRecoveryAccountOperation extends Operation {
   }
 }
 
+/**
+ * Moves pending rewards to the account's balances. Signed with the posting key.
+ *
+ * The node names the first two fields `reward_hive` and `reward_hbd`; dpixa also accepts
+ * `reward_pixa` and `reward_pxs`, and writes both names when it signs, so the node reads the
+ * amounts that were signed. Give each amount under one of its names.
+ */
 export interface ClaimRewardBalanceOperation extends Operation {
   0: 'claim_reward_balance' // 39
   1: {
     account: string // account_name_type
-    reward_pixa: string | Asset
-    reward_pxs: string | Asset
+    /** PIXA to claim (node name: `reward_hive`). */
+    reward_pixa?: string | Asset
+    /** PXS to claim (node name: `reward_hbd`). */
+    reward_pxs?: string | Asset
+    reward_hive?: string | Asset
+    reward_hbd?: string | Asset
     reward_vests: string | Asset
   }
 }
@@ -296,6 +323,12 @@ export interface CommentOperation extends Operation {
   }
 }
 
+/**
+ * Payout options of a post or comment, set before its first vote.
+ *
+ * The node names the PXS share `percent_hbd`; dpixa also accepts `percent_pxs` and writes both
+ * names when it signs, so the node reads the value that was signed. Give it under one name.
+ */
 export interface CommentOptionsOperation extends Operation {
   0: 'comment_options' // 19
   1: {
@@ -303,8 +336,13 @@ export interface CommentOptionsOperation extends Operation {
     permlink: string
     /** PXS value of the maximum payout this post will receive. */
     max_accepted_payout: Asset | string
-    /** The percent of Pixa Dollars to key, unkept amounts will be received as Pixa Power. */
-    percent_pxs: number // uint16_t
+    /**
+     * Share of the payout paid in PXS, in basis points (10000 = 100%); the rest is paid as
+     * Pixa Power. Node name: `percent_hbd`.
+     */
+    percent_pxs?: number // uint16_t
+    /** Same as `percent_pxs`, under the name the node uses. */
+    percent_hbd?: number // uint16_t
     /** Whether to allow post to receive votes. */
     allow_votes: boolean
     /** Whether to allow post to recieve curation rewards. */
@@ -478,13 +516,15 @@ export interface EscrowReleaseOperation extends Operation {
     receiver: string // account_name_type
     escrow_id: number // uint32_t
     /**
-     * The amount of pxs to release.
+     * The amount of PXS to release (node name: `hbd_amount`).
      */
-    pxs_amount: Asset | string
+    pxs_amount?: Asset | string
     /**
-     * The amount of pixa to release.
+     * The amount of PIXA to release (node name: `hive_amount`).
      */
-    pixa_amount: Asset | string
+    pixa_amount?: Asset | string
+    hbd_amount?: Asset | string
+    hive_amount?: Asset | string
   }
 }
 
@@ -505,6 +545,9 @@ export interface EscrowReleaseOperation extends Operation {
  *
  * Escrow transactions are uniquely identified by 'from' and 'escrow_id', the 'escrow_id' is defined
  * by the sender.
+ *
+ * The node names the amounts `hbd_amount` and `hive_amount`; dpixa also accepts `pxs_amount` and
+ * `pixa_amount` and writes both names when it signs. Give each amount under one of its names.
  */
 export interface EscrowTransferOperation extends Operation {
   0: 'escrow_transfer' // 27
@@ -513,8 +556,12 @@ export interface EscrowTransferOperation extends Operation {
     to: string // account_name_type
     agent: string // account_name_type
     escrow_id: number // uint32_t
-    pxs_amount: Asset | string
-    pixa_amount: Asset | string
+    /** PXS held in escrow (node name: `hbd_amount`). */
+    pxs_amount?: Asset | string
+    /** PIXA held in escrow (node name: `hive_amount`). */
+    pixa_amount?: Asset | string
+    hbd_amount?: Asset | string
+    hive_amount?: Asset | string
     fee: Asset | string
     ratification_deadline: string // time_point_sec
     escrow_expiration: string // time_point_sec
@@ -727,19 +774,6 @@ export interface RequestAccountRecoveryOperation extends Operation {
      * Extensions. Not currently used.
      */
     extensions: any[] // extensions_type
-  }
-}
-
-/**
- * This operation allows recovery_account to change account_to_reset's owner authority to
- * new_owner_authority after 60 days of inactivity.
- */
-export interface ResetAccountOperation extends Operation {
-  0: 'reset_account' // 37
-  1: {
-    reset_account: string // account_name_type
-    account_to_reset: string // account_name_type
-    new_owner_authority: AuthorityType
   }
 }
 
@@ -993,5 +1027,173 @@ export interface RecurrentTransferOperation extends Operation {
     recurrence: number
     executions: number
     extensions: any[]
+  }
+}
+
+/**
+ * nft_mint, action 0 of {@link NftOperation}: mints a root post of the actor.
+ * All copies start with the author. Royalty and license are fixed for the life of the NFT, and the
+ * post can no longer be edited or deleted. See {@link checkNftMint} and {@link nftMintFee}.
+ */
+export interface NftMint {
+  /** Permlink of a root post of the actor (the minter is the author). */
+  permlink: string
+  /** Number of copies, 1 to 10,000. */
+  editions: number // uint16_t
+  /** Basis points of each later sale price paid to the author: 0 to 2500 (25%). */
+  royalty: number // uint16_t
+  /** Full text of the license terms, UTF-8, at most 72 KiB. The chain keeps its SHA-256. */
+  license: string
+  /** `editions` x 1.000 PXS, exactly; burned. */
+  fee: Asset | string
+  /** Not used; `[]` when omitted. */
+  extensions?: any[] // extensions_type
+}
+
+/**
+ * nft_list, action 1: offers a copy at a fixed price in PXS, or replaces its offer. Only the owner
+ * can. Edition 0 offers the author's reserve: every copy that never left the author and has no
+ * offer of its own, at one price, each buyer getting the lowest-numbered copy still in it.
+ */
+export interface NftList {
+  /** Author of the minted post. */
+  author: string // account_name_type
+  permlink: string
+  /** The copy, 1 to the number of copies; 0 for the reserve. */
+  edition: number // uint16_t
+  /** Asking price, in PXS. */
+  price: Asset | string
+  /**
+   * The offer cannot be taken at or after this time. Leave it out for an offer that never expires.
+   * At most 2038-01-19T03:14:07: the node refuses later times in JSON.
+   */
+  expiration?: string // time_point_sec
+  /** Not used; `[]` when omitted. */
+  extensions?: any[] // extensions_type
+}
+
+/**
+ * nft_unlist, action 2: withdraws an offer. Edition 0 withdraws the reserve offer. A copy that never
+ * left its author goes back to the reserve.
+ */
+export interface NftUnlist {
+  author: string // account_name_type
+  permlink: string
+  /** The copy, 1 to the number of copies; 0 for the reserve. */
+  edition: number // uint16_t
+  /** Not used; `[]` when omitted. */
+  extensions?: any[] // extensions_type
+}
+
+/**
+ * nft_buy, action 3: takes an offer. `price` has to equal the asking price exactly, so a buyer never
+ * pays a price changed after signing. The author receives the royalty unless he is the seller, the
+ * seller the rest. Edition 0 buys the next copy of the reserve, all of the price going to the author.
+ */
+export interface NftBuy {
+  author: string // account_name_type
+  permlink: string
+  /** The copy, 1 to the number of copies; 0 for the next copy of the reserve. */
+  edition: number // uint16_t
+  /** The asking price, in PXS. */
+  price: Asset | string
+  /** Not used; `[]` when omitted. */
+  extensions?: any[] // extensions_type
+}
+
+/**
+ * nft_transfer, action 4: gives a copy away, without payment and so without royalty. Only the
+ * owner can. Ends any offer of the copy. Giving it to `null` burns it.
+ */
+export interface NftTransfer {
+  author: string // account_name_type
+  permlink: string
+  /** The copy, 1 to the number of copies (the reserve cannot be given as a whole). */
+  edition: number // uint16_t
+  /** The new owner; `null` burns the copy. */
+  to: string // account_name_type
+  /** Not used; `[]` when omitted. */
+  extensions?: any[] // extensions_type
+}
+
+/**
+ * An nft_operation action as the node writes it in condenser_api JSON: `[tag, payload]`, the tag
+ * being the action's position (0 mint, 1 list, 2 unlist, 3 buy, 4 transfer).
+ */
+export type NftAction =
+  | [0, NftMint]
+  | [1, NftList]
+  | [2, NftUnlist]
+  | [3, NftBuy]
+  | [4, NftTransfer]
+
+/**
+ * The forms an action can be given in: `[tag, payload]`, `[name, payload]`, or `{type, value}` as
+ * database_api and HAF write it. dpixa signs and sends the `[tag, payload]` form.
+ */
+export type NftActionInput =
+  | NftAction
+  | ['nft_mint', NftMint]
+  | ['nft_list', NftList]
+  | ['nft_unlist', NftUnlist]
+  | ['nft_buy', NftBuy]
+  | ['nft_transfer', NftTransfer]
+  | { type: 'nft_mint', value: NftMint }
+  | { type: 'nft_list', value: NftList }
+  | { type: 'nft_unlist', value: NftUnlist }
+  | { type: 'nft_buy', value: NftBuy }
+  | { type: 'nft_transfer', value: NftTransfer }
+
+/**
+ * The operation of native NFTs (hardfork 32). It carries one action; `account` is its actor (the
+ * minter, the owner who lists, unlists or gives a copy, or the buyer) and signs with the active key.
+ *
+ * An NFT is written `@author/permlink/0` and its copy N `@author/permlink/N`. Prices, royalties and
+ * the mint fee are in PXS. A purchase produces the virtual operations `nft_sold` (93) and, when a
+ * royalty is paid, `nft_royalty` (94).
+ */
+export interface NftOperation extends Operation {
+  0: 'nft' // 37
+  1: {
+    /** The actor of the action. */
+    account: string // account_name_type
+    action: NftActionInput
+    /** Not used; `[]` when omitted. */
+    extensions?: any[] // extensions_type
+  }
+}
+
+/**
+ * Virtual operation 93: a listed copy was bought. For a purchase from the reserve (edition 0),
+ * `edition` is the copy the buyer got.
+ */
+export interface NftSoldOperation extends Operation {
+  0: 'nft_sold'
+  1: {
+    /** Previous owner; received the price minus the royalty. */
+    seller: string
+    /** New owner; paid the price. */
+    buyer: string
+    /** Creator of the NFT. */
+    author: string
+    permlink: string
+    edition: number
+    price: Asset | string
+    /** Part of the price paid to the creator; zero when the creator sold. */
+    royalty: Asset | string
+  }
+}
+
+/** Virtual operation 94: the royalty of a sale, produced next to nft_sold when it is not zero. */
+export interface NftRoyaltyOperation extends Operation {
+  0: 'nft_royalty'
+  1: {
+    /** Creator of the NFT, who received the royalty. */
+    creator: string
+    seller: string
+    buyer: string
+    permlink: string
+    edition: number
+    royalty: Asset | string
   }
 }

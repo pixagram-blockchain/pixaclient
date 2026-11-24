@@ -6,7 +6,7 @@
 
 # Interface: Comment
 
-Defined in: chain/comment.ts:39
+Defined in: [chain/comment.ts:39](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L39)
 
 ## Extended by
 
@@ -18,7 +18,7 @@ Defined in: chain/comment.ts:39
 
 > **abs\_rshares**: `string`
 
-Defined in: chain/comment.ts:56
+Defined in: [chain/comment.ts:56](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L56)
 
 ***
 
@@ -26,7 +26,7 @@ Defined in: chain/comment.ts:56
 
 > **active**: `string`
 
-Defined in: chain/comment.ts:51
+Defined in: [chain/comment.ts:51](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L51)
 
 ***
 
@@ -34,7 +34,7 @@ Defined in: chain/comment.ts:51
 
 > **allow\_curation\_rewards**: `boolean`
 
-Defined in: chain/comment.ts:72
+Defined in: [chain/comment.ts:74](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L74)
 
 ***
 
@@ -42,7 +42,7 @@ Defined in: chain/comment.ts:72
 
 > **allow\_replies**: `boolean`
 
-Defined in: chain/comment.ts:70
+Defined in: [chain/comment.ts:72](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L72)
 
 ***
 
@@ -50,7 +50,7 @@ Defined in: chain/comment.ts:70
 
 > **allow\_votes**: `boolean`
 
-Defined in: chain/comment.ts:71
+Defined in: [chain/comment.ts:73](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L73)
 
 ***
 
@@ -58,7 +58,7 @@ Defined in: chain/comment.ts:71
 
 > **author**: `string`
 
-Defined in: chain/comment.ts:44
+Defined in: [chain/comment.ts:44](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L44)
 
 ***
 
@@ -66,7 +66,7 @@ Defined in: chain/comment.ts:44
 
 > **author\_rewards**: `string`
 
-Defined in: chain/comment.ts:65
+Defined in: [chain/comment.ts:65](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L65)
 
 ***
 
@@ -74,7 +74,7 @@ Defined in: chain/comment.ts:65
 
 > **beneficiaries**: [`BeneficiaryRoute`](BeneficiaryRoute.md)[]
 
-Defined in: chain/comment.ts:73
+Defined in: [chain/comment.ts:75](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L75)
 
 ***
 
@@ -82,7 +82,7 @@ Defined in: chain/comment.ts:73
 
 > **body**: `string`
 
-Defined in: chain/comment.ts:47
+Defined in: [chain/comment.ts:47](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L47)
 
 ***
 
@@ -90,7 +90,7 @@ Defined in: chain/comment.ts:47
 
 > **cashout\_time**: `string`
 
-Defined in: chain/comment.ts:59
+Defined in: [chain/comment.ts:59](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L59)
 
 ***
 
@@ -98,7 +98,7 @@ Defined in: chain/comment.ts:59
 
 > **category**: `string`
 
-Defined in: chain/comment.ts:41
+Defined in: [chain/comment.ts:41](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L41)
 
 ***
 
@@ -106,7 +106,7 @@ Defined in: chain/comment.ts:41
 
 > **children**: `number`
 
-Defined in: chain/comment.ts:54
+Defined in: [chain/comment.ts:54](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L54)
 
 ***
 
@@ -114,7 +114,7 @@ Defined in: chain/comment.ts:54
 
 > **children\_abs\_rshares**: `string`
 
-Defined in: chain/comment.ts:58
+Defined in: [chain/comment.ts:58](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L58)
 
 ***
 
@@ -122,7 +122,7 @@ Defined in: chain/comment.ts:58
 
 > **created**: `string`
 
-Defined in: chain/comment.ts:50
+Defined in: [chain/comment.ts:50](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L50)
 
 ***
 
@@ -130,7 +130,7 @@ Defined in: chain/comment.ts:50
 
 > **curator\_payout\_value**: `string` \| [`Asset`](../classes/Asset.md)
 
-Defined in: chain/comment.ts:64
+Defined in: [chain/comment.ts:64](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L64)
 
 ***
 
@@ -138,7 +138,7 @@ Defined in: chain/comment.ts:64
 
 > **depth**: `number`
 
-Defined in: chain/comment.ts:53
+Defined in: [chain/comment.ts:53](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L53)
 
 ***
 
@@ -146,7 +146,7 @@ Defined in: chain/comment.ts:53
 
 > **id**: `number`
 
-Defined in: chain/comment.ts:40
+Defined in: [chain/comment.ts:40](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L40)
 
 ***
 
@@ -154,7 +154,7 @@ Defined in: chain/comment.ts:40
 
 > **json\_metadata**: `string`
 
-Defined in: chain/comment.ts:48
+Defined in: [chain/comment.ts:48](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L48)
 
 ***
 
@@ -162,7 +162,7 @@ Defined in: chain/comment.ts:48
 
 > **last\_payout**: `string`
 
-Defined in: chain/comment.ts:52
+Defined in: [chain/comment.ts:52](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L52)
 
 ***
 
@@ -170,7 +170,7 @@ Defined in: chain/comment.ts:52
 
 > **last\_update**: `string`
 
-Defined in: chain/comment.ts:49
+Defined in: [chain/comment.ts:49](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L49)
 
 ***
 
@@ -178,7 +178,7 @@ Defined in: chain/comment.ts:49
 
 > **max\_accepted\_payout**: `string`
 
-Defined in: chain/comment.ts:68
+Defined in: [chain/comment.ts:68](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L68)
 
 ***
 
@@ -186,7 +186,7 @@ Defined in: chain/comment.ts:68
 
 > **max\_cashout\_time**: `string`
 
-Defined in: chain/comment.ts:60
+Defined in: [chain/comment.ts:60](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L60)
 
 ***
 
@@ -194,7 +194,7 @@ Defined in: chain/comment.ts:60
 
 > **net\_rshares**: `string`
 
-Defined in: chain/comment.ts:55
+Defined in: [chain/comment.ts:55](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L55)
 
 ***
 
@@ -202,7 +202,7 @@ Defined in: chain/comment.ts:55
 
 > **net\_votes**: `number`
 
-Defined in: chain/comment.ts:66
+Defined in: [chain/comment.ts:66](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L66)
 
 ***
 
@@ -210,7 +210,7 @@ Defined in: chain/comment.ts:66
 
 > **parent\_author**: `string`
 
-Defined in: chain/comment.ts:42
+Defined in: [chain/comment.ts:42](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L42)
 
 ***
 
@@ -218,15 +218,25 @@ Defined in: chain/comment.ts:42
 
 > **parent\_permlink**: `string`
 
-Defined in: chain/comment.ts:43
+Defined in: [chain/comment.ts:43](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L43)
 
 ***
 
-### percent\_pxs
+### percent\_hbd?
 
-> **percent\_pxs**: `number`
+> `optional` **percent\_hbd?**: `number`
 
-Defined in: chain/comment.ts:69
+Defined in: [chain/comment.ts:71](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L71)
+
+***
+
+### percent\_pxs?
+
+> `optional` **percent\_pxs?**: `number`
+
+Defined in: [chain/comment.ts:70](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L70)
+
+Share of the payout paid in PXS, basis points. An API node writes it `percent_pxs` or `percent_hbd`.
 
 ***
 
@@ -234,7 +244,7 @@ Defined in: chain/comment.ts:69
 
 > **permlink**: `string`
 
-Defined in: chain/comment.ts:45
+Defined in: [chain/comment.ts:45](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L45)
 
 ***
 
@@ -242,7 +252,7 @@ Defined in: chain/comment.ts:45
 
 > **reward\_weight**: `number`
 
-Defined in: chain/comment.ts:62
+Defined in: [chain/comment.ts:62](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L62)
 
 ***
 
@@ -250,7 +260,7 @@ Defined in: chain/comment.ts:62
 
 > **root\_comment**: `number`
 
-Defined in: chain/comment.ts:67
+Defined in: [chain/comment.ts:67](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L67)
 
 ***
 
@@ -258,7 +268,7 @@ Defined in: chain/comment.ts:67
 
 > **title**: `string`
 
-Defined in: chain/comment.ts:46
+Defined in: [chain/comment.ts:46](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L46)
 
 ***
 
@@ -266,7 +276,7 @@ Defined in: chain/comment.ts:46
 
 > **total\_payout\_value**: `string` \| [`Asset`](../classes/Asset.md)
 
-Defined in: chain/comment.ts:63
+Defined in: [chain/comment.ts:63](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L63)
 
 ***
 
@@ -274,7 +284,7 @@ Defined in: chain/comment.ts:63
 
 > **total\_vote\_weight**: `number`
 
-Defined in: chain/comment.ts:61
+Defined in: [chain/comment.ts:61](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L61)
 
 ***
 
@@ -282,4 +292,4 @@ Defined in: chain/comment.ts:61
 
 > **vote\_rshares**: `string`
 
-Defined in: chain/comment.ts:57
+Defined in: [chain/comment.ts:57](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L57)

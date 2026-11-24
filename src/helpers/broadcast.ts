@@ -38,14 +38,17 @@ import assert from '../assert'
 import { BBuffer as Buffer } from '../bbuffer'
 import { Authority, AuthorityType } from '../chain/account'
 import { Asset } from '../chain/asset'
+import { normalizeTransaction } from '../chain/normalize'
 import {
   AccountUpdateOperation,
   ClaimAccountOperation,
+  ClaimRewardBalanceOperation,
   CommentOperation,
   CommentOptionsOperation,
   CreateClaimedAccountOperation,
   CustomJsonOperation,
   DelegateVestingSharesOperation,
+  NftOperation,
   Operation,
   TransferOperation,
   VoteOperation
@@ -171,6 +174,57 @@ export class BroadcastAPI {
    */
   public async json(data: CustomJsonOperation[1], key: PrivateKey) {
     const op: Operation = ['custom_json', data]
+    return this.sendOperations([op], key)
+  }
+
+  /**
+   * Claim pending rewards into the account's balances.
+   * @param data The amounts to claim, as `getAccounts` shows them pending; PIXA as `reward_pixa`
+   *             (or `reward_hive`), PXS as `reward_pxs` (or `reward_hbd`), and `reward_vests`.
+   * @param key Private posting key of the account.
+   */
+  public async claimRewardBalance(data: ClaimRewardBalanceOperation[1], key: PrivateKey) {
+    const op: Operation = ['claim_reward_balance', data]
+    return this.sendOperations([op], key)
+  }
+
+  /**
+   * Broadcast an nft_operation (hardfork 32): mint, offer, withdraw an offer, buy or give away a
+   * copy. {@link NftAPI} (`client.nft`) builds each action and checks it first.
+   * @param data `account` (the actor) and `action`, e.g. `[0, { permlink, editions, royalty, license, fee }]`.
+   * @param key Private active key of `account`.
+   */
+  public async nft(data: NftOperation[1], key: PrivateKey | PrivateKey[]) {
+    const op: Operation = ['nft', data]
+    return this.sendOperations([op], key)
+  }
+
+  /**
+   * Promote a post: burn PXS for it by sending it to `null` with the memo `@author/permlink`.
+   * Pixamind adds the amount to the post's promoted total, which ranks the promoted feed while
+   * the post awaits its payout. Only a root post can be promoted, only PXS counts, and the PXS is
+   * burned whatever happens to the post.
+   * @param data `from` pays, `author`/`permlink` name the post, `amount` in PXS (from 0.001).
+   * @param key Private active key of `from`.
+   */
+  public async promote(
+      data: { from: string, author: string, permlink: string, amount: string | Asset },
+      key: PrivateKey | PrivateKey[]
+  ) {
+    const amount = Asset.from(data.amount)
+    if (amount.symbol !== 'PXS' && amount.symbol !== 'TBD') {
+      throw new Error(`A promotion is paid in PXS, got ${amount.toString()}`)
+    }
+    if (!(amount.amount >= 0.001)) {
+      throw new Error(`A promotion is at least 0.001 PXS, got ${amount.toString()}`)
+    }
+    if (!data.author || !data.permlink) {
+      throw new Error('A promotion names a post: author and permlink')
+    }
+    const op: TransferOperation = [
+      'transfer',
+      { amount, from: data.from, memo: `@${data.author}/${data.permlink}`, to: 'null' }
+    ]
     return this.sendOperations([op], key)
   }
 
@@ -364,12 +418,16 @@ export class BroadcastAPI {
 
   /**
    * Broadcast a signed transaction to the network.
+   *
+   * The operations are sent in the form the node reads (see `normalizeTransaction`), which never
+   * changes what the signatures cover. The node checks and queues the transaction; `id` is its
+   * transaction id, and `client.transaction.findTransaction(id)` tells when it is in a block.
    */
   public async send(
       transaction: SignedTransaction
   ): Promise<TransactionConfirmation> {
     const trxId = requireCrypto('client.broadcast.send').generateTrxId(transaction)
-    const result = await this.call('broadcast_transaction', [transaction])
+    const result = await this.call('broadcast_transaction', [normalizeTransaction(transaction)])
     return Object.assign({ id: trxId }, result)
   }
 

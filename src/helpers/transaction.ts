@@ -29,9 +29,13 @@ export class TransactionStatusAPI {
     }
 
     /**
-     * Returns the status of a given transaction id
+     * Returns the status of a given transaction id, with the number of its block once it is in one.
+     * Pass the transaction's `expiration` to tell an expired transaction from an unknown one.
      */
-    public async findTransaction(transaction_id: string, expiration?: string): Promise<{ status: TransactionStatus }> {
+    public async findTransaction(
+        transaction_id: string,
+        expiration?: string
+    ): Promise<{ status: TransactionStatus, block_num?: number }> {
         const params: FindTransactionParams = {
             transaction_id
         }

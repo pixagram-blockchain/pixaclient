@@ -41,6 +41,7 @@ import assert from './assert'
 import * as bs58 from './base58'
 import { BBuffer as Buffer } from './bbuffer'
 import ByteBuffer from './bytebuffer'
+import { normalizeTransaction } from './chain/normalize'
 import { Types } from './chain/serializer'
 import { SignedTransaction, Transaction } from './chain/transaction'
 import { DEFAULT_ADDRESS_PREFIX, DEFAULT_CHAIN_ID } from './client'
@@ -531,15 +532,20 @@ function transactionDigest(
 
 /**
  * Return copy of transaction with signature appended to signatures array.
+ *
+ * The copy has its operations in the form the node reads (see chain/normalize.ts): fields that
+ * dpixa accepts under a Pixa name (`percent_pxs`, `reward_pixa`, …) are written under the node's
+ * name too, and an NFT action is written `[tag, payload]`. This never changes what is signed.
  * @param transaction Transaction to sign.
  * @param keys Key(s) to sign transaction with.
- * @param options Chain id and address prefix, compatible with {@link Client}.
+ * @param chainId The chain id, {@link Client.chainId}; the main network's by default.
  */
 function signTransaction(
     transaction: Transaction,
     keys: PrivateKey | PrivateKey[],
     chainId: Buffer = DEFAULT_CHAIN_ID
 ) {
+  transaction = normalizeTransaction(transaction)
   const digest = transactionDigest(transaction, chainId)
   const signedTransaction = copy(transaction) as SignedTransaction
   if (!signedTransaction.signatures) {

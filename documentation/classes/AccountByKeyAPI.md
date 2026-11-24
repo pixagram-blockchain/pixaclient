@@ -6,7 +6,7 @@
 
 # Class: AccountByKeyAPI
 
-Defined in: helpers/key.ts:13
+Defined in: [helpers/key.ts:13](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/key.ts#L13)
 
 ## Constructors
 
@@ -14,7 +14,7 @@ Defined in: helpers/key.ts:13
 
 > **new AccountByKeyAPI**(`client`): `AccountByKeyAPI`
 
-Defined in: helpers/key.ts:14
+Defined in: [helpers/key.ts:14](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/key.ts#L14)
 
 #### Parameters
 
@@ -32,7 +32,7 @@ Defined in: helpers/key.ts:14
 
 > `readonly` **client**: [`Client`](Client.md)
 
-Defined in: helpers/key.ts:14
+Defined in: [helpers/key.ts:14](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/key.ts#L14)
 
 ## Methods
 
@@ -40,7 +40,7 @@ Defined in: helpers/key.ts:14
 
 > **call**(`method`, `params?`): `Promise`\<`any`\>
 
-Defined in: helpers/key.ts:19
+Defined in: [helpers/key.ts:19](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/key.ts#L19)
 
 Convenience for calling `account_by_key_api`.
 
@@ -64,7 +64,7 @@ Convenience for calling `account_by_key_api`.
 
 > **getKeyReferences**(`keys`): `Promise`\<[`AccountsByKey`](../interfaces/AccountsByKey.md)\>
 
-Defined in: helpers/key.ts:26
+Defined in: [helpers/key.ts:26](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/key.ts#L26)
 
 Returns all accounts that have the key associated with their owner or active authorities.
 

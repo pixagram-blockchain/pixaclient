@@ -6,7 +6,7 @@
 
 # Interface: WitnessSetPropertiesOperation
 
-Defined in: chain/operation.ts:909
+Defined in: [chain/operation.ts:943](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L943)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"witness_set_properties"`
 
-Defined in: chain/operation.ts:910
+Defined in: [chain/operation.ts:944](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L944)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:910
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:911
+Defined in: [chain/operation.ts:945](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L945)
 
 #### extensions
 

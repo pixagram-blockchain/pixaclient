@@ -13,6 +13,24 @@
  * an RPC error message containing '%' is no longer mangled by printf (see
  * src/errors.ts) and the engine's own wording of a BigInt RangeError, which
  * is why only the error name is recorded for that case.
+ *
+ * 1.7.0 regenerated it. Every digest is unchanged except that of the
+ * witness_set_properties transaction (txs[52]); the differences, all intended:
+ *  - witness props: utils.buildWitnessUpdateOp writes pxs_exchange_rate and
+ *    pxs_interest_rate under the names the node reads, hbd_exchange_rate and
+ *    hbd_interest_rate (the node skipped the pxs_* names), which moves them in
+ *    the sorted props and changes that transaction's digest, signatures and id
+ *    (witnessOp, txs[52], client.sendOps, requests[31]);
+ *  - signed transactions carry each renamed field under both names
+ *    (percent_hbd next to percent_pxs, reward_hive and reward_hbd, hbd_amount
+ *    and hive_amount, props.hbd_interest_rate), so the node reads what was
+ *    signed (txs[14,15,16,31,34,35], requests[25]); see src/chain/normalize.ts;
+ *  - operationOrders: nft (37) replaces reset_account, and the virtual
+ *    operations 85 to 94 (nft_sold 93, nft_royalty 94) and the node's names of
+ *    67, 68, 69 and 74 are added (bitmasks[8]);
+ *  - exports: the NFT, normalization and voting bar additions, and the
+ *    BroadcastAPI and TransactionStatusAPI classes behind client.broadcast and
+ *    client.transaction.
  */
 
 const hex = (b) => Buffer.from(b).toString('hex')

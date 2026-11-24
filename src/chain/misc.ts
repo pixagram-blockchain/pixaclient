@@ -91,7 +91,7 @@ export interface ChainProperties {
      * fee requires all accounts to have some kind of commitment to the network that includes the
      * ability to vote and make transactions.
      *
-     * @note This has to be multiplied by STEEMIT ? `CREATE_ACCOUNT_WITH_PIXA_MODIFIER`
+     * @remarks This has to be multiplied by STEEMIT ? `CREATE_ACCOUNT_WITH_PIXA_MODIFIER`
      * (defined as 30 on the main chain) to get the minimum fee needed to create an account.
      *
      */
@@ -102,9 +102,13 @@ export interface ChainProperties {
      */
     maximum_block_size: number // uint32_t
     /**
-     * The PXS interest percentage rate decided by witnesses, expressed 0 to 10000.
+     * The PXS interest percentage rate decided by witnesses, expressed 0 to 10000 (fixed at 0
+     * on Pixa). The node names it `hbd_interest_rate`; dpixa accepts either name in
+     * `witness_update` and writes both when it signs.
      */
-    pxs_interest_rate: number // uint16_t
+    pxs_interest_rate?: number // uint16_t
+    /** Same as `pxs_interest_rate`, under the name the node uses. */
+    hbd_interest_rate?: number // uint16_t
 }
 
 export interface VestingDelegation {
@@ -197,7 +201,7 @@ export interface DynamicGlobalProperties {
      * Each witness posts what they think the maximum size should be as part of their witness
      * properties, the median size is chosen to be the maximum block size for the round.
      *
-     * @note the minimum value for maximum_block_size is defined by the protocol to prevent the
+     * @remarks the minimum value for maximum_block_size is defined by the protocol to prevent the
      * network from getting stuck by witnesses attempting to set this too low.
      */
     maximum_block_size: number
@@ -231,19 +235,56 @@ export interface DynamicGlobalProperties {
      */
     current_reserve_ratio: number
     /**
-     * The number of votes regenerated per day.  Any user voting slower than this rate will be
-     * "wasting" voting power through spillover; any user voting faster than this rate will have
-     * their votes reduced.
+     * Full votes a full voting bar holds, per day of refill: a 100% vote costs
+     * `86400 / (vote_power_reserve_rate * voting_mana_regeneration_seconds)` of the bar.
+     * 10 before hardfork 32 (2% per full vote), 5 from it (3%).
      */
     vote_power_reserve_rate: number
+    /**
+     * Seconds an empty voting bar takes to refill (the downvote bar too). A global property from
+     * hardfork 32: 576,000 (6 days 16 hours, 15% a day); older nodes leave it out, and the
+     * refill time was then 432,000 (5 days, 20% a day).
+     */
+    voting_mana_regeneration_seconds?: number
+    /**
+     * Seconds before vesting shares taken back from a delegation can be delegated again:
+     * 604,800 (7 days) from hardfork 32, 432,000 (5 days) before.
+     */
+    delegation_return_period?: number
+    /** Size of the downvote bar, in basis points of the voting bar. */
+    downvote_pool_percent?: number
+    /**
+     * Names the node uses for fields that dpixa names after PIXA and PXS: an API node returns one
+     * set or the other. {@link getVestingSharePrice} reads either.
+     */
+    total_vesting_fund_hive?: Asset | string
+    current_hbd_supply?: Asset | string
+    hbd_interest_rate?: number
+    hbd_print_rate?: number
+    pending_rewarded_vesting_hive?: Asset | string
+}
+
+/** Refill time of the voting bar before hardfork 32, in seconds (5 days). */
+export const VOTING_MANA_REGENERATION_SECONDS_PRE_HF32 = 432000
+
+/**
+ * Refill time of the voting bar that `props` describes: `voting_mana_regeneration_seconds`, or
+ * 432,000 (5 days) when the node predates hardfork 32 and leaves it out.
+ */
+export function getVotingManaRegenerationSeconds(props?: Partial<DynamicGlobalProperties>): number {
+    const seconds = props ? Number(props.voting_mana_regeneration_seconds) : NaN
+    return Number.isFinite(seconds) && seconds > 0 ? seconds : VOTING_MANA_REGENERATION_SECONDS_PRE_HF32
 }
 
 /**
  * Return the vesting share price.
  */
 export function getVestingSharePrice(props: DynamicGlobalProperties): Price {
-    // empty string is needed to skip the type check error
-    const totalVestingFund = Asset.from(props.total_vesting_fund_pixa)
+    // the node names the fund total_vesting_fund_hive; dpixa's name is total_vesting_fund_pixa
+    const fund = props.total_vesting_fund_pixa !== undefined
+        ? props.total_vesting_fund_pixa
+        : props.total_vesting_fund_hive
+    const totalVestingFund = Asset.from(fund as Asset | string)
     const totalVestingShares = Asset.from(props.total_vesting_shares)
     if (totalVestingFund.amount === 0 || totalVestingShares.amount === 0) {
         return new Price(new Asset(1, 'VESTS'), new Asset(1, 'PIXA'))

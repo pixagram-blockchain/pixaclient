@@ -110,6 +110,11 @@ export interface Account {
     current_mana: string | number
     last_update_time: number
   }
+  /** The downvote bar; see `RCAPI.calculateDownvoteMana`. */
+  downvote_manabar?: {
+    current_mana: string | number
+    last_update_time: number
+  }
   balance: string | Asset
   savings_balance: string | Asset
   pxs_balance: string | Asset
@@ -145,6 +150,15 @@ export interface Account {
   last_market_bandwidth_update: string // time_point_sec
   last_post: string // time_point_sec
   last_root_post: string // time_point_sec
+  /**
+   * Names the node uses for balances dpixa names after PIXA and PXS: an API node returns one set
+   * or the other.
+   */
+  hbd_balance?: string | Asset
+  savings_hbd_balance?: string | Asset
+  reward_hbd_balance?: string | Asset
+  reward_hive_balance?: string | Asset
+  reward_vesting_hive?: string | Asset
 }
 
 export interface ExtendedAccount extends Account {

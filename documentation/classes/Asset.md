@@ -6,7 +6,7 @@
 
 # Class: Asset
 
-Defined in: chain/asset.ts:53
+Defined in: [chain/asset.ts:64](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L64)
 
 Class representing a pixa asset, e.g. `1.000 PIXA` or `12.112233 VESTS`.
 
@@ -16,7 +16,7 @@ Class representing a pixa asset, e.g. `1.000 PIXA` or `12.112233 VESTS`.
 
 > **new Asset**(`amount`, `symbol`): `Asset`
 
-Defined in: chain/asset.ts:54
+Defined in: [chain/asset.ts:65](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L65)
 
 #### Parameters
 
@@ -38,7 +38,7 @@ Defined in: chain/asset.ts:54
 
 > `readonly` **amount**: `number`
 
-Defined in: chain/asset.ts:55
+Defined in: [chain/asset.ts:66](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L66)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: chain/asset.ts:55
 
 > `readonly` **symbol**: [`AssetSymbol`](../type-aliases/AssetSymbol.md)
 
-Defined in: chain/asset.ts:56
+Defined in: [chain/asset.ts:67](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L67)
 
 ## Methods
 
@@ -54,7 +54,7 @@ Defined in: chain/asset.ts:56
 
 > **add**(`amount`): `Asset`
 
-Defined in: chain/asset.ts:161
+Defined in: [chain/asset.ts:204](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L204)
 
 Return a new Asset instance with amount added.
 
@@ -74,7 +74,7 @@ Return a new Asset instance with amount added.
 
 > **divide**(`divisor`): `Asset`
 
-Defined in: chain/asset.ts:194
+Defined in: [chain/asset.ts:237](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L237)
 
 Return a new Asset with the amount divided.
 
@@ -94,7 +94,7 @@ Return a new Asset with the amount divided.
 
 > **getPrecision**(): `number`
 
-Defined in: chain/asset.ts:128
+Defined in: [chain/asset.ts:171](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L171)
 
 Return asset precision.
 
@@ -108,7 +108,7 @@ Return asset precision.
 
 > **multiply**(`factor`): `Asset`
 
-Defined in: chain/asset.ts:182
+Defined in: [chain/asset.ts:225](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L225)
 
 Return a new Asset with the amount multiplied by factor.
 
@@ -128,7 +128,7 @@ Return a new Asset with the amount multiplied by factor.
 
 > **steem\_symbols**(): `Asset`
 
-Defined in: chain/asset.ts:140
+Defined in: [chain/asset.ts:183](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L183)
 
 returns a representation of this asset using only STEEM SBD for
 legacy purposes
@@ -143,7 +143,7 @@ legacy purposes
 
 > **subtract**(`amount`): `Asset`
 
-Defined in: chain/asset.ts:170
+Defined in: [chain/asset.ts:213](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L213)
 
 Return a new Asset instance with amount subtracted.
 
@@ -163,7 +163,7 @@ Return a new Asset instance with amount subtracted.
 
 > **toJSON**(): `string`
 
-Defined in: chain/asset.ts:206
+Defined in: [chain/asset.ts:249](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L249)
 
 For JSON serialization, same as toString().
 
@@ -177,7 +177,7 @@ For JSON serialization, same as toString().
 
 > **toString**(): `string`
 
-Defined in: chain/asset.ts:154
+Defined in: [chain/asset.ts:197](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L197)
 
 Return a string representation of this asset, e.g. `42.000 PIXA`.
 
@@ -191,7 +191,7 @@ Return a string representation of this asset, e.g. `42.000 PIXA`.
 
 > `static` **from**(`value`, `symbol?`): `Asset`
 
-Defined in: chain/asset.ts:86
+Defined in: [chain/asset.ts:122](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L122)
 
 Convenience to create new Asset.
 
@@ -199,7 +199,10 @@ Convenience to create new Asset.
 
 ##### value
 
-`string` \| `number` \| `Asset`
+`string` \| `number` \| [`SMTAsset`](../interfaces/SMTAsset.md) \| `Asset`
+
+An Asset, a string such as `"42.000 PIXA"`, a number, or an amount in the
+              database_api form `{ amount, precision, nai }` (see [Asset.fromNai](#fromnai)).
 
 ##### symbol?
 
@@ -214,11 +217,37 @@ Symbol to use when created from number. Will also be used to validate
 
 ***
 
+### fromNai()
+
+> `static` **fromNai**(`value`, `symbol?`): `Asset`
+
+Defined in: [chain/asset.ts:97](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L97)
+
+Create an Asset from the form database_api (and HAF) use for amounts,
+`{ amount: "5000", precision: 3, nai: "@@000000013" }`: `@@000000021` is PIXA, `@@000000013`
+PXS and `@@000000037` VESTS (on a testnet, pass `TESTS` or `TBD` as `symbol`).
+
+#### Parameters
+
+##### value
+
+[`SMTAsset`](../interfaces/SMTAsset.md)
+
+##### symbol?
+
+[`AssetSymbol`](../type-aliases/AssetSymbol.md)
+
+#### Returns
+
+`Asset`
+
+***
+
 ### fromString()
 
 > `static` **fromString**(`string`, `expectedSymbol?`): `Asset`
 
-Defined in: chain/asset.ts:62
+Defined in: [chain/asset.ts:73](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L73)
 
 Create a new Asset instance from a string, e.g. `42.000 PIXA`.
 
@@ -242,7 +271,7 @@ Create a new Asset instance from a string, e.g. `42.000 PIXA`.
 
 > `static` **max**(`a`, `b`): `Asset`
 
-Defined in: chain/asset.ts:117
+Defined in: [chain/asset.ts:160](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L160)
 
 Return the larger of the two assets.
 
@@ -266,7 +295,7 @@ Return the larger of the two assets.
 
 > `static` **min**(`a`, `b`): `Asset`
 
-Defined in: chain/asset.ts:106
+Defined in: [chain/asset.ts:149](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L149)
 
 Return the smaller of the two assets.
 

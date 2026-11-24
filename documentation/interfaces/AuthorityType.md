@@ -6,7 +6,7 @@
 
 # Interface: AuthorityType
 
-Defined in: chain/account.ts:41
+Defined in: [chain/account.ts:41](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/account.ts#L41)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: chain/account.ts:41
 
 > **account\_auths**: \[`string`, `number`\][]
 
-Defined in: chain/account.ts:43
+Defined in: [chain/account.ts:43](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/account.ts#L43)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: chain/account.ts:43
 
 > **key\_auths**: \[`string` \| [`PublicKey`](../classes/PublicKey.md), `number`\][]
 
-Defined in: chain/account.ts:44
+Defined in: [chain/account.ts:44](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/account.ts#L44)
 
 ***
 
@@ -30,4 +30,4 @@ Defined in: chain/account.ts:44
 
 > **weight\_threshold**: `number`
 
-Defined in: chain/account.ts:42
+Defined in: [chain/account.ts:42](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/account.ts#L42)

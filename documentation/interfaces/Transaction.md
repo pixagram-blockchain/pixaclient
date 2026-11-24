@@ -6,7 +6,7 @@
 
 # Interface: Transaction
 
-Defined in: chain/transaction.ts:39
+Defined in: [chain/transaction.ts:39](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/transaction.ts#L39)
 
 ## Extended by
 
@@ -18,7 +18,7 @@ Defined in: chain/transaction.ts:39
 
 > **expiration**: `string`
 
-Defined in: chain/transaction.ts:42
+Defined in: [chain/transaction.ts:42](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/transaction.ts#L42)
 
 ***
 
@@ -26,7 +26,7 @@ Defined in: chain/transaction.ts:42
 
 > **extensions**: `any`[]
 
-Defined in: chain/transaction.ts:44
+Defined in: [chain/transaction.ts:44](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/transaction.ts#L44)
 
 ***
 
@@ -34,7 +34,7 @@ Defined in: chain/transaction.ts:44
 
 > **operations**: [`Operation`](Operation.md)[]
 
-Defined in: chain/transaction.ts:43
+Defined in: [chain/transaction.ts:43](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/transaction.ts#L43)
 
 ***
 
@@ -42,7 +42,7 @@ Defined in: chain/transaction.ts:43
 
 > **ref\_block\_num**: `number`
 
-Defined in: chain/transaction.ts:40
+Defined in: [chain/transaction.ts:40](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/transaction.ts#L40)
 
 ***
 
@@ -50,4 +50,4 @@ Defined in: chain/transaction.ts:40
 
 > **ref\_block\_prefix**: `number`
 
-Defined in: chain/transaction.ts:41
+Defined in: [chain/transaction.ts:41](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/transaction.ts#L41)

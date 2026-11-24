@@ -8,7 +8,7 @@
 
 > **copy**\<`T`\>(`object`): `T`
 
-Defined in: utils.ts:130
+Defined in: [utils.ts:133](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/utils.ts#L133)
 
 Return a deep copy of a JSON-serializable object.
 

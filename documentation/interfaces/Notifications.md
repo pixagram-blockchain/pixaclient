@@ -6,7 +6,7 @@
 
 # Interface: Notifications
 
-Defined in: chain/pixamind.ts:23
+Defined in: [chain/pixamind.ts:23](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L23)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: chain/pixamind.ts:23
 
 > **date**: `string`
 
-Defined in: chain/pixamind.ts:27
+Defined in: [chain/pixamind.ts:27](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L27)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: chain/pixamind.ts:27
 
 > **id**: `number`
 
-Defined in: chain/pixamind.ts:24
+Defined in: [chain/pixamind.ts:24](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L24)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: chain/pixamind.ts:24
 
 > **msg**: `string`
 
-Defined in: chain/pixamind.ts:28
+Defined in: [chain/pixamind.ts:28](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L28)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: chain/pixamind.ts:28
 
 > **score**: `number`
 
-Defined in: chain/pixamind.ts:26
+Defined in: [chain/pixamind.ts:26](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L26)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: chain/pixamind.ts:26
 
 > **type**: `string`
 
-Defined in: chain/pixamind.ts:25
+Defined in: [chain/pixamind.ts:25](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L25)
 
 ***
 
@@ -54,4 +54,4 @@ Defined in: chain/pixamind.ts:25
 
 > **url**: `string`
 
-Defined in: chain/pixamind.ts:29
+Defined in: [chain/pixamind.ts:29](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L29)

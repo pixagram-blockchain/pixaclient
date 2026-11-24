@@ -48,9 +48,15 @@ export interface SignedTransaction extends Transaction {
     signatures: string[]
 }
 
+/**
+ * What a broadcast returns. dpixa broadcasts with `condenser_api.broadcast_transaction`, which
+ * answers once the node has accepted the transaction, before it is in a block: `id` is set, and
+ * `client.transaction.findTransaction(id)` tells when the transaction is in a block. The other
+ * fields come only from `broadcast_transaction_synchronous`, called directly.
+ */
 export interface TransactionConfirmation {
     id: string // transaction_id_type
-    block_num: number // int32_t
-    trx_num: number // int32_t
-    expired: boolean
+    block_num?: number // int32_t
+    trx_num?: number // int32_t
+    expired?: boolean
 }

@@ -38,7 +38,8 @@ import { BBuffer as Buffer } from '../bytebuffer'
 import { PublicKey } from '../crypto'
 import { Asset } from './asset'
 import { HexBuffer } from './misc'
-import { Operation } from './operation'
+import { NFT_NEVER_EXPIRES, nftActionName, toNftAction } from './nft'
+import { NftActionInput, Operation } from './operation'
 
 export type Serializer = (buffer: any, data: any) => void
 
@@ -97,7 +98,7 @@ const StaticVariantSerializer = (itemSerializers: Serializer[]) => (
 
 /**
  * Serialize asset.
- * @note This looses precision for amounts larger than 2^53-1/10^precision.
+ * @remarks This looses precision for amounts larger than 2^53-1/10^precision.
  *       Should not be a problem in real-word usage.
  */
 const AssetSerializer = (buffer: any, data: Asset | string | number) => {
@@ -170,13 +171,22 @@ const ArraySerializer = (itemSerializer: Serializer) => (
   }
 }
 
-const ObjectSerializer = (keySerializers: [string, Serializer][]) => (
+/** A field of an object serializer: name, serializer and, optionally, a second name. */
+export type FieldDefinition = [string, Serializer] | [string, Serializer, string]
+
+/**
+ * Serializes the fields of an object in order. A field can have a second name, read when the
+ * first is absent: `[name, serializer, otherName]` (dpixa's Pixa names for the node's
+ * `percent_hbd`, `reward_hive`, …; see chain/normalize.ts).
+ */
+const ObjectSerializer = (keySerializers: FieldDefinition[]) => (
     buffer: any,
     data: { [key: string]: any }
 ) => {
-  for (const [key, serializer] of keySerializers) {
+  for (const [key, serializer, alias] of keySerializers as [string, Serializer, string?][]) {
     try {
-      serializer(buffer, data[key])
+      const value = data[key] === undefined && alias !== undefined ? data[alias] : data[key]
+      serializer(buffer, value)
     } catch (error) {
       error.message = `${key}: ${error.message}`
       throw error
@@ -228,12 +238,102 @@ const SignedBlockHeaderSerializer = ObjectSerializer([
 const ChainPropertiesSerializer = ObjectSerializer([
   ['account_creation_fee', AssetSerializer],
   ['maximum_block_size', UInt32Serializer],
-  ['pxs_interest_rate', UInt16Serializer]
+  ['hbd_interest_rate', UInt16Serializer, 'pxs_interest_rate']
 ])
+
+/*
+ * NFTs (hardfork 32). Stricter than the serializers above: a missing or out-of-range number, or a
+ * date that does not parse, throws instead of being written as 0, which would sign something else
+ * than what the node reads.
+ */
+
+const RequiredUInt16Serializer = (buffer: any, data: number | string) => {
+  const value = typeof data === 'string' && data.trim() !== '' ? Number(data) : data
+  if (typeof value !== 'number' || !Number.isInteger(value) || value < 0 || value > 0xffff) {
+    throw new Error(`Expected an integer from 0 to 65535, got ${JSON.stringify(data)}`)
+  }
+  buffer.writeUint16(value)
+}
+
+const RequiredStringSerializer = (buffer: any, data: string) => {
+  if (typeof data !== 'string') {
+    throw new Error(`Expected a string, got ${JSON.stringify(data)}`)
+  }
+  buffer.writeVString(data)
+}
+
+const RequiredDateSerializer = (buffer: any, data: string) => {
+  const time = typeof data === 'string' ? new Date(data.endsWith('Z') ? data : data + 'Z').getTime() : NaN
+  if (!Number.isFinite(time) || time < 0 || time / 1000 > 0xffffffff) {
+    throw new Error(`Expected a time such as 2027-01-31T00:00:00, got ${JSON.stringify(data)}`)
+  }
+  buffer.writeUint32(Math.floor(time / 1000))
+}
+
+const NftExtensionsSerializer = (buffer: any, data?: any[]) => {
+  ArraySerializer(VoidSerializer)(buffer, data === undefined ? [] : data)
+}
+
+const NftActionSerializers: Serializer[] = [
+  // 0 nft_mint
+  ObjectSerializer([
+    ['permlink', RequiredStringSerializer],
+    ['editions', RequiredUInt16Serializer],
+    ['royalty', RequiredUInt16Serializer],
+    ['license', RequiredStringSerializer],
+    ['fee', AssetSerializer],
+    ['extensions', NftExtensionsSerializer]
+  ]),
+  // 1 nft_list
+  ObjectSerializer([
+    ['author', RequiredStringSerializer],
+    ['permlink', RequiredStringSerializer],
+    ['edition', RequiredUInt16Serializer],
+    ['price', AssetSerializer],
+    ['expiration', (buffer: any, data?: string) =>
+      RequiredDateSerializer(buffer, data === undefined ? NFT_NEVER_EXPIRES : data)],
+    ['extensions', NftExtensionsSerializer]
+  ]),
+  // 2 nft_unlist
+  ObjectSerializer([
+    ['author', RequiredStringSerializer],
+    ['permlink', RequiredStringSerializer],
+    ['edition', RequiredUInt16Serializer],
+    ['extensions', NftExtensionsSerializer]
+  ]),
+  // 3 nft_buy
+  ObjectSerializer([
+    ['author', RequiredStringSerializer],
+    ['permlink', RequiredStringSerializer],
+    ['edition', RequiredUInt16Serializer],
+    ['price', AssetSerializer],
+    ['extensions', NftExtensionsSerializer]
+  ]),
+  // 4 nft_transfer
+  ObjectSerializer([
+    ['author', RequiredStringSerializer],
+    ['permlink', RequiredStringSerializer],
+    ['edition', RequiredUInt16Serializer],
+    ['to', RequiredStringSerializer],
+    ['extensions', NftExtensionsSerializer]
+  ])
+]
+
+/** The action of nft_operation: its tag, then its fields. Takes every form {@link toNftAction} reads. */
+const NftActionSerializer = (buffer: any, data: NftActionInput) => {
+  const [tag, payload] = toNftAction(data)
+  buffer.writeVarint32(tag)
+  try {
+    NftActionSerializers[tag](buffer, payload)
+  } catch (error) {
+    error.message = `${nftActionName(tag)}.${error.message}`
+    throw error
+  }
+}
 
 const OperationDataSerializer = (
     operationId: number,
-    definitions: [string, Serializer][]
+    definitions: FieldDefinition[]
 ) => {
   const objectSerializer = ObjectSerializer(definitions)
   return (buffer: any, data: { [key: string]: any }) => {
@@ -312,8 +412,8 @@ OperationSerializers.claim_account = OperationDataSerializer(22, [
 
 OperationSerializers.claim_reward_balance = OperationDataSerializer(39, [
   ['account', StringSerializer],
-  ['reward_pixa', AssetSerializer],
-  ['reward_pxs', AssetSerializer],
+  ['reward_hive', AssetSerializer, 'reward_pixa'],
+  ['reward_hbd', AssetSerializer, 'reward_pxs'],
   ['reward_vests', AssetSerializer]
 ])
 
@@ -331,7 +431,7 @@ OperationSerializers.comment_options = OperationDataSerializer(19, [
   ['author', StringSerializer],
   ['permlink', StringSerializer],
   ['max_accepted_payout', AssetSerializer],
-  ['percent_pxs', UInt16Serializer],
+  ['percent_hbd', UInt16Serializer, 'percent_pxs'],
   ['allow_votes', BooleanSerializer],
   ['allow_curation_rewards', BooleanSerializer],
   [
@@ -425,15 +525,15 @@ OperationSerializers.escrow_release = OperationDataSerializer(29, [
   ['who', StringSerializer],
   ['receiver', StringSerializer],
   ['escrow_id', UInt32Serializer],
-  ['pxs_amount', AssetSerializer],
-  ['pixa_amount', AssetSerializer]
+  ['hbd_amount', AssetSerializer, 'pxs_amount'],
+  ['hive_amount', AssetSerializer, 'pixa_amount']
 ])
 
 OperationSerializers.escrow_transfer = OperationDataSerializer(27, [
   ['from', StringSerializer],
   ['to', StringSerializer],
-  ['pxs_amount', AssetSerializer],
-  ['pixa_amount', AssetSerializer],
+  ['hbd_amount', AssetSerializer, 'pxs_amount'],
+  ['hive_amount', AssetSerializer, 'pixa_amount'],
   ['escrow_id', UInt32Serializer],
   ['agent', StringSerializer],
   ['fee', AssetSerializer],
@@ -488,12 +588,6 @@ OperationSerializers.request_account_recovery = OperationDataSerializer(24, [
   ['account_to_recover', StringSerializer],
   ['new_owner_authority', AuthoritySerializer],
   ['extensions', ArraySerializer(VoidSerializer)]
-])
-
-OperationSerializers.reset_account = OperationDataSerializer(37, [
-  ['reset_account', StringSerializer],
-  ['account_to_reset', StringSerializer],
-  ['new_owner_authority', AuthoritySerializer]
 ])
 
 OperationSerializers.set_reset_account = OperationDataSerializer(38, [
@@ -623,6 +717,13 @@ OperationSerializers.recurrent_transfer = OperationDataSerializer(49, [
   ['extensions', ArraySerializer(VoidSerializer)]
 ])
 
+// Native NFTs, hardfork 32. 37 was the number of reset_account, a placeholder no block ever contained.
+OperationSerializers.nft = OperationDataSerializer(37, [
+  ['account', RequiredStringSerializer],
+  ['action', NftActionSerializer],
+  ['extensions', NftExtensionsSerializer]
+])
+
 const OperationSerializer = (buffer: any, operation: Operation) => {
   const serializer = OperationSerializers[operation[0]]
   if (!serializer) {
@@ -666,6 +767,7 @@ export const Types = {
   Int32: Int32Serializer,
   Int64: Int64Serializer,
   Int8: Int8Serializer,
+  NftAction: NftActionSerializer,
   Object: ObjectSerializer,
   Operation: OperationSerializer,
   Optional: OptionalSerializer,

@@ -6,7 +6,7 @@
 
 # Interface: CustomBinaryOperation
 
-Defined in: chain/operation.ts:351
+Defined in: [chain/operation.ts:389](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L389)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"custom_binary"`
 
-Defined in: chain/operation.ts:352
+Defined in: [chain/operation.ts:390](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L390)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:352
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:353
+Defined in: [chain/operation.ts:391](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L391)
 
 #### data
 

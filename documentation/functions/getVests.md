@@ -8,7 +8,7 @@
 
 > **getVests**(`account`, `subtract_delegated?`, `add_received?`): `number`
 
-Defined in: chain/misc.ts:257
+Defined in: [chain/misc.ts:298](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/misc.ts#L298)
 
 Returns the vests of specified account. Default: Subtract delegated & add received
 

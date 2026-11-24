@@ -6,7 +6,7 @@
 
 # Interface: DisqussionQuery
 
-Defined in: helpers/database.ts:65
+Defined in: [helpers/database.ts:65](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/database.ts#L65)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: helpers/database.ts:65
 
 > `optional` **filter\_tags?**: `string`[]
 
-Defined in: helpers/database.ts:74
+Defined in: [helpers/database.ts:74](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/database.ts#L74)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: helpers/database.ts:74
 
 > **limit**: `number`
 
-Defined in: helpers/database.ts:73
+Defined in: [helpers/database.ts:73](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/database.ts#L73)
 
 Number of results, max 100.
 
@@ -32,7 +32,7 @@ Number of results, max 100.
 
 > `optional` **parent\_author?**: `string`
 
-Defined in: helpers/database.ts:91
+Defined in: [helpers/database.ts:91](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/database.ts#L91)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: helpers/database.ts:91
 
 > `optional` **parent\_permlink?**: `string`
 
-Defined in: helpers/database.ts:92
+Defined in: [helpers/database.ts:92](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/database.ts#L92)
 
 ***
 
@@ -48,7 +48,7 @@ Defined in: helpers/database.ts:92
 
 > `optional` **select\_authors?**: `string`[]
 
-Defined in: helpers/database.ts:75
+Defined in: [helpers/database.ts:75](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/database.ts#L75)
 
 ***
 
@@ -56,7 +56,7 @@ Defined in: helpers/database.ts:75
 
 > `optional` **select\_tags?**: `string`[]
 
-Defined in: helpers/database.ts:76
+Defined in: [helpers/database.ts:76](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/database.ts#L76)
 
 ***
 
@@ -64,7 +64,7 @@ Defined in: helpers/database.ts:76
 
 > `optional` **start\_author?**: `string`
 
-Defined in: helpers/database.ts:85
+Defined in: [helpers/database.ts:85](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/database.ts#L85)
 
 Name of author to start from, used for paging.
 Should be used in conjunction with `start_permlink`.
@@ -75,7 +75,7 @@ Should be used in conjunction with `start_permlink`.
 
 > `optional` **start\_permlink?**: `string`
 
-Defined in: helpers/database.ts:90
+Defined in: [helpers/database.ts:90](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/database.ts#L90)
 
 Permalink of post to start from, used for paging.
 Should be used in conjunction with `start_author`.
@@ -86,7 +86,7 @@ Should be used in conjunction with `start_author`.
 
 > `optional` **tag?**: `string`
 
-Defined in: helpers/database.ts:69
+Defined in: [helpers/database.ts:69](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/database.ts#L69)
 
 Name of author or tag to fetch.
 
@@ -96,6 +96,6 @@ Name of author or tag to fetch.
 
 > `optional` **truncate\_body?**: `number`
 
-Defined in: helpers/database.ts:80
+Defined in: [helpers/database.ts:80](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/database.ts#L80)
 
 Number of bytes of post body to fetch, default 0 (all)

@@ -6,7 +6,7 @@
 
 # Interface: BeneficiaryRoute
 
-Defined in: chain/comment.ts:94
+Defined in: [chain/comment.ts:106](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L106)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: chain/comment.ts:94
 
 > **account**: `string`
 
-Defined in: chain/comment.ts:95
+Defined in: [chain/comment.ts:107](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L107)
 
 ***
 
@@ -22,4 +22,4 @@ Defined in: chain/comment.ts:95
 
 > **weight**: `number`
 
-Defined in: chain/comment.ts:96
+Defined in: [chain/comment.ts:108](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/comment.ts#L108)

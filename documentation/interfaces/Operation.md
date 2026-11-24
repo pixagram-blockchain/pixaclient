@@ -6,7 +6,7 @@
 
 # Interface: Operation
 
-Defined in: chain/operation.ts:143
+Defined in: [chain/operation.ts:159](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L159)
 
 Generic operation.
 
@@ -44,7 +44,6 @@ Generic operation.
 - [`RecoverAccountOperation`](RecoverAccountOperation.md)
 - [`ReportOverProductionOperation`](ReportOverProductionOperation.md)
 - [`RequestAccountRecoveryOperation`](RequestAccountRecoveryOperation.md)
-- [`ResetAccountOperation`](ResetAccountOperation.md)
 - [`SetResetAccountOperation`](SetResetAccountOperation.md)
 - [`SetWithdrawVestingRouteOperation`](SetWithdrawVestingRouteOperation.md)
 - [`TransferOperation`](TransferOperation.md)
@@ -62,6 +61,9 @@ Generic operation.
 - [`UpdateProposalOperation`](UpdateProposalOperation.md)
 - [`CollateralizedConvertOperation`](CollateralizedConvertOperation.md)
 - [`RecurrentTransferOperation`](RecurrentTransferOperation.md)
+- [`NftOperation`](NftOperation.md)
+- [`NftSoldOperation`](NftSoldOperation.md)
+- [`NftRoyaltyOperation`](NftRoyaltyOperation.md)
 
 ## Properties
 
@@ -69,7 +71,7 @@ Generic operation.
 
 > **0**: [`OperationName`](../type-aliases/OperationName.md) \| [`VirtualOperationName`](../type-aliases/VirtualOperationName.md)
 
-Defined in: chain/operation.ts:144
+Defined in: [chain/operation.ts:160](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L160)
 
 ***
 
@@ -77,7 +79,7 @@ Defined in: chain/operation.ts:144
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:145
+Defined in: [chain/operation.ts:161](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L161)
 
 #### Index Signature
 

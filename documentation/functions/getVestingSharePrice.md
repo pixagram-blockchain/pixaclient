@@ -8,7 +8,7 @@
 
 > **getVestingSharePrice**(`props`): [`Price`](../classes/Price.md)
 
-Defined in: chain/misc.ts:244
+Defined in: [chain/misc.ts:282](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/misc.ts#L282)
 
 Return the vesting share price.
 

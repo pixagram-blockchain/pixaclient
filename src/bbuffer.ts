@@ -44,9 +44,9 @@ export function hexToBytes(hex: string): Uint8Array {
 }
 
 function parseHexChar(code: number): number {
-  if (code >= 48 && code <= 57) return code - 48       // 0-9
-  if (code >= 97 && code <= 102) return code - 87      // a-f
-  if (code >= 65 && code <= 70) return code - 55       // A-F
+  if (code >= 48 && code <= 57) { return code - 48 }       // 0-9
+  if (code >= 97 && code <= 102) { return code - 87 }      // a-f
+  if (code >= 65 && code <= 70) { return code - 55 }       // A-F
   return -1
 }
 
@@ -65,7 +65,7 @@ export function bytesToBinary(bytes: Uint8Array, start = 0, end = bytes.length):
   const CHUNK = 0x8000
   for (let i = start; i < end; i += CHUNK) {
     const slice = bytes.subarray(i, Math.min(i + CHUNK, end))
-    out += String.fromCharCode.apply(null, slice as unknown as number[])
+    out += String.fromCharCode.apply(null, slice)
   }
   return out
 }
@@ -137,7 +137,7 @@ export class BBuffer extends Uint8Array {
    */
   public static alloc(size: number, fill: number = 0): BBuffer {
     const buf = new BBuffer(size)
-    if (fill !== 0) buf.fill(fill)
+    if (fill !== 0) { buf.fill(fill) }
     return buf
   }
 
@@ -175,16 +175,16 @@ export class BBuffer extends Uint8Array {
     }
     // ArrayLike<number> (plain number[])
     const arr = value as ArrayLike<number>
-    const out = new BBuffer(arr.length)
-    for (let i = 0; i < arr.length; i++) out[i] = arr[i] & 0xff
-    return out
+    const result = new BBuffer(arr.length)
+    for (let i = 0; i < arr.length; i++) { result[i] = arr[i] & 0xff }
+    return result
   }
 
   /** Concatenate a list of Uint8Arrays / BBuffers into a single new buffer. */
-  public static concat(list: Array<Uint8Array | BBuffer>, totalLength?: number): BBuffer {
+  public static concat(list: (Uint8Array | BBuffer)[], totalLength?: number): BBuffer {
     if (totalLength === undefined) {
       totalLength = 0
-      for (const item of list) totalLength += item.length
+      for (const item of list) { totalLength += item.length }
     }
     const out = new BBuffer(totalLength)
     let offset = 0
@@ -224,9 +224,9 @@ export class BBuffer extends Uint8Array {
   public slice(begin = 0, end: number = this.length): BBuffer {
     // Normalise negative indices the way Array.prototype.slice does.
     const len = this.length
-    let s = begin < 0 ? Math.max(len + begin, 0) : Math.min(begin, len)
+    const s = begin < 0 ? Math.max(len + begin, 0) : Math.min(begin, len)
     let e = end < 0 ? Math.max(len + end, 0) : Math.min(end, len)
-    if (e < s) e = s
+    if (e < s) { e = s }
     const out = new BBuffer(e - s)
     out.set(super.subarray(s, e))
     return out
@@ -301,13 +301,13 @@ export class BBuffer extends Uint8Array {
       sourceStart: number = 0,
       sourceEnd: number = this.length
   ): number {
-    if (sourceEnd > this.length) sourceEnd = this.length
-    if (sourceStart < 0) sourceStart = 0
-    if (sourceEnd <= sourceStart) return 0
+    if (sourceEnd > this.length) { sourceEnd = this.length }
+    if (sourceStart < 0) { sourceStart = 0 }
+    if (sourceEnd <= sourceStart) { return 0 }
     const available = target.length - targetStart
     const want = sourceEnd - sourceStart
     const n = Math.min(available, want)
-    if (n <= 0) return 0
+    if (n <= 0) { return 0 }
     target.set(super.subarray(sourceStart, sourceStart + n), targetStart)
     return n
   }

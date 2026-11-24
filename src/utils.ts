@@ -42,7 +42,10 @@ import type { WitnessProps } from './witness'
 export type { WitnessProps } from './witness'
 
 // TODO: Add more errors that should trigger a failover
-const timeoutErrors = ['timeout', 'ENOTFOUND', 'ECONNREFUSED', 'database lock', 'CERT_HAS_EXPIRED', 'EHOSTUNREACH', 'ECONNRESET', 'ERR_TLS_CERT_ALTNAME_INVALID', 'EAI_AGAIN']
+const timeoutErrors = [
+  'timeout', 'ENOTFOUND', 'ECONNREFUSED', 'database lock', 'CERT_HAS_EXPIRED', 'EHOSTUNREACH', 'ECONNRESET',
+  'ERR_TLS_CERT_ALTNAME_INVALID', 'EAI_AGAIN'
+]
 
 /**
  * Anything with an EventEmitter-style `once()`.
@@ -58,7 +61,7 @@ export function waitForEvent<T>(
   emitter: EventEmitterLike,
   eventName: string | symbol
 ): Promise<T> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, _reject) => {
     emitter.once(eventName, resolve)
   })
 }
@@ -67,7 +70,7 @@ export function waitForEvent<T>(
  * Sleep for N milliseconds.
  */
 export function sleep(ms: number): Promise<void> {
-  return new Promise<void>((resolve) => {
+  return new Promise<void>(resolve => {
     setTimeout(resolve, ms)
   })
 }
@@ -118,7 +121,7 @@ export function iteratorStream<T>(
     .then(() => {
       stream.end()
     })
-    .catch((error) => {
+    .catch(error => {
       stream.emit('error', error)
       stream.end()
     })
@@ -208,8 +211,8 @@ export async function retryingFetch(
   timeout: number,
   failoverThreshold: number,
   consoleOnFailover: boolean,
-  backoff: (tries: number) => number,
-  fetchTimeout?: (tries: number) => number
+  backoff: (attempt: number) => number,
+  fetchTimeout?: (attempt: number) => number
 ) {
   let start = Date.now()
   let tries = 0
@@ -259,7 +262,7 @@ export async function retryingFetch(
         } else {
           const isFailoverError =
             timeoutErrors.filter(
-              (fe) => error && typeof error.code === 'string' && error.code.includes(fe)
+              fe => error && typeof error.code === 'string' && error.code.includes(fe)
             ).length > 0
           if (
             isFailoverError &&
@@ -287,7 +290,7 @@ export async function retryingFetch(
               throw error
             }
           } else {
-            // tslint:disable-next-line: no-console
+            // eslint-disable-next-line no-console
             console.error(
               `Didn't failover for error ${error.code ? 'code' : 'message'}: [${
                 error.code || error.message
@@ -311,7 +314,7 @@ const failover = (
   const index = urls.indexOf(url)
   const targetUrl = urls.length === index + 1 ? urls[0] : urls[index + 1]
   if (consoleOnFailover) {
-    // tslint:disable-next-line: no-console
+    // eslint-disable-next-line no-console
     console.log(`Switched Pixa RPC: ${targetUrl} (previous: ${currentAddress})`)
   }
   return targetUrl
@@ -369,7 +372,7 @@ export const operationOrders = {
   cancel_transfer_from_savings: 34,
   custom_binary: 35,
   decline_voting_rights: 36,
-  reset_account: 37,
+  nft: 37, // hardfork 32; the number of reset_account, a placeholder no block ever contained
   set_reset_account: 38,
   claim_reward_balance: 39,
   delegate_vesting_shares: 40,
@@ -400,14 +403,18 @@ export const operationOrders = {
   producer_reward: 64,
   clear_null_account_balance: 65,
   proposal_pay: 66,
-  sps_fund: 67,
-  hardfork_pixa: 68,
-  hardfork_pixa_restore: 69,
+  dhf_funding: 67,
+  sps_fund: 67, // dhf_funding, as earlier dpixa versions named it
+  hardfork_hive: 68,
+  hardfork_pixa: 68, // hardfork_hive
+  hardfork_hive_restore: 69,
+  hardfork_pixa_restore: 69, // hardfork_hive_restore
   delayed_voting: 70,
   consolidate_treasury_balance: 71,
   effective_comment_vote: 72,
   ineffective_delete_comment: 73,
-  sps_convert: 74,
+  dhf_conversion: 74,
+  sps_convert: 74, // dhf_conversion
   expired_account_notification: 75,
   changed_recovery_account: 76,
   transfer_to_vesting_completed: 77,
@@ -417,7 +424,17 @@ export const operationOrders = {
   fill_collateralized_convert_request: 81,
   system_warning: 82,
   fill_recurrent_transfer: 83,
-  failed_recurrent_transfer: 84
+  failed_recurrent_transfer: 84,
+  limit_order_cancelled: 85,
+  producer_missed: 86,
+  proposal_fee: 87,
+  collateralized_convert_immediate_conversion: 88,
+  escrow_approved: 89,
+  escrow_rejected: 90,
+  proxy_cleared: 91,
+  declined_voting_rights: 92,
+  nft_sold: 93, // hardfork 32
+  nft_royalty: 94 // hardfork 32
 }
 
 /**

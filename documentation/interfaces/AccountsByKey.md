@@ -6,7 +6,7 @@
 
 # Interface: AccountsByKey
 
-Defined in: helpers/key.ts:9
+Defined in: [helpers/key.ts:9](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/key.ts#L9)
 
 ## Properties
 
@@ -14,4 +14,4 @@ Defined in: helpers/key.ts:9
 
 > **accounts**: `string`[][]
 
-Defined in: helpers/key.ts:10
+Defined in: [helpers/key.ts:10](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/helpers/key.ts#L10)

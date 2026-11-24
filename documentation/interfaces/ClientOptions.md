@@ -6,7 +6,7 @@
 
 # Interface: ClientOptions
 
-Defined in: client.ts:131
+Defined in: [client.ts:115](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L115)
 
 RPC Client options
 ------------------
@@ -17,7 +17,7 @@ RPC Client options
 
 > `optional` **addressPrefix?**: `string`
 
-Defined in: client.ts:143
+Defined in: [client.ts:127](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L127)
 
 Pixa address prefix. Defaults to main network:
 `PIX`
@@ -28,7 +28,7 @@ Pixa address prefix. Defaults to main network:
 
 > `optional` **agent?**: `any`
 
-Defined in: client.ts:175
+Defined in: [client.ts:159](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L159)
 
 Node.js http(s) agent, use if you want http keep-alive.
 Defaults to using https.globalAgent.
@@ -43,9 +43,9 @@ https://nodejs.org/api/http.html#http_new_agent_options.
 
 > `optional` **backoff?**: (`tries`) => `number`
 
-Defined in: client.ts:169
+Defined in: [client.ts:153](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L153)
 
-Retry backoff function, returns milliseconds. Default = defaultBackoff.
+Retry backoff function, returns milliseconds. Default: `min((tries * 10)^2, 10000)`.
 
 #### Parameters
 
@@ -63,7 +63,7 @@ Retry backoff function, returns milliseconds. Default = defaultBackoff.
 
 > `optional` **chainId?**: `string`
 
-Defined in: client.ts:138
+Defined in: [client.ts:122](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L122)
 
 Pixa chain id. Defaults to main pixa network:
 need the new id?
@@ -75,7 +75,7 @@ need the new id?
 
 > `optional` **consoleOnFailover?**: `boolean`
 
-Defined in: client.ts:164
+Defined in: [client.ts:148](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L148)
 
 Whether a console.log should be made when RPC failed over to another one
 
@@ -85,7 +85,7 @@ Whether a console.log should be made when RPC failed over to another one
 
 > `optional` **failoverThreshold?**: `number`
 
-Defined in: client.ts:159
+Defined in: [client.ts:143](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L143)
 
 Specifies the amount of times the urls (RPC nodes) should be
 iterated and retried in case of timeout errors.
@@ -98,7 +98,7 @@ Can be set to 0 to iterate and retry forever. Defaults to 3 rounds.
 
 > `optional` **rebrandedApi?**: `boolean`
 
-Defined in: client.ts:179
+Defined in: [client.ts:163](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L163)
 
 Deprecated - don't use
 
@@ -108,7 +108,7 @@ Deprecated - don't use
 
 > `optional` **timeout?**: `number`
 
-Defined in: client.ts:151
+Defined in: [client.ts:135](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L135)
 
 Send timeout, how long to wait in milliseconds before giving
 up on a rpc call. Note that this is not an exact timeout,
