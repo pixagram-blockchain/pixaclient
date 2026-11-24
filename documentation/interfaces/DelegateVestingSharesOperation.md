@@ -6,7 +6,7 @@
 
 # Interface: DelegateVestingSharesOperation
 
-Defined in: chain/operation.ts:390
+Defined in: [chain/operation.ts:428](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L428)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"delegate_vesting_shares"`
 
-Defined in: chain/operation.ts:391
+Defined in: [chain/operation.ts:429](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L429)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:391
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:392
+Defined in: [chain/operation.ts:430](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L430)
 
 #### delegatee
 

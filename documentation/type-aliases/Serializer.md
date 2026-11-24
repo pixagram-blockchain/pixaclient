@@ -8,7 +8,7 @@
 
 > **Serializer** = (`buffer`, `data`) => `void`
 
-Defined in: chain/serializer.ts:43
+Defined in: [chain/serializer.ts:44](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/serializer.ts#L44)
 
 ## Parameters
 

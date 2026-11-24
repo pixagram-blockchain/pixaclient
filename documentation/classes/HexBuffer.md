@@ -6,7 +6,7 @@
 
 # Class: HexBuffer
 
-Defined in: chain/misc.ts:49
+Defined in: [chain/misc.ts:49](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/misc.ts#L49)
 
 Buffer wrapper that serializes to a hex-encoded string.
 
@@ -16,7 +16,7 @@ Buffer wrapper that serializes to a hex-encoded string.
 
 > **new HexBuffer**(`buffer`): `HexBuffer`
 
-Defined in: chain/misc.ts:50
+Defined in: [chain/misc.ts:50](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/misc.ts#L50)
 
 #### Parameters
 
@@ -34,7 +34,7 @@ Defined in: chain/misc.ts:50
 
 > **buffer**: `any`
 
-Defined in: chain/misc.ts:50
+Defined in: [chain/misc.ts:50](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/misc.ts#L50)
 
 ## Methods
 
@@ -42,7 +42,7 @@ Defined in: chain/misc.ts:50
 
 > **toJSON**(): `string`
 
-Defined in: chain/misc.ts:79
+Defined in: [chain/misc.ts:79](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/misc.ts#L79)
 
 #### Returns
 
@@ -54,7 +54,7 @@ Defined in: chain/misc.ts:79
 
 > **toString**(`encoding?`): `string`
 
-Defined in: chain/misc.ts:75
+Defined in: [chain/misc.ts:75](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/misc.ts#L75)
 
 #### Parameters
 
@@ -72,7 +72,7 @@ Defined in: chain/misc.ts:75
 
 > `static` **from**(`value`): `HexBuffer`
 
-Defined in: chain/misc.ts:61
+Defined in: [chain/misc.ts:61](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/misc.ts#L61)
 
 Convenience to create a new HexBuffer, does not copy data if value passed is already a buffer.
 

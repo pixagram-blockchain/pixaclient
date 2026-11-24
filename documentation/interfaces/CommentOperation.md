@@ -6,7 +6,7 @@
 
 # Interface: CommentOperation
 
-Defined in: chain/operation.ts:286
+Defined in: [chain/operation.ts:313](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L313)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"comment"`
 
-Defined in: chain/operation.ts:287
+Defined in: [chain/operation.ts:314](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L314)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:287
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:288
+Defined in: [chain/operation.ts:315](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L315)
 
 #### author
 

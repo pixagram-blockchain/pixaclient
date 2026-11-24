@@ -6,7 +6,7 @@
 
 # Interface: WitnessUpdateOperation
 
-Defined in: chain/operation.ts:892
+Defined in: [chain/operation.ts:926](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L926)
 
 Users who wish to become a witness must pay a fee acceptable to
 the current witnesses to apply for the position and allow voting
@@ -31,7 +31,7 @@ producing blocks.
 
 > **0**: `"witness_update"`
 
-Defined in: chain/operation.ts:893
+Defined in: [chain/operation.ts:927](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L927)
 
 #### Overrides
 
@@ -43,7 +43,7 @@ Defined in: chain/operation.ts:893
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:894
+Defined in: [chain/operation.ts:928](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L928)
 
 #### block\_signing\_key
 

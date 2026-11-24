@@ -6,7 +6,7 @@
 
 # Interface: AccountUpdate2Operation
 
-Defined in: chain/operation.ts:918
+Defined in: [chain/operation.ts:952](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L952)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"account_update2"`
 
-Defined in: chain/operation.ts:919
+Defined in: [chain/operation.ts:953](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L953)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:919
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:920
+Defined in: [chain/operation.ts:954](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L954)
 
 #### account
 

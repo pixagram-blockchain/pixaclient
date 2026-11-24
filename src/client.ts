@@ -45,16 +45,17 @@ import {
     MAIN_TESTNET_NODE_URL,
     PREFIX_TESTNET_ADDRESS,
     MAIN_MAINNET_NODE_URL
-} from "./parameters";
+} from './parameters'
 
 import { Blockchain } from './helpers/blockchain'
 import { BroadcastAPI } from './helpers/broadcast'
 import { DatabaseAPI } from './helpers/database'
+import { NftAPI } from './helpers/nft'
 import { PixamindAPI } from './helpers/pixamind'
 import {AccountByKeyAPI} from './helpers/key'
 import { RCAPI } from './helpers/rc'
 import {TransactionStatusAPI} from './helpers/transaction'
-import { copy, retryingFetch, waitForEvent } from './utils'
+import { copy, retryingFetch } from './utils'
 
 
 /**
@@ -73,33 +74,23 @@ export const DEFAULT_CHAIN_ID = Buffer.from(
 /**
  * Main Pixa network address prefix.
  */
-export const DEFAULT_ADDRESS_PREFIX = PREFIX_MAINNET_ADDRESS;
+export const DEFAULT_ADDRESS_PREFIX = PREFIX_MAINNET_ADDRESS
 
-interface RPCRequest {
+/** A JSON-RPC 2.0 request as {@link Client.call} sends it. */
+interface RPCCall {
     /**
      * Request sequence number.
      */
     id: number | string
-    /**
-     * RPC method.
-     */
-    method: 'call' | 'notice' | 'callback'
-    /**
-     * Array of parameters to pass to the method.
-     */
     jsonrpc: '2.0'
-    params: any[]
-}
-
-interface RPCCall extends RPCRequest {
-    method: 'call' | any
     /**
-     * 1. API to call, you can pass either the numerical id of the API you get
-     *    from calling 'get_api_by_name' or the name directly as a string.
-     * 2. Method to call on that API.
-     * 3. Arguments to pass to the method.
+     * `api.method`, e.g. `condenser_api.get_accounts` or `pixamind_nft.get_nfts`.
      */
-    params: [number | string, string, any[]]
+    method: string
+    /**
+     * Parameters of the method: an array or an object, as the method takes them.
+     */
+    params: any
 }
 
 interface RPCError {
@@ -115,13 +106,6 @@ interface RPCResponse {
     id: number
     error?: RPCError
     result?: any
-}
-
-interface PendingRequest {
-    request: RPCRequest
-    timer: NodeJS.Timer | undefined
-    resolve: (response: any) => void
-    reject: (error: Error) => void
 }
 
 /**
@@ -164,7 +148,7 @@ export interface ClientOptions {
     consoleOnFailover?: boolean
 
     /**
-     * Retry backoff function, returns milliseconds. Default = {@link defaultBackoff}.
+     * Retry backoff function, returns milliseconds. Default: `min((tries * 10)^2, 10000)`.
      */
     backoff?: (tries: number) => number
     /**
@@ -222,6 +206,11 @@ export class Client {
     public readonly pixamind: PixamindAPI
 
     /**
+     * Native NFTs (hardfork 32): chain queries and the actions of nft_operation.
+     */
+    public readonly nft: NftAPI
+
+    /**
      * Accounts by key API helper.
      */
     public readonly keys: AccountByKeyAPI
@@ -241,14 +230,17 @@ export class Client {
      */
     public readonly addressPrefix: string
 
+    /**
+     * The RPC node requests go to now; changes when the client fails over to another address.
+     */
+    public currentAddress: string
+
     private timeout: number
     private backoff: typeof defaultBackoff
 
     private failoverThreshold: number
 
     private consoleOnFailover: boolean
-
-    public currentAddress: string
 
     /**
      * @param address The address to the Pixa RPC server,
@@ -257,7 +249,7 @@ export class Client {
      */
     constructor(address: string | string[], options: ClientOptions = {}) {
         if (options.rebrandedApi) {
-            // tslint:disable-next-line: no-console
+            // eslint-disable-next-line no-console
             console.log('Warning: rebrandedApi is deprecated and safely can be removed from client options')
         }
         this.currentAddress = (Array.isArray(address) ? address[0] : address) || MAIN_MAINNET_NODE_URL
@@ -280,6 +272,7 @@ export class Client {
         this.blockchain = new Blockchain(this)
         this.rc = new RCAPI(this)
         this.pixamind = new PixamindAPI(this)
+        this.nft = new NftAPI(this)
         this.keys = new AccountByKeyAPI(this)
         this.transaction = new TransactionStatusAPI(this)
     }
@@ -294,8 +287,8 @@ export class Client {
             opts.agent = options.agent
         }
 
-        opts.addressPrefix = PREFIX_TESTNET_ADDRESS;
-        opts.chainId = TESTNET_HEX_CHAIN_ID;
+        opts.addressPrefix = PREFIX_TESTNET_ADDRESS
+        opts.chainId = TESTNET_HEX_CHAIN_ID
         return new Client(MAIN_TESTNET_NODE_URL, opts)
     }
 
@@ -330,10 +323,10 @@ export class Client {
             cache: 'no-cache',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             method: 'POST',
-            mode: 'cors',
+            mode: 'cors'
         }
 
         // Self is not defined within Node environments
@@ -354,7 +347,7 @@ export class Client {
         ) {
             // bit of a hack to work around some nodes high error rates
             // only effective in node.js (until timeout spec lands in browsers)
-            fetchTimeout = (tries) => (tries + 1) * 500
+            fetchTimeout = tries => (tries + 1) * 500
         }
 
         const { response, currentAddress }: { response: RPCResponse; currentAddress: string } =
@@ -398,8 +391,8 @@ export class Client {
                     }
                 )
                 const unformattedData = Object.keys(topData)
-                    .map((key) => ({ key, value: formatValue(topData[key]) }))
-                    .map((item) => `${item.key}=${item.value}`)
+                    .map(key => ({ key, value: formatValue(topData[key]) }))
+                    .map(item => `${item.key}=${item.value}`)
                 if (unformattedData.length > 0) {
                     message += ' ' + unformattedData.join(' ')
                 }
@@ -410,8 +403,8 @@ export class Client {
         return response.result
     }
 
-    public updateOperations(rebrandedApi) {
-        // tslint:disable-next-line: no-console
+    public updateOperations(_rebrandedApi?: boolean) {
+        // eslint-disable-next-line no-console
         console.log('Warning: call to updateOperations() is deprecated and can safely be removed')
     }
 }

@@ -6,7 +6,7 @@
 
 # Interface: RequestAccountRecoveryOperation
 
-Defined in: chain/operation.ts:710
+Defined in: [chain/operation.ts:757](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L757)
 
 All account recovery requests come from a listed recovery account. This
 is secure based on the assumption that only a trusted account should be
@@ -44,7 +44,7 @@ the recover account operation.
 
 > **0**: `"request_account_recovery"`
 
-Defined in: chain/operation.ts:711
+Defined in: [chain/operation.ts:758](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L758)
 
 #### Overrides
 
@@ -56,7 +56,7 @@ Defined in: chain/operation.ts:711
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:712
+Defined in: [chain/operation.ts:759](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L759)
 
 #### account\_to\_recover
 

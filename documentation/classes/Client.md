@@ -6,7 +6,7 @@
 
 # Class: Client
 
-Defined in: client.ts:187
+Defined in: [client.ts:171](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L171)
 
 RPC Client
 ----------
@@ -18,7 +18,7 @@ Can be used in both node.js and the browser. Also see [ClientOptions](../interfa
 
 > **new Client**(`address`, `options?`): `Client`
 
-Defined in: client.ts:258
+Defined in: [client.ts:250](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L250)
 
 #### Parameters
 
@@ -45,7 +45,7 @@ Client options.
 
 > **address**: `string` \| `string`[]
 
-Defined in: client.ts:197
+Defined in: [client.ts:181](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L181)
 
 Address to Pixa RPC server.
 String or String[] *read-only*
@@ -56,7 +56,7 @@ String or String[] *read-only*
 
 > `readonly` **addressPrefix**: `string`
 
-Defined in: client.ts:242
+Defined in: [client.ts:231](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L231)
 
 Address prefix for current network.
 
@@ -66,7 +66,7 @@ Address prefix for current network.
 
 > `readonly` **blockchain**: [`Blockchain`](Blockchain.md)
 
-Defined in: client.ts:217
+Defined in: [client.ts:201](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L201)
 
 Blockchain helper.
 
@@ -74,9 +74,9 @@ Blockchain helper.
 
 ### broadcast
 
-> `readonly` **broadcast**: `BroadcastAPI`
+> `readonly` **broadcast**: [`BroadcastAPI`](BroadcastAPI.md)
 
-Defined in: client.ts:212
+Defined in: [client.ts:196](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L196)
 
 Broadcast API helper.
 
@@ -86,7 +86,7 @@ Broadcast API helper.
 
 > `readonly` **chainId**: `BBuffer`
 
-Defined in: client.ts:237
+Defined in: [client.ts:226](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L226)
 
 Chain ID for current network.
 
@@ -96,7 +96,9 @@ Chain ID for current network.
 
 > **currentAddress**: `string`
 
-Defined in: client.ts:251
+Defined in: [client.ts:236](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L236)
+
+The RPC node requests go to now; changes when the client fails over to another address.
 
 ***
 
@@ -104,7 +106,7 @@ Defined in: client.ts:251
 
 > `readonly` **database**: [`DatabaseAPI`](DatabaseAPI.md)
 
-Defined in: client.ts:202
+Defined in: [client.ts:186](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L186)
 
 Database API helper.
 
@@ -114,9 +116,19 @@ Database API helper.
 
 > `readonly` **keys**: [`AccountByKeyAPI`](AccountByKeyAPI.md)
 
-Defined in: client.ts:227
+Defined in: [client.ts:216](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L216)
 
 Accounts by key API helper.
+
+***
+
+### nft
+
+> `readonly` **nft**: [`NftAPI`](NftAPI.md)
+
+Defined in: [client.ts:211](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L211)
+
+Native NFTs (hardfork 32): chain queries and the actions of nft_operation.
 
 ***
 
@@ -124,7 +136,7 @@ Accounts by key API helper.
 
 > `readonly` **options**: [`ClientOptions`](../interfaces/ClientOptions.md)
 
-Defined in: client.ts:191
+Defined in: [client.ts:175](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L175)
 
 Client options, *read-only*.
 
@@ -134,7 +146,7 @@ Client options, *read-only*.
 
 > `readonly` **pixamind**: [`PixamindAPI`](PixamindAPI.md)
 
-Defined in: client.ts:222
+Defined in: [client.ts:206](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L206)
 
 Pixamind helper.
 
@@ -144,7 +156,7 @@ Pixamind helper.
 
 > `readonly` **rc**: [`RCAPI`](RCAPI.md)
 
-Defined in: client.ts:207
+Defined in: [client.ts:191](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L191)
 
 RC API helper.
 
@@ -152,9 +164,9 @@ RC API helper.
 
 ### transaction
 
-> `readonly` **transaction**: `TransactionStatusAPI`
+> `readonly` **transaction**: [`TransactionStatusAPI`](TransactionStatusAPI.md)
 
-Defined in: client.ts:232
+Defined in: [client.ts:221](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L221)
 
 Transaction status API helper.
 
@@ -164,7 +176,7 @@ Transaction status API helper.
 
 > **call**(`api`, `method`, `params?`): `Promise`\<`any`\>
 
-Defined in: client.ts:310
+Defined in: [client.ts:303](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L303)
 
 Make a RPC call to the server.
 
@@ -196,15 +208,15 @@ Array of parameters to pass to the method, optional.
 
 ### updateOperations()
 
-> **updateOperations**(`rebrandedApi`): `void`
+> **updateOperations**(`_rebrandedApi?`): `void`
 
-Defined in: client.ts:413
+Defined in: [client.ts:406](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L406)
 
 #### Parameters
 
-##### rebrandedApi
+##### \_rebrandedApi?
 
-`any`
+`boolean`
 
 #### Returns
 
@@ -216,7 +228,7 @@ Defined in: client.ts:413
 
 > `static` **testnet**(`options?`): `Client`
 
-Defined in: client.ts:290
+Defined in: [client.ts:283](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L283)
 
 Create a new client instance configured for the testnet.
 

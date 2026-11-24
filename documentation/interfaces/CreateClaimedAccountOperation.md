@@ -6,7 +6,7 @@
 
 # Interface: CreateClaimedAccountOperation
 
-Defined in: chain/operation.ts:325
+Defined in: [chain/operation.ts:363](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L363)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"create_claimed_account"`
 
-Defined in: chain/operation.ts:326
+Defined in: [chain/operation.ts:364](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L364)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:326
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:327
+Defined in: [chain/operation.ts:365](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L365)
 
 #### active
 

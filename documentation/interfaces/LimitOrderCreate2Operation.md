@@ -6,7 +6,7 @@
 
 # Interface: LimitOrderCreate2Operation
 
-Defined in: chain/operation.ts:563
+Defined in: [chain/operation.ts:610](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L610)
 
 This operation is identical to limit_order_create except it serializes the price rather
 than calculating it from other fields.
@@ -21,7 +21,7 @@ than calculating it from other fields.
 
 > **0**: `"limit_order_create2"`
 
-Defined in: chain/operation.ts:564
+Defined in: [chain/operation.ts:611](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L611)
 
 #### Overrides
 
@@ -33,7 +33,7 @@ Defined in: chain/operation.ts:564
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:565
+Defined in: [chain/operation.ts:612](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L612)
 
 #### amount\_to\_sell
 

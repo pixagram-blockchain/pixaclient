@@ -6,7 +6,7 @@
 
 # Interface: CancelTransferFromSavingsOperation
 
-Defined in: chain/operation.ts:220
+Defined in: [chain/operation.ts:236](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L236)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"cancel_transfer_from_savings"`
 
-Defined in: chain/operation.ts:221
+Defined in: [chain/operation.ts:237](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L237)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:221
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:222
+Defined in: [chain/operation.ts:238](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L238)
 
 #### from
 

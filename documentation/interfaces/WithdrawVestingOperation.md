@@ -6,7 +6,7 @@
 
 # Interface: WithdrawVestingOperation
 
-Defined in: chain/operation.ts:867
+Defined in: [chain/operation.ts:901](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L901)
 
 At any given point in time an account can be withdrawing from their
 vesting shares. A user may change the number of shares they wish to
@@ -29,7 +29,7 @@ This operation is not valid if the user has no vesting shares.
 
 > **0**: `"withdraw_vesting"`
 
-Defined in: chain/operation.ts:868
+Defined in: [chain/operation.ts:902](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L902)
 
 #### Overrides
 
@@ -41,7 +41,7 @@ Defined in: chain/operation.ts:868
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:869
+Defined in: [chain/operation.ts:903](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L903)
 
 #### account
 

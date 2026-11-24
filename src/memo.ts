@@ -81,7 +81,7 @@ const decode = (private_key: PrivateKey | string, memo: string): string => {
   try {
     mbuf.mark()
     return '#' + mbuf.readVString()
-  } catch (e) {
+  } catch (_e) {
     mbuf.reset()
     // Sender did not length-prefix the memo
     memo = Buffer.from(mbuf.toString('binary'), 'binary').toString('utf-8')

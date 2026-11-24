@@ -6,7 +6,7 @@
 
 # Interface: EscrowDisputeOperation
 
-Defined in: chain/operation.ts:441
+Defined in: [chain/operation.ts:479](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L479)
 
 If either the sender or receiver of an escrow payment has an issue, they can
 raise it for dispute. Once a payment is in dispute, the agent has authority over
@@ -22,7 +22,7 @@ who gets what.
 
 > **0**: `"escrow_dispute"`
 
-Defined in: chain/operation.ts:442
+Defined in: [chain/operation.ts:480](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L480)
 
 #### Overrides
 
@@ -34,7 +34,7 @@ Defined in: chain/operation.ts:442
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:443
+Defined in: [chain/operation.ts:481](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L481)
 
 #### agent
 

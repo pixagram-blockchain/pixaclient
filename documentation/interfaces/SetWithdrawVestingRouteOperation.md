@@ -6,7 +6,7 @@
 
 # Interface: SetWithdrawVestingRouteOperation
 
-Defined in: chain/operation.ts:766
+Defined in: [chain/operation.ts:800](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L800)
 
 Allows an account to setup a vesting withdraw but with the additional
 request for the funds to be transferred directly to another account's
@@ -24,7 +24,7 @@ vests to pixa and back, guaranteeing they maintain their value.
 
 > **0**: `"set_withdraw_vesting_route"`
 
-Defined in: chain/operation.ts:767
+Defined in: [chain/operation.ts:801](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L801)
 
 #### Overrides
 
@@ -36,7 +36,7 @@ Defined in: chain/operation.ts:767
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:768
+Defined in: [chain/operation.ts:802](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L802)
 
 #### auto\_vest
 

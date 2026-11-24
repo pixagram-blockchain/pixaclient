@@ -6,7 +6,7 @@
 
 # Interface: AccountWitnessVoteOperation
 
-Defined in: chain/operation.ts:211
+Defined in: [chain/operation.ts:227](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L227)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"account_witness_vote"`
 
-Defined in: chain/operation.ts:212
+Defined in: [chain/operation.ts:228](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L228)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:212
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:213
+Defined in: [chain/operation.ts:229](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L229)
 
 #### account
 

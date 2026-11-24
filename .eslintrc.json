@@ -145,5 +145,13 @@
     "spaced-comment": "error",
     "use-isnan": "error",
     "valid-typeof": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/bytebuffer.ts"],
+      "rules": {
+        "@typescript-eslint/member-ordering": "off"
+      }
+    }
+  ]
 }

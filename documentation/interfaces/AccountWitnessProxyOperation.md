@@ -6,7 +6,7 @@
 
 # Interface: AccountWitnessProxyOperation
 
-Defined in: chain/operation.ts:203
+Defined in: [chain/operation.ts:219](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L219)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"account_witness_proxy"`
 
-Defined in: chain/operation.ts:204
+Defined in: [chain/operation.ts:220](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L220)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:204
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:205
+Defined in: [chain/operation.ts:221](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L221)
 
 #### account
 

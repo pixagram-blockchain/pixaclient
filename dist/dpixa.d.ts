@@ -63,7 +63,7 @@ declare module 'dpixa/src/bbuffer' {
 	    static from(value: string, encoding?: Encoding): BBuffer;
 	    static from(value: ArrayBuffer | Uint8Array | BBuffer | ArrayLike<number>): BBuffer;
 	    /** Concatenate a list of Uint8Arrays / BBuffers into a single new buffer. */
-	    static concat(list: Array<Uint8Array | BBuffer>, totalLength?: number): BBuffer;
+	    static concat(list: (Uint8Array | BBuffer)[], totalLength?: number): BBuffer;
 	    /** Internal helper: wrap a Uint8Array in a BBuffer with its own memory. */
 	    private static fromUint8Array;
 	    /**
@@ -131,7 +131,7 @@ declare module 'dpixa/src/bytebuffer' {
 	export class Long {
 	    static isLong(value: unknown): value is Long;
 	    static fromNumber(n: number): Long;
-	    static fromString(s: string, unsigned?: boolean, radix?: number): Long;
+	    static fromString(s: string, _unsigned?: boolean, radix?: number): Long;
 	    /** Always stored masked to 64 unsigned bits. */
 	    private readonly value;
 	    constructor(value: bigint);
@@ -339,6 +339,8 @@ declare module 'dpixa/src/chain/asset' {
 	 * Asset symbol string.
 	 */
 	export type AssetSymbol = 'HIVE' | 'PXA' | 'PIXA' | 'TESTS' | 'PXP' | 'VESTS' | 'PXS' | 'TBD' | 'STEEM' | 'TPS' | 'SBD' | 'HBD';
+	/** Mainnet symbol of a core asset NAI (`@@000000013` is PXS), or undefined. */
+	export const symbolOfNai: (nai: string) => AssetSymbol | undefined;
 	/**
 	 * Class representing a pixa asset, e.g. `1.000 PIXA` or `12.112233 VESTS`.
 	 */
@@ -351,11 +353,19 @@ declare module 'dpixa/src/chain/asset' {
 	     */
 	    static fromString(string: string, expectedSymbol?: AssetSymbol): Asset;
 	    /**
+	     * Create an Asset from the form database_api (and HAF) use for amounts,
+	     * `{ amount: "5000", precision: 3, nai: "@@000000013" }`: `@@000000021` is PIXA, `@@000000013`
+	     * PXS and `@@000000037` VESTS (on a testnet, pass `TESTS` or `TBD` as `symbol`).
+	     */
+	    static fromNai(value: SMTAsset, symbol?: AssetSymbol): Asset;
+	    /**
 	     * Convenience to create new Asset.
+	     * @param value  An Asset, a string such as `"42.000 PIXA"`, a number, or an amount in the
+	     *               database_api form `{ amount, precision, nai }` (see {@link Asset.fromNai}).
 	     * @param symbol Symbol to use when created from number. Will also be used to validate
 	     *               the asset, throws if the passed value has a different symbol than this.
 	     */
-	    static from(value: string | Asset | number, symbol?: AssetSymbol): Asset;
+	    static from(value: string | Asset | number | SMTAsset, symbol?: AssetSymbol): Asset;
 	    /**
 	     * Return the smaller of the two assets.
 	     */
@@ -441,6 +451,246 @@ declare module 'dpixa/src/chain/asset' {
 	}
 
 }
+declare module 'dpixa/src/chain/nft' {
+	/**
+	 * @file Native NFTs of the Pixa chain (hardfork 32): ids, limits and amounts.
+	 * @author Matias Affolter
+	 * @license
+	 * Copyright (c) 2026 Matias Affolter. All Rights Reserved.
+	 *
+	 * Redistribution and use in source and binary forms, with or without modification,
+	 * are permitted provided that the following conditions are met:
+	 *
+	 *  1. Redistribution of source code must retain the above copyright notice, this
+	 *     list of conditions and the following disclaimer.
+	 *
+	 *  2. Redistribution in binary form must reproduce the above copyright notice,
+	 *     this list of conditions and the following disclaimer in the documentation
+	 *     and/or other materials provided with the distribution.
+	 *
+	 *  3. Neither the name of the copyright holder nor the names of its contributors
+	 *     may be used to endorse or promote products derived from this software without
+	 *     specific prior written permission.
+	 *
+	 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+	 * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+	 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+	 * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+	 * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	 * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+	 * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+	 * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+	 * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+	 * OF THE POSSIBILITY OF SUCH DAMAGE.
+	 *
+	 * You acknowledge that this software is not designed, licensed or intended for use
+	 * in the design, construction, operation or maintenance of any military facility.
+	 */
+	import { Asset } from 'dpixa/src/chain/asset';
+	import type { NftAction, NftActionInput, NftBuy, NftList, NftMint, NftTransfer, NftUnlist } from 'dpixa/src/chain/operation';
+	/** Most copies an NFT can have (`PIXA_NFT_EDITIONS_LIMIT`). */
+	export const NFT_MAX_EDITIONS = 10000;
+	/** Highest royalty, in basis points: 2500 is 25% (`PIXA_NFT_MAX_ROYALTY`). */
+	export const NFT_MAX_ROYALTY = 2500;
+	/** Longest license text, in UTF-8 bytes: 72 KiB (`PIXA_NFT_MAX_LICENSE_LENGTH`). */
+	export const NFT_MAX_LICENSE_BYTES: number;
+	/** Mint fee per copy, burned (`PIXA_NFT_MINT_FEE_PER_EDITION`). */
+	export const NFT_MINT_FEE_PER_EDITION = "1.000 PXS";
+	/** The edition number that stands for the author's reserve in nft_list, nft_unlist and nft_buy. */
+	export const NFT_RESERVE = 0;
+	/**
+	 * Expiration of an offer that never expires (`time_point_sec::maximum()`), as the node writes it
+	 * in what it returns. To make such an offer, leave `expiration` out: the node cannot read this
+	 * time back from JSON (see {@link NFT_LATEST_EXPIRATION}), and dpixa does not send it.
+	 */
+	export const NFT_NEVER_EXPIRES = "2106-02-07T06:28:15";
+	/**
+	 * Latest expiration an offer can be given: the node reads JSON times up to 2^31 - 1 seconds after
+	 * 1970 and refuses later ones ("Datetime overflow"), the never-expiring value included.
+	 */
+	export const NFT_LATEST_EXPIRATION = "2038-01-19T03:14:07";
+	/** The account a copy is given to in order to burn it. */
+	export const NFT_BURN_ACCOUNT = "null";
+	/** Most ids per `database_api.find_nfts` or `pixamind_nft.get_nfts` call. */
+	export const NFT_FIND_LIMIT = 100;
+	/** Binary tag of each nft_operation action, its position in the node's `nft_action` variant. */
+	export const NFT_ACTION_TAGS: {
+	    readonly nft_mint: 0;
+	    readonly nft_list: 1;
+	    readonly nft_unlist: 2;
+	    readonly nft_buy: 3;
+	    readonly nft_transfer: 4;
+	};
+	/** Name of an nft_operation action. */
+	export type NftActionName = keyof typeof NFT_ACTION_TAGS;
+	/** What an NFT id names: copy `edition` of the NFT (author, permlink), or the NFT itself for 0. */
+	export interface NftIdParts {
+	    author: string;
+	    permlink: string;
+	    /** 0 for the NFT (or its reserve, in list, unlist and buy), 1 to 10,000 for a copy. */
+	    edition: number;
+	}
+	/**
+	 * Read an NFT id, "@author/permlink/N", with the node's rules: the author runs to the first '/'
+	 * and N follows the last one, so a permlink that holds a '/' still reads correctly; N is written
+	 * without leading zeros and is at most 10,000. Throws on anything else.
+	 */
+	export const parseNftId: (id: string) => NftIdParts;
+	/** Whether `id` is a well-formed NFT id ("@author/permlink/N"). */
+	export const isNftId: (id: string) => boolean;
+	/**
+	 * Write an NFT id: "@author/permlink/0" for the NFT (the default), "@author/permlink/N" for copy N.
+	 */
+	export const formatNftId: (author: string, permlink: string, edition?: number) => string;
+	/** Number of bytes of `text` in UTF-8, the unit of the license limit. */
+	export const utf8ByteLength: (text: string) => number;
+	/**
+	 * The mint fee nft_mint has to carry: `editions` times 1.000 PXS, which the chain burns.
+	 * @param perEdition The fee per copy; `database_api.get_nft_params` returns the one in force.
+	 */
+	export const nftMintFee: (editions: number, perEdition?: Asset | string) => Asset;
+	/**
+	 * What the creator receives from a sale: `price * royalty / 10000`, rounded down to 0.001, as the
+	 * node computes it. A sale by the creator pays no royalty; use {@link nftSaleSplit} for that case.
+	 * @param royalty Basis points (1000 is 10%).
+	 */
+	export const nftRoyalty: (price: Asset | string, royalty: number) => Asset;
+	/**
+	 * How a sale price is shared: the creator gets the royalty unless the seller is the creator
+	 * (a first sale, or a copy the creator got back), and the seller gets the rest.
+	 */
+	export const nftSaleSplit: (price: Asset | string, royalty: number, sellerIsCreator?: boolean) => {
+	    royalty: Asset;
+	    seller: Asset;
+	};
+	/**
+	 * Check an nft_mint the way the node will (format and consensus limits), so a user is told before
+	 * signing. Returns the list of problems, empty when the mint would be accepted on these points;
+	 * the chain also checks that the post is a root post of the minter, not minted before, and that the
+	 * minter holds the fee in liquid PXS.
+	 */
+	export const checkNftMint: (mint: Partial<NftMint>) => string[];
+	/** Tag and payload of an action, whatever form it was given in. */
+	export const toNftAction: (action: NftActionInput) => NftAction;
+	/** Name of the action with this tag ("nft_mint" for 0, …). */
+	export const nftActionName: (tag: number) => NftActionName;
+	/** Payload types by action, for helpers that build actions. */
+	export interface NftActionPayloads {
+	    nft_mint: NftMint;
+	    nft_list: NftList;
+	    nft_unlist: NftUnlist;
+	    nft_buy: NftBuy;
+	    nft_transfer: NftTransfer;
+	}
+
+}
+declare module 'dpixa/src/chain/transaction' {
+	/**
+	 * @file Hive/Pixa transaction type definitions.
+	 * @author Johan Nordberg <code@johan-nordberg.com> / Matias Affolter
+	 * @license
+	 * Copyright (c) 2017 Johan Nordberg. All Rights Reserved.
+	 * Copyright (c) 2025 Matias Affolter. All Rights Reserved.
+	 *
+	 * Redistribution and use in source and binary forms, with or without modification,
+	 * are permitted provided that the following conditions are met:
+	 *
+	 *  1. Redistribution of source code must retain the above copyright notice, this
+	 *     list of conditions and the following disclaimer.
+	 *
+	 *  2. Redistribution in binary form must reproduce the above copyright notice,
+	 *     this list of conditions and the following disclaimer in the documentation
+	 *     and/or other materials provided with the distribution.
+	 *
+	 *  3. Neither the name of the copyright holder nor the names of its contributors
+	 *     may be used to endorse or promote products derived from this software without
+	 *     specific prior written permission.
+	 *
+	 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+	 * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+	 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+	 * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+	 * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	 * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+	 * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+	 * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+	 * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+	 * OF THE POSSIBILITY OF SUCH DAMAGE.
+	 *
+	 * You acknowledge that this software is not designed, licensed or intended for use
+	 * in the design, construction, operation or maintenance of any military facility.
+	 */
+	import { Operation } from 'dpixa/src/chain/operation';
+	export interface Transaction {
+	    ref_block_num: number;
+	    ref_block_prefix: number;
+	    expiration: string;
+	    operations: Operation[];
+	    extensions: any[];
+	}
+	export interface SignedTransaction extends Transaction {
+	    signatures: string[];
+	}
+	/**
+	 * What a broadcast returns. dpixa broadcasts with `condenser_api.broadcast_transaction`, which
+	 * answers once the node has accepted the transaction, before it is in a block: `id` is set, and
+	 * `client.transaction.findTransaction(id)` tells when the transaction is in a block. The other
+	 * fields come only from `broadcast_transaction_synchronous`, called directly.
+	 */
+	export interface TransactionConfirmation {
+	    id: string;
+	    block_num?: number;
+	    trx_num?: number;
+	    expired?: boolean;
+	}
+
+}
+declare module 'dpixa/src/chain/normalize' {
+	/**
+	 * @file Puts operations in the form the node reads before they are signed and sent.
+	 * @author Matias Affolter
+	 * @license
+	 * Copyright (c) 2026 Matias Affolter. All Rights Reserved.
+	 *
+	 * Redistribution and use in source and binary forms, with or without modification,
+	 * are permitted provided that the following conditions are met:
+	 *
+	 *  1. Redistribution of source code must retain the above copyright notice, this
+	 *     list of conditions and the following disclaimer.
+	 *
+	 *  2. Redistribution in binary form must reproduce the above copyright notice,
+	 *     this list of conditions and the following disclaimer in the documentation
+	 *     and/or other materials provided with the distribution.
+	 *
+	 *  3. Neither the name of the copyright holder nor the names of its contributors
+	 *     may be used to endorse or promote products derived from this software without
+	 *     specific prior written permission.
+	 *
+	 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+	 * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+	 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+	 * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+	 * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	 * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+	 * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+	 * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+	 * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+	 * OF THE POSSIBILITY OF SUCH DAMAGE.
+	 *
+	 * You acknowledge that this software is not designed, licensed or intended for use
+	 * in the design, construction, operation or maintenance of any military facility.
+	 */
+	import type { Operation } from 'dpixa/src/chain/operation';
+	import type { Transaction } from 'dpixa/src/chain/transaction';
+	/**
+	 * The operation in the form the node reads: see the notes at the top of this file. Returns the
+	 * operation itself when nothing changes, a copy otherwise.
+	 */
+	export const normalizeOperation: (operation: Operation) => Operation;
+	/** The transaction with every operation in the form the node reads (a copy when one changes). */
+	export const normalizeTransaction: <T extends Transaction>(transaction: T) => T;
+
+}
 declare module 'dpixa/src/witness' {
 	/**
 	 * @file witness_set_properties builder.
@@ -459,8 +709,14 @@ declare module 'dpixa/src/witness' {
 	    key: PublicKey | string;
 	    maximum_block_size?: number;
 	    new_signing_key?: PublicKey | string | null;
+	    /** PXS price feed: PXS per PIXA. Written as the node's `hbd_exchange_rate` property. */
 	    pxs_exchange_rate?: PriceType;
+	    /** Fixed at 0 on Pixa. Written as the node's `hbd_interest_rate` property. */
 	    pxs_interest_rate?: number;
+	    /** Same as `pxs_exchange_rate`, under the node's name. */
+	    hbd_exchange_rate?: PriceType;
+	    /** Same as `pxs_interest_rate`, under the node's name. */
+	    hbd_interest_rate?: number;
 	    url?: string;
 	}
 	export const buildWitnessUpdateOp: (owner: string, props: WitnessProps) => WitnessSetPropertiesOperation;
@@ -587,6 +843,11 @@ declare module 'dpixa/src/chain/account' {
 	        current_mana: string | number;
 	        last_update_time: number;
 	    };
+	    /** The downvote bar; see `RCAPI.calculateDownvoteMana`. */
+	    downvote_manabar?: {
+	        current_mana: string | number;
+	        last_update_time: number;
+	    };
 	    balance: string | Asset;
 	    savings_balance: string | Asset;
 	    pxs_balance: string | Asset;
@@ -622,6 +883,15 @@ declare module 'dpixa/src/chain/account' {
 	    last_market_bandwidth_update: string;
 	    last_post: string;
 	    last_root_post: string;
+	    /**
+	     * Names the node uses for balances dpixa names after PIXA and PXS: an API node returns one set
+	     * or the other.
+	     */
+	    hbd_balance?: string | Asset;
+	    savings_hbd_balance?: string | Asset;
+	    reward_hbd_balance?: string | Asset;
+	    reward_hive_balance?: string | Asset;
+	    reward_vesting_hive?: string | Asset;
 	}
 	export interface ExtendedAccount extends Account {
 	    /**
@@ -688,7 +958,7 @@ declare module 'dpixa/src/chain/misc' {
 	     * fee requires all accounts to have some kind of commitment to the network that includes the
 	     * ability to vote and make transactions.
 	     *
-	     * @note This has to be multiplied by STEEMIT ? `CREATE_ACCOUNT_WITH_PIXA_MODIFIER`
+	     * @remarks This has to be multiplied by STEEMIT ? `CREATE_ACCOUNT_WITH_PIXA_MODIFIER`
 	     * (defined as 30 on the main chain) to get the minimum fee needed to create an account.
 	     *
 	     */
@@ -699,9 +969,13 @@ declare module 'dpixa/src/chain/misc' {
 	     */
 	    maximum_block_size: number;
 	    /**
-	     * The PXS interest percentage rate decided by witnesses, expressed 0 to 10000.
+	     * The PXS interest percentage rate decided by witnesses, expressed 0 to 10000 (fixed at 0
+	     * on Pixa). The node names it `hbd_interest_rate`; dpixa accepts either name in
+	     * `witness_update` and writes both when it signs.
 	     */
-	    pxs_interest_rate: number;
+	    pxs_interest_rate?: number;
+	    /** Same as `pxs_interest_rate`, under the name the node uses. */
+	    hbd_interest_rate?: number;
 	}
 	export interface VestingDelegation {
 	    /**
@@ -792,7 +1066,7 @@ declare module 'dpixa/src/chain/misc' {
 	     * Each witness posts what they think the maximum size should be as part of their witness
 	     * properties, the median size is chosen to be the maximum block size for the round.
 	     *
-	     * @note the minimum value for maximum_block_size is defined by the protocol to prevent the
+	     * @remarks the minimum value for maximum_block_size is defined by the protocol to prevent the
 	     * network from getting stuck by witnesses attempting to set this too low.
 	     */
 	    maximum_block_size: number;
@@ -826,12 +1100,41 @@ declare module 'dpixa/src/chain/misc' {
 	     */
 	    current_reserve_ratio: number;
 	    /**
-	     * The number of votes regenerated per day.  Any user voting slower than this rate will be
-	     * "wasting" voting power through spillover; any user voting faster than this rate will have
-	     * their votes reduced.
+	     * Full votes a full voting bar holds, per day of refill: a 100% vote costs
+	     * `86400 / (vote_power_reserve_rate * voting_mana_regeneration_seconds)` of the bar.
+	     * 10 before hardfork 32 (2% per full vote), 5 from it (3%).
 	     */
 	    vote_power_reserve_rate: number;
+	    /**
+	     * Seconds an empty voting bar takes to refill (the downvote bar too). A global property from
+	     * hardfork 32: 576,000 (6 days 16 hours, 15% a day); older nodes leave it out, and the
+	     * refill time was then 432,000 (5 days, 20% a day).
+	     */
+	    voting_mana_regeneration_seconds?: number;
+	    /**
+	     * Seconds before vesting shares taken back from a delegation can be delegated again:
+	     * 604,800 (7 days) from hardfork 32, 432,000 (5 days) before.
+	     */
+	    delegation_return_period?: number;
+	    /** Size of the downvote bar, in basis points of the voting bar. */
+	    downvote_pool_percent?: number;
+	    /**
+	     * Names the node uses for fields that dpixa names after PIXA and PXS: an API node returns one
+	     * set or the other. {@link getVestingSharePrice} reads either.
+	     */
+	    total_vesting_fund_hive?: Asset | string;
+	    current_hbd_supply?: Asset | string;
+	    hbd_interest_rate?: number;
+	    hbd_print_rate?: number;
+	    pending_rewarded_vesting_hive?: Asset | string;
 	}
+	/** Refill time of the voting bar before hardfork 32, in seconds (5 days). */
+	export const VOTING_MANA_REGENERATION_SECONDS_PRE_HF32 = 432000;
+	/**
+	 * Refill time of the voting bar that `props` describes: `voting_mana_regeneration_seconds`, or
+	 * 432,000 (5 days) when the node predates hardfork 32 and leaves it out.
+	 */
+	export function getVotingManaRegenerationSeconds(props?: Partial<DynamicGlobalProperties>): number;
 	/**
 	 * Return the vesting share price.
 	 */
@@ -882,8 +1185,10 @@ declare module 'dpixa/src/chain/serializer' {
 	import { PublicKey } from 'dpixa/src/crypto';
 	import { Asset } from 'dpixa/src/chain/asset';
 	import { HexBuffer } from 'dpixa/src/chain/misc';
-	import { Operation } from 'dpixa/src/chain/operation';
+	import { NftActionInput, Operation } from 'dpixa/src/chain/operation';
 	export type Serializer = (buffer: any, data: any) => void;
+	/** A field of an object serializer: name, serializer and, optionally, a second name. */
+	export type FieldDefinition = [string, Serializer] | [string, Serializer, string];
 	export const Types: {
 	    Array: (itemSerializer: Serializer) => (buffer: any, data: any[]) => void;
 	    Asset: (buffer: any, data: Asset | string | number) => void;
@@ -901,7 +1206,8 @@ declare module 'dpixa/src/chain/serializer' {
 	    Int32: (buffer: any, data: number) => void;
 	    Int64: (buffer: any, data: number) => void;
 	    Int8: (buffer: any, data: number) => void;
-	    Object: (keySerializers: [string, Serializer][]) => (buffer: any, data: {
+	    NftAction: (buffer: any, data: NftActionInput) => void;
+	    Object: (keySerializers: FieldDefinition[]) => (buffer: any, data: {
 	        [key: string]: any;
 	    }) => void;
 	    Operation: (buffer: any, operation: Operation) => void;
@@ -921,61 +1227,6 @@ declare module 'dpixa/src/chain/serializer' {
 	    UInt8: (buffer: any, data: number) => void;
 	    Void: (_buffer: any) => never;
 	};
-
-}
-declare module 'dpixa/src/chain/transaction' {
-	/**
-	 * @file Hive/Pixa transaction type definitions.
-	 * @author Johan Nordberg <code@johan-nordberg.com> / Matias Affolter
-	 * @license
-	 * Copyright (c) 2017 Johan Nordberg. All Rights Reserved.
-	 * Copyright (c) 2025 Matias Affolter. All Rights Reserved.
-	 *
-	 * Redistribution and use in source and binary forms, with or without modification,
-	 * are permitted provided that the following conditions are met:
-	 *
-	 *  1. Redistribution of source code must retain the above copyright notice, this
-	 *     list of conditions and the following disclaimer.
-	 *
-	 *  2. Redistribution in binary form must reproduce the above copyright notice,
-	 *     this list of conditions and the following disclaimer in the documentation
-	 *     and/or other materials provided with the distribution.
-	 *
-	 *  3. Neither the name of the copyright holder nor the names of its contributors
-	 *     may be used to endorse or promote products derived from this software without
-	 *     specific prior written permission.
-	 *
-	 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-	 * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-	 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-	 * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-	 * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-	 * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-	 * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-	 * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-	 * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-	 * OF THE POSSIBILITY OF SUCH DAMAGE.
-	 *
-	 * You acknowledge that this software is not designed, licensed or intended for use
-	 * in the design, construction, operation or maintenance of any military facility.
-	 */
-	import { Operation } from 'dpixa/src/chain/operation';
-	export interface Transaction {
-	    ref_block_num: number;
-	    ref_block_prefix: number;
-	    expiration: string;
-	    operations: Operation[];
-	    extensions: any[];
-	}
-	export interface SignedTransaction extends Transaction {
-	    signatures: string[];
-	}
-	export interface TransactionConfirmation {
-	    id: string;
-	    block_num: number;
-	    trx_num: number;
-	    expired: boolean;
-	}
 
 }
 declare module 'dpixa/src/crypto' {
@@ -1310,7 +1561,9 @@ declare module 'dpixa/src/chain/comment' {
 	    net_votes: number;
 	    root_comment: number;
 	    max_accepted_payout: string;
-	    percent_pxs: number;
+	    /** Share of the payout paid in PXS, basis points. An API node writes it `percent_pxs` or `percent_hbd`. */
+	    percent_pxs?: number;
+	    percent_hbd?: number;
 	    allow_replies: boolean;
 	    allow_votes: boolean;
 	    allow_curation_rewards: boolean;
@@ -1327,7 +1580,17 @@ declare module 'dpixa/src/chain/comment' {
 	    active_votes: any[];
 	    replies: string[];
 	    author_reputation: number;
+	    /**
+	     * PXS burned to promote the post, `"0.000 PXS"` when none (Pixamind); see
+	     * `PixamindAPI.getPromotedPosts` and `BroadcastAPI.promote`.
+	     */
 	    promoted: Asset | string;
+	    /**
+	     * True when the post is minted as an NFT (hardfork 32); every post Pixamind returns carries it.
+	     * A minted post can no longer be edited or deleted. Its NFT: `client.nft.getNft(author, permlink)`
+	     * or `client.pixamind.getNft(author, permlink)`.
+	     */
+	    nft_minted?: boolean;
 	    body_length: string;
 	    reblogged_by: any[];
 	    first_reblogged_by?: any;
@@ -1383,13 +1646,19 @@ declare module 'dpixa/src/chain/operation' {
 	import { ChainProperties, HexBuffer } from 'dpixa/src/chain/misc';
 	/**
 	 * Operation name.
-	 * Ref: https://gitlab.syncad.com/pixa/pixa/-/blob/master/libraries/protocol/include/pixa/protocol/operations.hpp
+	 * Ref: libraries/protocol/include/hive/protocol/operations.hpp in
+	 * https://github.com/pixagram-blockchain/pixagram
 	 */
-	export type OperationName = 'vote' | 'comment' | 'transfer' | 'transfer_to_vesting' | 'withdraw_vesting' | 'limit_order_create' | 'limit_order_cancel' | 'feed_publish' | 'convert' | 'account_create' | 'account_update' | 'witness_update' | 'account_witness_vote' | 'account_witness_proxy' | 'pow' | 'custom' | 'report_over_production' | 'delete_comment' | 'custom_json' | 'comment_options' | 'set_withdraw_vesting_route' | 'limit_order_create2' | 'claim_account' | 'create_claimed_account' | 'request_account_recovery' | 'recover_account' | 'change_recovery_account' | 'escrow_transfer' | 'escrow_dispute' | 'escrow_release' | 'pow2' | 'escrow_approve' | 'transfer_to_savings' | 'transfer_from_savings' | 'cancel_transfer_from_savings' | 'custom_binary' | 'decline_voting_rights' | 'reset_account' | 'set_reset_account' | 'claim_reward_balance' | 'delegate_vesting_shares' | 'account_create_with_delegation' | 'witness_set_properties' | 'account_update2' | 'create_proposal' | 'update_proposal_votes' | 'remove_proposal' | 'update_proposal' | 'collateralized_convert' | 'recurrent_transfer';
+	export type OperationName = 'vote' | 'comment' | 'transfer' | 'transfer_to_vesting' | 'withdraw_vesting' | 'limit_order_create' | 'limit_order_cancel' | 'feed_publish' | 'convert' | 'account_create' | 'account_update' | 'witness_update' | 'account_witness_vote' | 'account_witness_proxy' | 'pow' | 'custom' | 'report_over_production' | 'delete_comment' | 'custom_json' | 'comment_options' | 'set_withdraw_vesting_route' | 'limit_order_create2' | 'claim_account' | 'create_claimed_account' | 'request_account_recovery' | 'recover_account' | 'change_recovery_account' | 'escrow_transfer' | 'escrow_dispute' | 'escrow_release' | 'pow2' | 'escrow_approve' | 'transfer_to_savings' | 'transfer_from_savings' | 'cancel_transfer_from_savings' | 'custom_binary' | 'decline_voting_rights' | 'nft' | 'set_reset_account' | 'claim_reward_balance' | 'delegate_vesting_shares' | 'account_create_with_delegation' | 'witness_set_properties' | 'account_update2' | 'create_proposal' | 'update_proposal_votes' | 'remove_proposal' | 'update_proposal' | 'collateralized_convert' | 'recurrent_transfer';
 	/**
-	 * Virtual operation name.
+	 * Virtual operation name. The last regular operation is recurrent_transfer (49), so
+	 * `last_regular + 1` is 50; {@link utils.operationOrders} has every number.
+	 *
+	 * Four operations have two names here: the node writes `dhf_funding`, `hardfork_hive`,
+	 * `hardfork_hive_restore` and `dhf_conversion`; `sps_fund`, `hardfork_pixa`,
+	 * `hardfork_pixa_restore` and `sps_convert` are the names earlier dpixa versions used.
 	 */
-	export type VirtualOperationName = 'fill_convert_request' | 'author_reward' | 'curation_reward' | 'comment_reward' | 'liquidity_reward' | 'interest' | 'fill_vesting_withdraw' | 'fill_order' | 'shutdown_witness' | 'fill_transfer_from_savings' | 'hardfork' | 'comment_payout_update' | 'return_vesting_delegation' | 'comment_benefactor_reward' | 'producer_reward' | 'clear_null_account_balance' | 'proposal_pay' | 'sps_fund' | 'hardfork_pixa' | 'hardfork_pixa_restore' | 'delayed_voting' | 'consolidate_treasury_balance' | 'effective_comment_vote' | 'ineffective_delete_comment' | 'sps_convert' | 'expired_account_notification' | 'changed_recovery_account' | 'transfer_to_vesting_completed' | 'pow_reward' | 'vesting_shares_split' | 'account_created' | 'fill_collateralized_convert_request' | 'system_warning' | 'fill_recurrent_transfer' | 'failed_recurrent_transfer';
+	export type VirtualOperationName = 'fill_convert_request' | 'author_reward' | 'curation_reward' | 'comment_reward' | 'liquidity_reward' | 'interest' | 'fill_vesting_withdraw' | 'fill_order' | 'shutdown_witness' | 'fill_transfer_from_savings' | 'hardfork' | 'comment_payout_update' | 'return_vesting_delegation' | 'comment_benefactor_reward' | 'producer_reward' | 'clear_null_account_balance' | 'proposal_pay' | 'dhf_funding' | 'sps_fund' | 'hardfork_hive' | 'hardfork_pixa' | 'hardfork_hive_restore' | 'hardfork_pixa_restore' | 'delayed_voting' | 'consolidate_treasury_balance' | 'effective_comment_vote' | 'ineffective_delete_comment' | 'dhf_conversion' | 'sps_convert' | 'expired_account_notification' | 'changed_recovery_account' | 'transfer_to_vesting_completed' | 'pow_reward' | 'vesting_shares_split' | 'account_created' | 'fill_collateralized_convert_request' | 'system_warning' | 'fill_recurrent_transfer' | 'failed_recurrent_transfer' | 'limit_order_cancelled' | 'producer_missed' | 'proposal_fee' | 'collateralized_convert_immediate_conversion' | 'escrow_approved' | 'escrow_rejected' | 'proxy_cleared' | 'declined_voting_rights' | 'nft_sold' | 'nft_royalty';
 	/**
 	 * Generic operation.
 	 */
@@ -1507,12 +1776,23 @@ declare module 'dpixa/src/chain/operation' {
 	        extensions: any[];
 	    };
 	}
+	/**
+	 * Moves pending rewards to the account's balances. Signed with the posting key.
+	 *
+	 * The node names the first two fields `reward_hive` and `reward_hbd`; dpixa also accepts
+	 * `reward_pixa` and `reward_pxs`, and writes both names when it signs, so the node reads the
+	 * amounts that were signed. Give each amount under one of its names.
+	 */
 	export interface ClaimRewardBalanceOperation extends Operation {
 	    0: 'claim_reward_balance';
 	    1: {
 	        account: string;
-	        reward_pixa: string | Asset;
-	        reward_pxs: string | Asset;
+	        /** PIXA to claim (node name: `reward_hive`). */
+	        reward_pixa?: string | Asset;
+	        /** PXS to claim (node name: `reward_hbd`). */
+	        reward_pxs?: string | Asset;
+	        reward_hive?: string | Asset;
+	        reward_hbd?: string | Asset;
 	        reward_vests: string | Asset;
 	    };
 	}
@@ -1539,6 +1819,12 @@ declare module 'dpixa/src/chain/operation' {
 	        json_metadata: string;
 	    };
 	}
+	/**
+	 * Payout options of a post or comment, set before its first vote.
+	 *
+	 * The node names the PXS share `percent_hbd`; dpixa also accepts `percent_pxs` and writes both
+	 * names when it signs, so the node reads the value that was signed. Give it under one name.
+	 */
 	export interface CommentOptionsOperation extends Operation {
 	    0: 'comment_options';
 	    1: {
@@ -1546,8 +1832,13 @@ declare module 'dpixa/src/chain/operation' {
 	        permlink: string;
 	        /** PXS value of the maximum payout this post will receive. */
 	        max_accepted_payout: Asset | string;
-	        /** The percent of Pixa Dollars to key, unkept amounts will be received as Pixa Power. */
-	        percent_pxs: number;
+	        /**
+	         * Share of the payout paid in PXS, in basis points (10000 = 100%); the rest is paid as
+	         * Pixa Power. Node name: `percent_hbd`.
+	         */
+	        percent_pxs?: number;
+	        /** Same as `percent_pxs`, under the name the node uses. */
+	        percent_hbd?: number;
 	        /** Whether to allow post to receive votes. */
 	        allow_votes: boolean;
 	        /** Whether to allow post to recieve curation rewards. */
@@ -1712,13 +2003,15 @@ declare module 'dpixa/src/chain/operation' {
 	        receiver: string;
 	        escrow_id: number;
 	        /**
-	         * The amount of pxs to release.
+	         * The amount of PXS to release (node name: `hbd_amount`).
 	         */
-	        pxs_amount: Asset | string;
+	        pxs_amount?: Asset | string;
 	        /**
-	         * The amount of pixa to release.
+	         * The amount of PIXA to release (node name: `hive_amount`).
 	         */
-	        pixa_amount: Asset | string;
+	        pixa_amount?: Asset | string;
+	        hbd_amount?: Asset | string;
+	        hive_amount?: Asset | string;
 	    };
 	}
 	/**
@@ -1738,6 +2031,9 @@ declare module 'dpixa/src/chain/operation' {
 	 *
 	 * Escrow transactions are uniquely identified by 'from' and 'escrow_id', the 'escrow_id' is defined
 	 * by the sender.
+	 *
+	 * The node names the amounts `hbd_amount` and `hive_amount`; dpixa also accepts `pxs_amount` and
+	 * `pixa_amount` and writes both names when it signs. Give each amount under one of its names.
 	 */
 	export interface EscrowTransferOperation extends Operation {
 	    0: 'escrow_transfer';
@@ -1746,8 +2042,12 @@ declare module 'dpixa/src/chain/operation' {
 	        to: string;
 	        agent: string;
 	        escrow_id: number;
-	        pxs_amount: Asset | string;
-	        pixa_amount: Asset | string;
+	        /** PXS held in escrow (node name: `hbd_amount`). */
+	        pxs_amount?: Asset | string;
+	        /** PIXA held in escrow (node name: `hive_amount`). */
+	        pixa_amount?: Asset | string;
+	        hbd_amount?: Asset | string;
+	        hive_amount?: Asset | string;
 	        fee: Asset | string;
 	        ratification_deadline: string;
 	        escrow_expiration: string;
@@ -1951,18 +2251,6 @@ declare module 'dpixa/src/chain/operation' {
 	         * Extensions. Not currently used.
 	         */
 	        extensions: any[];
-	    };
-	}
-	/**
-	 * This operation allows recovery_account to change account_to_reset's owner authority to
-	 * new_owner_authority after 60 days of inactivity.
-	 */
-	export interface ResetAccountOperation extends Operation {
-	    0: 'reset_account';
-	    1: {
-	        reset_account: string;
-	        account_to_reset: string;
-	        new_owner_authority: AuthorityType;
 	    };
 	}
 	/**
@@ -2201,6 +2489,163 @@ declare module 'dpixa/src/chain/operation' {
 	        extensions: any[];
 	    };
 	}
+	/**
+	 * nft_mint, action 0 of {@link NftOperation}: mints a root post of the actor.
+	 * All copies start with the author. Royalty and license are fixed for the life of the NFT, and the
+	 * post can no longer be edited or deleted. See {@link checkNftMint} and {@link nftMintFee}.
+	 */
+	export interface NftMint {
+	    /** Permlink of a root post of the actor (the minter is the author). */
+	    permlink: string;
+	    /** Number of copies, 1 to 10,000. */
+	    editions: number;
+	    /** Basis points of each later sale price paid to the author: 0 to 2500 (25%). */
+	    royalty: number;
+	    /** Full text of the license terms, UTF-8, at most 72 KiB. The chain keeps its SHA-256. */
+	    license: string;
+	    /** `editions` x 1.000 PXS, exactly; burned. */
+	    fee: Asset | string;
+	    /** Not used; `[]` when omitted. */
+	    extensions?: any[];
+	}
+	/**
+	 * nft_list, action 1: offers a copy at a fixed price in PXS, or replaces its offer. Only the owner
+	 * can. Edition 0 offers the author's reserve: every copy that never left the author and has no
+	 * offer of its own, at one price, each buyer getting the lowest-numbered copy still in it.
+	 */
+	export interface NftList {
+	    /** Author of the minted post. */
+	    author: string;
+	    permlink: string;
+	    /** The copy, 1 to the number of copies; 0 for the reserve. */
+	    edition: number;
+	    /** Asking price, in PXS. */
+	    price: Asset | string;
+	    /**
+	     * The offer cannot be taken at or after this time. Leave it out for an offer that never expires.
+	     * At most 2038-01-19T03:14:07: the node refuses later times in JSON.
+	     */
+	    expiration?: string;
+	    /** Not used; `[]` when omitted. */
+	    extensions?: any[];
+	}
+	/**
+	 * nft_unlist, action 2: withdraws an offer. Edition 0 withdraws the reserve offer. A copy that never
+	 * left its author goes back to the reserve.
+	 */
+	export interface NftUnlist {
+	    author: string;
+	    permlink: string;
+	    /** The copy, 1 to the number of copies; 0 for the reserve. */
+	    edition: number;
+	    /** Not used; `[]` when omitted. */
+	    extensions?: any[];
+	}
+	/**
+	 * nft_buy, action 3: takes an offer. `price` has to equal the asking price exactly, so a buyer never
+	 * pays a price changed after signing. The author receives the royalty unless he is the seller, the
+	 * seller the rest. Edition 0 buys the next copy of the reserve, all of the price going to the author.
+	 */
+	export interface NftBuy {
+	    author: string;
+	    permlink: string;
+	    /** The copy, 1 to the number of copies; 0 for the next copy of the reserve. */
+	    edition: number;
+	    /** The asking price, in PXS. */
+	    price: Asset | string;
+	    /** Not used; `[]` when omitted. */
+	    extensions?: any[];
+	}
+	/**
+	 * nft_transfer, action 4: gives a copy away, without payment and so without royalty. Only the
+	 * owner can. Ends any offer of the copy. Giving it to `null` burns it.
+	 */
+	export interface NftTransfer {
+	    author: string;
+	    permlink: string;
+	    /** The copy, 1 to the number of copies (the reserve cannot be given as a whole). */
+	    edition: number;
+	    /** The new owner; `null` burns the copy. */
+	    to: string;
+	    /** Not used; `[]` when omitted. */
+	    extensions?: any[];
+	}
+	/**
+	 * An nft_operation action as the node writes it in condenser_api JSON: `[tag, payload]`, the tag
+	 * being the action's position (0 mint, 1 list, 2 unlist, 3 buy, 4 transfer).
+	 */
+	export type NftAction = [0, NftMint] | [1, NftList] | [2, NftUnlist] | [3, NftBuy] | [4, NftTransfer];
+	/**
+	 * The forms an action can be given in: `[tag, payload]`, `[name, payload]`, or `{type, value}` as
+	 * database_api and HAF write it. dpixa signs and sends the `[tag, payload]` form.
+	 */
+	export type NftActionInput = NftAction | ['nft_mint', NftMint] | ['nft_list', NftList] | ['nft_unlist', NftUnlist] | ['nft_buy', NftBuy] | ['nft_transfer', NftTransfer] | {
+	    type: 'nft_mint';
+	    value: NftMint;
+	} | {
+	    type: 'nft_list';
+	    value: NftList;
+	} | {
+	    type: 'nft_unlist';
+	    value: NftUnlist;
+	} | {
+	    type: 'nft_buy';
+	    value: NftBuy;
+	} | {
+	    type: 'nft_transfer';
+	    value: NftTransfer;
+	};
+	/**
+	 * The operation of native NFTs (hardfork 32). It carries one action; `account` is its actor (the
+	 * minter, the owner who lists, unlists or gives a copy, or the buyer) and signs with the active key.
+	 *
+	 * An NFT is written `@author/permlink/0` and its copy N `@author/permlink/N`. Prices, royalties and
+	 * the mint fee are in PXS. A purchase produces the virtual operations `nft_sold` (93) and, when a
+	 * royalty is paid, `nft_royalty` (94).
+	 */
+	export interface NftOperation extends Operation {
+	    0: 'nft';
+	    1: {
+	        /** The actor of the action. */
+	        account: string;
+	        action: NftActionInput;
+	        /** Not used; `[]` when omitted. */
+	        extensions?: any[];
+	    };
+	}
+	/**
+	 * Virtual operation 93: a listed copy was bought. For a purchase from the reserve (edition 0),
+	 * `edition` is the copy the buyer got.
+	 */
+	export interface NftSoldOperation extends Operation {
+	    0: 'nft_sold';
+	    1: {
+	        /** Previous owner; received the price minus the royalty. */
+	        seller: string;
+	        /** New owner; paid the price. */
+	        buyer: string;
+	        /** Creator of the NFT. */
+	        author: string;
+	        permlink: string;
+	        edition: number;
+	        price: Asset | string;
+	        /** Part of the price paid to the creator; zero when the creator sold. */
+	        royalty: Asset | string;
+	    };
+	}
+	/** Virtual operation 94: the royalty of a sale, produced next to nft_sold when it is not zero. */
+	export interface NftRoyaltyOperation extends Operation {
+	    0: 'nft_royalty';
+	    1: {
+	        /** Creator of the NFT, who received the royalty. */
+	        creator: string;
+	        seller: string;
+	        buyer: string;
+	        permlink: string;
+	        edition: number;
+	        royalty: Asset | string;
+	    };
+	}
 
 }
 declare module 'dpixa/src/iterator-stream' {
@@ -2335,7 +2780,7 @@ declare module 'dpixa/src/utils' {
 	 * Uses the platform `fetch` (browsers, Node.js, workers) — no
 	 * cross-fetch / node-fetch / whatwg-fetch polyfills.
 	 */
-	export function retryingFetch(currentAddress: string, allAddresses: string | string[], opts: any, timeout: number, failoverThreshold: number, consoleOnFailover: boolean, backoff: (tries: number) => number, fetchTimeout?: (tries: number) => number): Promise<{
+	export function retryingFetch(currentAddress: string, allAddresses: string | string[], opts: any, timeout: number, failoverThreshold: number, consoleOnFailover: boolean, backoff: (attempt: number) => number, fetchTimeout?: (attempt: number) => number): Promise<{
 	    response: any;
 	    currentAddress: string;
 	}>;
@@ -2385,7 +2830,7 @@ declare module 'dpixa/src/utils' {
 	    cancel_transfer_from_savings: number;
 	    custom_binary: number;
 	    decline_voting_rights: number;
-	    reset_account: number;
+	    nft: number;
 	    set_reset_account: number;
 	    claim_reward_balance: number;
 	    delegate_vesting_shares: number;
@@ -2415,13 +2860,17 @@ declare module 'dpixa/src/utils' {
 	    producer_reward: number;
 	    clear_null_account_balance: number;
 	    proposal_pay: number;
+	    dhf_funding: number;
 	    sps_fund: number;
+	    hardfork_hive: number;
 	    hardfork_pixa: number;
+	    hardfork_hive_restore: number;
 	    hardfork_pixa_restore: number;
 	    delayed_voting: number;
 	    consolidate_treasury_balance: number;
 	    effective_comment_vote: number;
 	    ineffective_delete_comment: number;
+	    dhf_conversion: number;
 	    sps_convert: number;
 	    expired_account_notification: number;
 	    changed_recovery_account: number;
@@ -2433,6 +2882,16 @@ declare module 'dpixa/src/utils' {
 	    system_warning: number;
 	    fill_recurrent_transfer: number;
 	    failed_recurrent_transfer: number;
+	    limit_order_cancelled: number;
+	    producer_missed: number;
+	    proposal_fee: number;
+	    collateralized_convert_immediate_conversion: number;
+	    escrow_approved: number;
+	    escrow_rejected: number;
+	    proxy_cleared: number;
+	    declined_voting_rights: number;
+	    nft_sold: number;
+	    nft_royalty: number;
 	};
 	/**
 	 * Make bitmask filter to be used with getAccountHistory call
@@ -2584,7 +3043,7 @@ declare module 'dpixa/src/helpers/broadcast' {
 	 */
 	import { AuthorityType } from 'dpixa/src/chain/account';
 	import { Asset } from 'dpixa/src/chain/asset';
-	import { AccountUpdateOperation, CommentOperation, CommentOptionsOperation, CustomJsonOperation, DelegateVestingSharesOperation, Operation, TransferOperation, VoteOperation } from 'dpixa/src/chain/operation';
+	import { AccountUpdateOperation, ClaimRewardBalanceOperation, CommentOperation, CommentOptionsOperation, CustomJsonOperation, DelegateVestingSharesOperation, NftOperation, Operation, TransferOperation, VoteOperation } from 'dpixa/src/chain/operation';
 	import { SignedTransaction, Transaction, TransactionConfirmation } from 'dpixa/src/chain/transaction';
 	import type { Client } from 'dpixa/src/client';
 	import type { PrivateKey, PublicKey } from 'dpixa/src/crypto';
@@ -2677,6 +3136,34 @@ declare module 'dpixa/src/helpers/broadcast' {
 	     */
 	    json(data: CustomJsonOperation[1], key: PrivateKey): Promise<TransactionConfirmation>;
 	    /**
+	     * Claim pending rewards into the account's balances.
+	     * @param data The amounts to claim, as `getAccounts` shows them pending; PIXA as `reward_pixa`
+	     *             (or `reward_hive`), PXS as `reward_pxs` (or `reward_hbd`), and `reward_vests`.
+	     * @param key Private posting key of the account.
+	     */
+	    claimRewardBalance(data: ClaimRewardBalanceOperation[1], key: PrivateKey): Promise<TransactionConfirmation>;
+	    /**
+	     * Broadcast an nft_operation (hardfork 32): mint, offer, withdraw an offer, buy or give away a
+	     * copy. {@link NftAPI} (`client.nft`) builds each action and checks it first.
+	     * @param data `account` (the actor) and `action`, e.g. `[0, { permlink, editions, royalty, license, fee }]`.
+	     * @param key Private active key of `account`.
+	     */
+	    nft(data: NftOperation[1], key: PrivateKey | PrivateKey[]): Promise<TransactionConfirmation>;
+	    /**
+	     * Promote a post: burn PXS for it by sending it to `null` with the memo `@author/permlink`.
+	     * Pixamind adds the amount to the post's promoted total, which ranks the promoted feed while
+	     * the post awaits its payout. Only a root post can be promoted, only PXS counts, and the PXS is
+	     * burned whatever happens to the post.
+	     * @param data `from` pays, `author`/`permlink` name the post, `amount` in PXS (from 0.001).
+	     * @param key Private active key of `from`.
+	     */
+	    promote(data: {
+	        from: string;
+	        author: string;
+	        permlink: string;
+	        amount: string | Asset;
+	    }, key: PrivateKey | PrivateKey[]): Promise<TransactionConfirmation>;
+	    /**
 	     * Create a new account on testnet.
 	     * @param options New account options.
 	     * @param key Private active key of account creator.
@@ -2714,6 +3201,10 @@ declare module 'dpixa/src/helpers/broadcast' {
 	    sign(transaction: Transaction, key: PrivateKey | PrivateKey[]): SignedTransaction;
 	    /**
 	     * Broadcast a signed transaction to the network.
+	     *
+	     * The operations are sent in the form the node reads (see `normalizeTransaction`), which never
+	     * changes what the signatures cover. The node checks and queues the transaction; `id` is its
+	     * transaction id, and `client.transaction.findTransaction(id)` tells when it is in a block.
 	     */
 	    send(transaction: SignedTransaction): Promise<TransactionConfirmation>;
 	    /**
@@ -2875,7 +3366,7 @@ declare module 'dpixa/src/helpers/database' {
 	     * @param account The account to fetch
 	     * @param from The starting index
 	     * @param limit The maximum number of results to return
-	     * @param operations_bitmask Generated by dpixa.utils.makeBitMaskFilter() - see example below
+	     * @param operation_bitmask Generated by dpixa.utils.makeBitMaskFilter() - see example below
 	     * @example
 	     * const op = dpixa.utils.operationOrders
 	     * const operationsBitmask = dpixa.utils.makeBitMaskFilter([
@@ -2903,6 +3394,253 @@ declare module 'dpixa/src/helpers/database' {
 	    verifyAuthority(stx: SignedTransaction): Promise<boolean>;
 	    /** return rpc node version */
 	    getVersion(): Promise<object>;
+	}
+
+}
+declare module 'dpixa/src/helpers/nft' {
+	/**
+	 * @file Native NFTs (hardfork 32): chain queries and the actions of nft_operation.
+	 * @author Matias Affolter
+	 * @license
+	 * Copyright (c) 2026 Matias Affolter. All Rights Reserved.
+	 *
+	 * Redistribution and use in source and binary forms, with or without modification,
+	 * are permitted provided that the following conditions are met:
+	 *
+	 *  1. Redistribution of source code must retain the above copyright notice, this
+	 *     list of conditions and the following disclaimer.
+	 *
+	 *  2. Redistribution in binary form must reproduce the above copyright notice,
+	 *     this list of conditions and the following disclaimer in the documentation
+	 *     and/or other materials provided with the distribution.
+	 *
+	 *  3. Neither the name of the copyright holder nor the names of its contributors
+	 *     may be used to endorse or promote products derived from this software without
+	 *     specific prior written permission.
+	 *
+	 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+	 * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+	 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+	 * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+	 * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	 * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+	 * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+	 * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+	 * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+	 * OF THE POSSIBILITY OF SUCH DAMAGE.
+	 *
+	 * You acknowledge that this software is not designed, licensed or intended for use
+	 * in the design, construction, operation or maintenance of any military facility.
+	 */
+	import { Asset } from 'dpixa/src/chain/asset';
+	import { NftMint } from 'dpixa/src/chain/operation';
+	import { TransactionConfirmation } from 'dpixa/src/chain/transaction';
+	import type { Client } from 'dpixa/src/client';
+	import type { PrivateKey } from 'dpixa/src/crypto';
+	/** The limits and mint fee nft_operation is checked against at head block (`get_nft_params`). */
+	export interface NftParams {
+	    /** Mint fee per copy: 1.000 PXS. nft_mint carries it times its number of copies. */
+	    mint_fee_per_edition: Asset;
+	    /** Copies per NFT: 10,000. */
+	    max_editions: number;
+	    /** Royalty ceiling in basis points: 2500 (25%). */
+	    max_royalty: number;
+	    /** Bytes of license text: 73,728 (72 KiB). */
+	    max_license_length: number;
+	    /** Assets an offer can be made in: `['PXS']`. */
+	    price_symbols: string[];
+	}
+	/** An NFT as the chain keeps it (`database_api.find_nfts`, `list_nfts`). */
+	export interface ChainNft {
+	    id: number;
+	    /** `@author/permlink/0` */
+	    nft_id: string;
+	    /** Creator of the NFT, author of the minted post. */
+	    author: string;
+	    permlink: string;
+	    mint_time: string;
+	    /** Number of copies, numbered from 1. */
+	    editions: number;
+	    /** Basis points of a sale price paid to the author. */
+	    royalty: number;
+	    /** Bytes of the license text, which the mint operation carries. */
+	    license_size: number;
+	    /** SHA-256 of the license text. */
+	    license_sha256: string;
+	    /** Copies still with the author since the mint, without an offer of their own. */
+	    reserve: number;
+	    /** The copy a buyer of copy 0 gets now; 0 when the reserve is empty. */
+	    reserve_next: number;
+	    /** True when copy 0 can be bought at head block time. */
+	    reserve_listed: boolean;
+	    /** The author's price for one copy of the reserve; meaningful only when `reserve_listed`. */
+	    reserve_price: Asset;
+	    /** The reserve offer ends at this time; meaningful only when `reserve_listed`. */
+	    reserve_expiration: string;
+	}
+	/** One copy as the chain sees it (`find_nfts`, `list_nft_editions`). */
+	export interface ChainNftEdition {
+	    /** `@author/permlink/N` */
+	    nft_id: string;
+	    /** Id of the NFT object. */
+	    nft: number;
+	    author: string;
+	    permlink: string;
+	    edition: number;
+	    /** `null` once the copy is burned. */
+	    owner: string;
+	    burned: boolean;
+	    /** When the owner got the copy. */
+	    acquired: string;
+	    /** True when it can be bought at head block time. */
+	    listed: boolean;
+	    /** Asking price; meaningful only when `listed`. */
+	    price: Asset;
+	    /** The offer ends at this time; meaningful only when `listed`. */
+	    expiration: string;
+	}
+	/** A copy, by id (`{ nft: '@alice/art/3' }`) or by its parts. */
+	export type NftRef = {
+	    nft: string;
+	} | {
+	    author: string;
+	    permlink: string;
+	    edition: number;
+	};
+	/** A post, as `[author, permlink]` or `{ author, permlink }`. */
+	export type PostRef = [string, string] | {
+	    author: string;
+	    permlink: string;
+	};
+	/**
+	 * Native NFTs, read from the chain (`database_api`) and acted on with `nft_operation`.
+	 *
+	 * Every action is signed with the active key of `account`, its actor. The market summary of an NFT
+	 * page, its history and the lists by creator, owner and price come from Pixamind
+	 * ({@link PixamindAPI.getNfts} and the other `…Nft…` methods); this helper is what the chain holds
+	 * at head block, which is what a purchase is checked against.
+	 */
+	export class NftAPI {
+	    readonly client: Client;
+	    constructor(client: Client);
+	    /** Convenience for calling `database_api`. */
+	    call(method: string, params?: any): Promise<any>;
+	    /** The limits and mint fee nft_operation is checked against at head block. */
+	    getParams(): Promise<NftParams>;
+	    /**
+	     * Up to 100 NFTs or copies by id: `@author/permlink/0` for an NFT (with its reserve),
+	     * `@author/permlink/N` for the NFT with its copy N. Ids that name nothing are left out, so the
+	     * call also tells which posts are minted. Each NFT and each copy is answered once, in the order
+	     * first asked; a copy that was never offered nor moved is answered as its creator's.
+	     */
+	    find(ids: string[]): Promise<{
+	        nfts: ChainNft[];
+	        editions: ChainNftEdition[];
+	    }>;
+	    /** The NFT of a post, or undefined when the post is not minted. */
+	    getNft(author: string, permlink: string): Promise<ChainNft | undefined>;
+	    /** One copy (`@author/permlink/N`, N >= 1), or undefined when there is no such copy. */
+	    getEdition(id: string): Promise<ChainNftEdition | undefined>;
+	    /** Whether each post is minted, in the order given (100 posts per request). */
+	    areMinted(posts: PostRef[]): Promise<boolean[]>;
+	    /**
+	     * NFTs a creator minted, in permlink order.
+	     * @param options `after`: the permlink to continue after (the last of the previous page);
+	     *                `limit`: 1 to 1000, default 100.
+	     */
+	    listByCreator(creator: string, options?: {
+	        after?: string;
+	        limit?: number;
+	    }): Promise<ChainNft[]>;
+	    /**
+	     * The copies of one NFT in number order, each copy once whether or not it ever moved.
+	     * @param nft The NFT, `@author/permlink/0` (or any copy id).
+	     * @param options `from`: first copy, default 1; `limit`: 1 to 1000, default 100.
+	     */
+	    listEditions(nft: string, options?: {
+	        from?: number;
+	        limit?: number;
+	    }): Promise<ChainNftEdition[]>;
+	    /**
+	     * Copies an account owns that were offered or moved at least once. A creator's reserve is not
+	     * listed: it is `reserve` on each NFT ({@link listByCreator}); Pixamind's
+	     * {@link PixamindAPI.listOwnedNfts} counts both.
+	     * @param options `after`: the copy id to continue after (the last of the previous page);
+	     *                `limit`: 1 to 1000, default 100.
+	     */
+	    listByOwner(owner: string, options?: {
+	        after?: string;
+	        limit?: number;
+	    }): Promise<ChainNftEdition[]>;
+	    /**
+	     * Mint a root post of `account` in 1 to 10,000 copies. `fee` defaults to the copies times the
+	     * fee per copy in force (1.000 PXS); it is burned. Royalty and license can never change, and the
+	     * post can no longer be edited or deleted. Throws before signing when {@link checkNftMint} finds
+	     * a problem.
+	     */
+	    mint(data: {
+	        account: string;
+	    } & Omit<NftMint, 'fee'> & {
+	        fee?: Asset | string;
+	    }, key: PrivateKey | PrivateKey[]): Promise<TransactionConfirmation>;
+	    /**
+	     * Offer a copy at a fixed price in PXS, or change its offer. The copy stays with its owner until
+	     * someone buys it. `expiration` left out: the offer never expires; otherwise at most
+	     * 2038-01-19T03:14:07, the latest time the node reads.
+	     */
+	    list(data: {
+	        account: string;
+	        price: Asset | string;
+	        expiration?: string;
+	    } & NftRef, key: PrivateKey | PrivateKey[]): Promise<TransactionConfirmation>;
+	    /** Withdraw the offer of a copy. A copy that never left its author goes back to the reserve. */
+	    unlist(data: {
+	        account: string;
+	    } & NftRef, key: PrivateKey | PrivateKey[]): Promise<TransactionConfirmation>;
+	    /**
+	     * Buy a copy (or, with edition 0, the next copy of the reserve). The price has to equal the
+	     * asking price; left out, it is read from the chain first, and the purchase fails if the offer
+	     * changes before the transaction is included.
+	     */
+	    buy(data: {
+	        account: string;
+	        price?: Asset | string;
+	    } & NftRef, key: PrivateKey | PrivateKey[]): Promise<TransactionConfirmation>;
+	    /** Give a copy to another account: no payment, so no royalty. Ends any offer of the copy. */
+	    transfer(data: {
+	        account: string;
+	        to: string;
+	    } & NftRef, key: PrivateKey | PrivateKey[]): Promise<TransactionConfirmation>;
+	    /** Burn a copy: give it to `null`, for good. It keeps its number and still counts among the copies. */
+	    burn(data: {
+	        account: string;
+	    } & NftRef, key: PrivateKey | PrivateKey[]): Promise<TransactionConfirmation>;
+	    /**
+	     * Offer the reserve: every copy that never left the author and has no offer of its own, at one
+	     * price, in one action. Each buyer gets the lowest-numbered copy still in the reserve and the
+	     * author receives the whole price. The offer ends by itself when the reserve runs out.
+	     */
+	    offerReserve(data: {
+	        account: string;
+	        permlink: string;
+	        price: Asset | string;
+	        expiration?: string;
+	    }, key: PrivateKey | PrivateKey[]): Promise<TransactionConfirmation>;
+	    /** Withdraw the reserve offer. */
+	    withdrawReserve(data: {
+	        account: string;
+	        permlink: string;
+	    }, key: PrivateKey | PrivateKey[]): Promise<TransactionConfirmation>;
+	    /** Buy the next copy of an author's reserve; `price` left out is read from the chain. */
+	    buyFromReserve(data: {
+	        account: string;
+	        author: string;
+	        permlink: string;
+	        price?: Asset | string;
+	    }, key: PrivateKey | PrivateKey[]): Promise<TransactionConfirmation>;
+	    /** The price a copy (or the reserve, edition 0) can be bought at now; throws when it is not for sale. */
+	    askingPrice(author: string, permlink: string, edition: number): Promise<Asset>;
+	    private send;
 	}
 
 }
@@ -2936,6 +3674,221 @@ declare module 'dpixa/src/chain/pixamind' {
 	    msg: string;
 	    url: string;
 	}
+	/**
+	 * A page of a Pixamind list: pass `next_start` back as `start` to get the next page (treat it as
+	 * opaque); `has_more` is false on the last page.
+	 */
+	export interface PixamindPage {
+	    next_start?: string;
+	    has_more: boolean;
+	}
+	/** Terms of an NFT, fixed at mint. Amounts are strings such as `"5.000 PXS"`. */
+	export interface PixamindNftTerms {
+	    /** `@author/permlink/0` */
+	    nft_id: string;
+	    author: string;
+	    permlink: string;
+	    /** Mint time, e.g. `2027-01-10T12:02:03`. */
+	    minted: string;
+	    mint_block: number;
+	    editions: number;
+	    /** Basis points of each later sale paid to the creator. */
+	    royalty: number;
+	    /** The royalty as a percentage with two decimals, e.g. `"10.00"`. */
+	    royalty_percent: string;
+	    mint_fee: string;
+	    /** Bytes of the license text; the text itself: {@link PixamindAPI.getNftLicense}. */
+	    license_size: number;
+	    /** SHA-256 of the license text, as the chain keeps it. */
+	    license_sha256: string;
+	    /** False when the minted post was removed from Pixamind's index. */
+	    post_exists: boolean;
+	}
+	/** One copy as Pixamind shows it. A field that does not apply is left out. */
+	export interface PixamindNftEdition {
+	    /** `@author/permlink/N`; `@author/permlink/0` for an offered reserve. */
+	    nft_id: string;
+	    author: string;
+	    permlink: string;
+	    /** 1 to 10,000; 0 for an offered reserve. */
+	    edition: number;
+	    owner: string;
+	    burned?: boolean;
+	    acquired?: string;
+	    /** True while the copy can be bought. */
+	    listed: boolean;
+	    price?: string;
+	    /** Only for an offer that expires. */
+	    expiration?: string;
+	    listed_at?: string;
+	    sales?: number;
+	    volume?: string;
+	    royalties?: string;
+	    last_sale_price?: string;
+	    last_sale?: string;
+	    /**
+	     * The copy is in the creator's reserve (bought through copy 0 while the reserve is offered),
+	     * or, with edition 0, this entry is the reserve offer itself.
+	     */
+	    reserve?: boolean;
+	    /** Reserve offer only: how many copies it covers. */
+	    copies?: number;
+	    /** Reserve offer only: the copy the next buyer of copy 0 gets, `@author/permlink/N`. */
+	    next?: string;
+	    /** The terms of the NFT, in `get_nfts` for a copy and in market lists. */
+	    nft?: PixamindNftTerms;
+	}
+	/** An NFT with its terms and the market summary an NFT page needs. */
+	export interface PixamindNft extends PixamindNftTerms {
+	    /** Number of copies (the same as `editions`). */
+	    copies: number;
+	    /** Copies that can be bought now: each copy offered on its own, plus the whole reserve while offered. */
+	    for_sale: number;
+	    /** Copies offered on their own. */
+	    listed: number;
+	    /** Copies in the creator's reserve: never left the creator, no offer of their own. */
+	    reserve: number;
+	    /** Copies given to `null`. */
+	    burned: number;
+	    /** Copies the creator still holds: the reserve, plus copies offered on their own or got back. */
+	    held_by_creator: number;
+	    sales: number;
+	    volume: string;
+	    royalties: string;
+	    /** The reserve offer, when copy 0 can be bought now. */
+	    reserve_offer?: PixamindNftEdition;
+	    /**
+	     * The lowest price a copy can be bought at now, how many copies sell at it, and the ids to buy
+	     * them with (at most 100; `@author/permlink/0` is the reserve, which gives `reserve_offer.next`).
+	     */
+	    floor?: {
+	        price: string;
+	        copies: number;
+	        nft_ids: string[];
+	    };
+	    /** The most recent sale of any copy. */
+	    last_sale?: {
+	        price: string;
+	        edition: number;
+	        time: string;
+	    };
+	}
+	/** An NFT an account holds copies of (`list_owned`). */
+	export interface PixamindOwnedNft {
+	    nft: PixamindNftTerms;
+	    /** Copies held. */
+	    held: number;
+	    /** Of those, how many can be bought now. */
+	    listed: number;
+	    /** Latest acquisition. */
+	    acquired: string;
+	}
+	/** One event of an NFT's history (`get_history`): mint, list, unlist, sale, transfer or burn. */
+	export interface PixamindNftEvent {
+	    /** Event id (an operation id, as a string). */
+	    id: string;
+	    block_num: number;
+	    timestamp: string;
+	    type: 'mint' | 'list' | 'unlist' | 'sale' | 'transfer' | 'burn';
+	    nft_id: string;
+	    author: string;
+	    permlink: string;
+	    /** Absent for the mint and the reserve. */
+	    edition?: number;
+	    /** The actor: minter, owner, buyer, giver. */
+	    account: string;
+	    /** Sale: the previous owner. */
+	    seller?: string;
+	    /** Transfer: the receiver. */
+	    to?: string;
+	    price?: string;
+	    /** Sale: the part paid to the creator. */
+	    royalty?: string;
+	    expiration?: string;
+	    /** Mint only. */
+	    editions?: number;
+	    royalty_rate?: number;
+	    license_size?: number;
+	    license_sha256?: string;
+	    fee?: string;
+	}
+	/** The full license text of an NFT (`get_license`). */
+	export interface PixamindNftLicense {
+	    nft_id: string;
+	    license: string;
+	    license_size: number;
+	    license_sha256: string;
+	}
+	/** Metadata of a post (`pixamind_content.get_content_metadata`). A field that does not apply is left out. */
+	export interface ContentMetadata {
+	    author: string;
+	    permlink: string;
+	    depth: number;
+	    category?: string;
+	    community?: string;
+	    created: string;
+	    updated: string;
+	    title?: string;
+	    /** Format, app, tags, license and, for an artwork, the picture's size, read from json_metadata and the body. */
+	    content?: {
+	        [key: string]: any;
+	    };
+	    /** Total burned to promote the post, e.g. `"1.750 PXS"`; only when something was. */
+	    promoted?: string;
+	    /** Number of recorded versions (the creation and each edit); only when the history is recorded. */
+	    versions?: number;
+	    /** Terms and market summary, when the post is minted. */
+	    nft?: PixamindNft;
+	}
+	/** One version of a post or comment (`pixamind_content.get_post_history`). */
+	export interface PostVersion {
+	    version: number;
+	    block_num: number;
+	    timestamp: string;
+	    op_id: string;
+	    /** True for the creation, false for an edit. */
+	    created: boolean;
+	    /** Fields this version changed: `title`, `body`, `json_metadata`. */
+	    changed: string[];
+	    title: string;
+	    /** Left out with `bodies: false`. */
+	    body?: string;
+	    json_metadata: string;
+	}
+	/** The recorded versions of a post or comment, oldest first. */
+	export interface PostHistory {
+	    author: string;
+	    permlink: string;
+	    total: number;
+	    /** False when the history only starts partway (the post predates the recording). */
+	    complete: boolean;
+	    versions: PostVersion[];
+	}
+	/**
+	 * The promotion payments behind a post (`author`, `permlink`, `promoted`), or what an account spent
+	 * on promotion (`sender`, `total`), newest first. Amounts are in PXS, e.g. `"1.750 PXS"`.
+	 */
+	export interface Promotions {
+	    author?: string;
+	    permlink?: string;
+	    /** Total burned for the post. */
+	    promoted?: string;
+	    sender?: string;
+	    /** Total the sender burned. */
+	    total?: string;
+	    promotions: {
+	        /** Payments behind a post: who paid. */
+	        sender?: string;
+	        /** An account's spending: which post. */
+	        author?: string;
+	        permlink?: string;
+	        /** An account's spending: false when the memo named no promotable post (the PXS burned anyway). */
+	        post_exists?: boolean;
+	        amount: string;
+	        block_num: number;
+	        timestamp: string;
+	    }[];
+	}
 
 }
 declare module 'dpixa/src/helpers/pixamind' {
@@ -2944,9 +3897,9 @@ declare module 'dpixa/src/helpers/pixamind' {
 	 */
 	import { Account } from 'dpixa/src/chain/account';
 	import { Discussion } from 'dpixa/src/chain/comment';
-	import { CommunityDetail, Notifications } from 'dpixa/src/chain/pixamind';
+	import { CommunityDetail, ContentMetadata, Notifications, PixamindNft, PixamindNftEdition, PixamindNftEvent, PixamindNftLicense, PixamindOwnedNft, PixamindPage, PostHistory, Promotions } from 'dpixa/src/chain/pixamind';
 	import { Client } from 'dpixa/src/client';
-	interface PostsQuery {
+	export interface PostsQuery {
 	    /**
 	     * Number of posts to fetch
 	     */
@@ -2956,7 +3909,8 @@ declare module 'dpixa/src/helpers/pixamind' {
 	     */
 	    sort: 'trending' | 'hot' | 'created' | 'promoted' | 'payout' | 'payout_comments' | 'muted';
 	    /**
-	     * Filtering with tags
+	     * Tag, community (`portal-…`), or `my` with an observer: the communities the observer
+	     * subscribes to (`promoted` too)
 	     */
 	    tag?: string[] | string;
 	    /**
@@ -2971,24 +3925,64 @@ declare module 'dpixa/src/helpers/pixamind' {
 	     * Paginating last post permlink
 	     */
 	    start_permlink?: string;
+	    /**
+	     * Mute reasons to leave out (bridge's muted_reasons_filter)
+	     */
+	    muted_reasons_filter?: number[];
 	}
+	/** Query of the promoted feed: the posts query without `sort`. */
+	export type PromotedPostsQuery = Omit<PostsQuery, 'sort'>;
+	/** Query of `pixamind_nft.list_editions`. */
+	export interface NftEditionsQuery {
+	    /** The NFT, `@author/permlink/0` (any copy number names it). */
+	    nft: string;
+	    /**
+	     * `number`: every copy in order, those of the reserve with `reserve: true`. `price`: what can
+	     * be bought now, cheapest first, the offered reserve as one entry (copy 0).
+	     */
+	    sort?: 'number' | 'price';
+	    /** Keep one account's copies. */
+	    owner?: string;
+	    /** 1 to 100. */
+	    limit?: number;
+	    /** `next_start` of the previous page. */
+	    start?: string;
+	}
+	/** Query of `pixamind_nft.list_market`. */
+	export interface NftMarketQuery {
+	    /** `recent`: latest offers first (the default). `price`: cheapest first. */
+	    sort?: 'recent' | 'price';
+	    /** Keep one creator's NFTs. */
+	    creator?: string;
+	    limit?: number;
+	    start?: string;
+	}
+	/** Query of `pixamind_nft.get_history`: one NFT (`…/0`, every copy) or copy (`…/N`), or one account. */
+	export type NftHistoryQuery = ({
+	    nft: string;
+	} | {
+	    account: string;
+	}) & {
+	    limit?: number;
+	    start?: string;
+	};
 	/**
 	 * Omitting sort extended from BridgeParam
 	 */
-	interface AccountPostsQuery extends Omit<PostsQuery, 'sort'> {
+	export interface AccountPostsQuery extends Omit<PostsQuery, 'sort'> {
 	    account: string;
 	    sort: 'posts';
 	}
-	interface CommunityQuery {
+	export interface CommunityQuery {
 	    name: string;
 	    observer: string;
 	}
-	interface AccountNotifsQuery {
+	export interface AccountNotifsQuery {
 	    account: Account['name'];
 	    limit: number;
 	    type?: 'new_community' | 'pin_post';
 	}
-	interface ListCommunitiesQuery {
+	export interface ListCommunitiesQuery {
 	    /**
 	     * Paginating last
 	     */
@@ -3048,8 +4042,127 @@ declare module 'dpixa/src/helpers/pixamind' {
 	     * @param options
 	     */
 	    listCommunities(options: ListCommunitiesQuery): Promise<CommunityDetail[]>;
+	    /**
+	     * Call a method of another Pixamind namespace: `pixamind_api`, `pixamind_content`,
+	     * `pixamind_feed`, `pixamind_graph` or `pixamind_nft`.
+	     */
+	    callNamespace(namespace: string, method: string, params?: any): Promise<any>;
+	    /**
+	     * What the Pixamind node is: version, indexed block, enabled features (`nfts`, `promotions`,
+	     * `post_history`, …) and namespaces.
+	     */
+	    getInfo(): Promise<{
+	        [key: string]: any;
+	    }>;
+	    /**
+	     * One post with its bridge fields, `nft_minted` and `promoted` included.
+	     */
+	    getPost(author: string, permlink: string, observer?: string): Promise<Discussion>;
+	    /**
+	     * The promoted feed: root posts awaiting payout that PXS was burned for, highest total first
+	     * (newest first on a tie), each with `promoted`. `tag` can be a tag, a community or `my` with
+	     * an observer. To promote a post: {@link BroadcastAPI.promote}.
+	     */
+	    getPromotedPosts(query?: PromotedPostsQuery): Promise<Discussion[]>;
+	    /**
+	     * The payments behind a post, newest first, with its total.
+	     * @param limit 1 to 1000, default 100.
+	     */
+	    getPromotions(author: string, permlink: string, limit?: number): Promise<Promotions>;
+	    /**
+	     * What an account burned to promote posts, newest first, with its total.
+	     * @param limit 1 to 1000, default 100.
+	     */
+	    getPromotionsBySender(sender: string, limit?: number): Promise<Promotions>;
+	    /**
+	     * Metadata of a post: format, tags, license, picture size, and when they apply `promoted`,
+	     * `versions` (recorded edits) and `nft` (terms and market summary of a minted post).
+	     * Throws when the post does not exist.
+	     */
+	    getContentMetadata(author: string, permlink: string): Promise<ContentMetadata>;
+	    /**
+	     * Metadata of up to 100 posts in one call, in the order asked; `null` for a post that does not exist.
+	     */
+	    getContentMetadataBatch(posts: [string, string][] | {
+	        author: string;
+	        permlink: string;
+	    }[]): Promise<(ContentMetadata | null)[]>;
+	    /**
+	     * Every recorded version of a post or comment, oldest first: the creation, then each edit, with
+	     * the fields it changed. `bodies: false` leaves the bodies out.
+	     * @param options `start` (version number, from 1), `limit` (1 to 100, default 20), `bodies` (default true)
+	     */
+	    getPostHistory(author: string, permlink: string, options?: {
+	        start?: number;
+	        limit?: number;
+	        bodies?: boolean;
+	    }): Promise<PostHistory>;
+	    /**
+	     * NFTs and copies by id, at most 100: for `@author/permlink/0` the NFT with its terms and
+	     * market summary (copies, for_sale, floor, reserve, reserve_offer, …), for `@author/permlink/N`
+	     * copy N with the terms of its NFT under `nft`. Ids that name nothing are left out, so an empty
+	     * answer means "not minted".
+	     */
+	    getNfts(ids: string | string[]): Promise<(PixamindNft | PixamindNftEdition)[]>;
+	    /**
+	     * One NFT with its terms and market summary; undefined when the post is not minted.
+	     */
+	    getNft(author: string, permlink: string): Promise<PixamindNft | undefined>;
+	    /**
+	     * The copies of one NFT, page by page: by number (every copy, reserve included) or by price
+	     * (what can be bought now, cheapest first, the offered reserve as copy 0).
+	     */
+	    listNftEditions(query: NftEditionsQuery): Promise<PixamindPage & {
+	        nft_id: string;
+	        sort: string;
+	        editions: PixamindNftEdition[];
+	    }>;
+	    /**
+	     * NFTs an account minted, newest first, each with its summary, and their `total`.
+	     */
+	    listCreatedNfts(account: string, options?: {
+	        limit?: number;
+	        start?: string;
+	    }): Promise<PixamindPage & {
+	        account: string;
+	        total: number;
+	        nfts: PixamindNft[];
+	    }>;
+	    /**
+	     * NFTs an account holds copies of, latest acquisition first: the terms, how many it holds and
+	     * how many of those are for sale. A creator holds the copies it never parted with;
+	     * `acquired_only` leaves those out.
+	     */
+	    listOwnedNfts(account: string, options?: {
+	        acquired_only?: boolean;
+	        limit?: number;
+	        start?: string;
+	    }): Promise<PixamindPage & {
+	        account: string;
+	        nfts: PixamindOwnedNft[];
+	    }>;
+	    /**
+	     * What can be bought now across all NFTs, each with the terms of its NFT: copies offered on their
+	     * own, and offered reserves as one entry each (copy 0, `reserve: true`, `copies`, `next`).
+	     */
+	    listNftMarket(query?: NftMarketQuery): Promise<PixamindPage & {
+	        sort: string;
+	        editions: PixamindNftEdition[];
+	    }>;
+	    /**
+	     * History of an NFT (`…/0`: every copy), of one copy (`…/N`: that copy and the mint), or of an
+	     * account, newest first: mints, offers, sales, gifts and burns. `limit` up to 1,000.
+	     */
+	    getNftHistory(query: NftHistoryQuery): Promise<PixamindPage & {
+	        history: PixamindNftEvent[];
+	    }>;
+	    /**
+	     * The full license text of an NFT (any copy id names it), with its size and SHA-256; undefined
+	     * when the post is not minted. Compare `license_sha256` with the chain's
+	     * ({@link NftAPI.getNft}) to check the text is the one minted.
+	     */
+	    getNftLicense(id: string): Promise<PixamindNftLicense | undefined>;
 	}
-	export {};
 
 }
 declare module 'dpixa/src/helpers/key' {
@@ -3128,13 +4241,24 @@ declare module 'dpixa/src/chain/rc' {
 	export interface Manabar {
 	    current_mana: number;
 	    max_mana: number;
+	    /** Fill of the bar in basis points: 10000 is full. */
 	    percentage: number;
+	}
+	/** What a vote costs (`RCAPI.calculateVoteCost`). */
+	export interface VoteCost {
+	    /** Mana the vote uses, in millionths of VESTS (the unit of `voting_manabar`). */
+	    mana: number;
+	    /** That mana as a percentage of a full bar, two decimals: 3 is 3%. */
+	    percentage: number;
+	    /** What a 100% vote costs, as a percentage of a full bar: 3 from hardfork 32, 2 before. */
+	    full_vote_percentage: number;
 	}
 
 }
 declare module 'dpixa/src/helpers/rc' {
 	import { Account } from 'dpixa/src/chain/account';
-	import { Manabar, RCAccount, RCParams, RCPool } from 'dpixa/src/chain/rc';
+	import { DynamicGlobalProperties } from 'dpixa/src/chain/misc';
+	import { Manabar, RCAccount, RCParams, RCPool, VoteCost } from 'dpixa/src/chain/rc';
 	import { Client } from 'dpixa/src/client';
 	export class RCAPI {
 	    readonly client: Client;
@@ -3160,21 +4284,47 @@ declare module 'dpixa/src/helpers/rc' {
 	     */
 	    getRCMana(username: string): Promise<Manabar>;
 	    /**
-	     * Makes a API call and returns the VP mana-data for a specified username
+	     * Makes API calls and returns the voting mana-data for a specified username, refilled with
+	     * the refill time the chain has now.
 	     */
 	    getVPMana(username: string): Promise<Manabar>;
+	    /**
+	     * Makes API calls and returns the downvote mana-data for a specified username.
+	     */
+	    getDownvoteMana(username: string): Promise<Manabar>;
+	    /**
+	     * Makes API calls and returns what a vote of `weight` would cost `username` now.
+	     */
+	    getVoteCost(username: string, weight: number): Promise<VoteCost>;
 	    /**
 	     * Calculates the RC mana-data based on an RCAccount - findRCAccounts()
 	     */
 	    calculateRCMana(rc_account: RCAccount): Manabar;
 	    /**
-	     * Calculates the RC mana-data based on an Account - getAccounts()
+	     * Calculates the voting mana-data based on an Account - getAccounts()
+	     * @param props The dynamic global properties (`getDynamicGlobalProperties()`), whose
+	     *              `voting_mana_regeneration_seconds` is the refill time of the bar: 576,000 s
+	     *              (15% a day) from hardfork 32. Without them, the 432,000 s (20% a day) of
+	     *              earlier hardforks is used.
 	     */
-	    calculateVPMana(account: Account): Manabar;
+	    calculateVPMana(account: Account, props?: Partial<DynamicGlobalProperties>): Manabar;
+	    /**
+	     * Calculates the downvote mana-data based on an Account - getAccounts(). The downvote bar holds
+	     * `downvote_pool_percent` of the voting bar and refills in the same time.
+	     */
+	    calculateDownvoteMana(account: Account, props: Partial<DynamicGlobalProperties>): Manabar;
+	    /**
+	     * What a vote of `weight` (-10000 to 10000) costs the voter, exactly as the node computes it
+	     * since hardfork 28: `ceil(floor(effective vests * |weight| * 86400 / 10000) /
+	     * (vote_power_reserve_rate * voting_mana_regeneration_seconds))`. From hardfork 32 a 100% vote
+	     * costs 3% of a full bar (2% before). A downvote is paid from the downvote bar first.
+	     */
+	    calculateVoteCost(account: Account, weight: number, props: Partial<DynamicGlobalProperties>): VoteCost;
 	    /**
 	     * Internal convenience method to reduce redundant code
 	     */
 	    private _calculateManabar;
+	    private accountAndProps;
 	}
 
 }
@@ -3193,10 +4343,12 @@ declare module 'dpixa/src/helpers/transaction' {
 	     */
 	    call(method: string, params?: any): Promise<any>;
 	    /**
-	     * Returns the status of a given transaction id
+	     * Returns the status of a given transaction id, with the number of its block once it is in one.
+	     * Pass the transaction's `expiration` to tell an expired transaction from an unknown one.
 	     */
 	    findTransaction(transaction_id: string, expiration?: string): Promise<{
 	        status: TransactionStatus;
+	        block_num?: number;
 	    }>;
 	}
 
@@ -3241,6 +4393,7 @@ declare module 'dpixa/src/client' {
 	import { Blockchain } from 'dpixa/src/helpers/blockchain';
 	import { BroadcastAPI } from 'dpixa/src/helpers/broadcast';
 	import { DatabaseAPI } from 'dpixa/src/helpers/database';
+	import { NftAPI } from 'dpixa/src/helpers/nft';
 	import { PixamindAPI } from 'dpixa/src/helpers/pixamind';
 	import { AccountByKeyAPI } from 'dpixa/src/helpers/key';
 	import { RCAPI } from 'dpixa/src/helpers/rc';
@@ -3294,7 +4447,7 @@ declare module 'dpixa/src/client' {
 	     */
 	    consoleOnFailover?: boolean;
 	    /**
-	     * Retry backoff function, returns milliseconds. Default = {@link defaultBackoff}.
+	     * Retry backoff function, returns milliseconds. Default: `min((tries * 10)^2, 10000)`.
 	     */
 	    backoff?: (tries: number) => number;
 	    /**
@@ -3344,6 +4497,10 @@ declare module 'dpixa/src/client' {
 	     */
 	    readonly pixamind: PixamindAPI;
 	    /**
+	     * Native NFTs (hardfork 32): chain queries and the actions of nft_operation.
+	     */
+	    readonly nft: NftAPI;
+	    /**
 	     * Accounts by key API helper.
 	     */
 	    readonly keys: AccountByKeyAPI;
@@ -3359,11 +4516,14 @@ declare module 'dpixa/src/client' {
 	     * Address prefix for current network.
 	     */
 	    readonly addressPrefix: string;
+	    /**
+	     * The RPC node requests go to now; changes when the client fails over to another address.
+	     */
+	    currentAddress: string;
 	    private timeout;
 	    private backoff;
 	    private failoverThreshold;
 	    private consoleOnFailover;
-	    currentAddress: string;
 	    /**
 	     * @param address The address to the Pixa RPC server,
 	     * e.g. `https://api.pixagram.com`. or [`https://api.pixagram.com`, `https://another.api.com`]
@@ -3383,7 +4543,7 @@ declare module 'dpixa/src/client' {
 	     *
 	     */
 	    call(api: string, method: string, params?: any): Promise<any>;
-	    updateOperations(rebrandedApi: any): void;
+	    updateOperations(_rebrandedApi?: boolean): void;
 	}
 
 }
@@ -3433,16 +4593,22 @@ declare module 'dpixa/src/index-lite' {
 	import * as utils from 'dpixa/src/utils';
 	export { utils };
 	export * from 'dpixa/src/helpers/blockchain';
+	export * from 'dpixa/src/helpers/broadcast';
 	export * from 'dpixa/src/helpers/database';
 	export * from 'dpixa/src/helpers/rc';
 	export * from 'dpixa/src/helpers/key';
+	export * from 'dpixa/src/helpers/nft';
 	export * from 'dpixa/src/helpers/pixamind';
+	export * from 'dpixa/src/helpers/transaction';
 	export * from 'dpixa/src/chain/account';
 	export * from 'dpixa/src/chain/asset';
 	export * from 'dpixa/src/chain/block';
 	export * from 'dpixa/src/chain/comment';
 	export * from 'dpixa/src/chain/misc';
+	export * from 'dpixa/src/chain/nft';
+	export * from 'dpixa/src/chain/normalize';
 	export * from 'dpixa/src/chain/operation';
+	export * from 'dpixa/src/chain/rc';
 	export * from 'dpixa/src/chain/transaction';
 	export * from 'dpixa/src/chain/pixamind';
 	export * from 'dpixa/src/client';

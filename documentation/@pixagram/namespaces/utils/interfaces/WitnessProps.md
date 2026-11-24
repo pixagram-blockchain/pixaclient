@@ -6,7 +6,7 @@
 
 # Interface: WitnessProps
 
-Defined in: witness.ts:17
+Defined in: [witness.ts:17](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/witness.ts#L17)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: witness.ts:17
 
 > `optional` **account\_creation\_fee?**: `string` \| [`Asset`](../../../../classes/Asset.md)
 
-Defined in: witness.ts:18
+Defined in: [witness.ts:18](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/witness.ts#L18)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: witness.ts:18
 
 > `optional` **account\_subsidy\_budget?**: `number`
 
-Defined in: witness.ts:19
+Defined in: [witness.ts:19](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/witness.ts#L19)
 
 ***
 
@@ -30,7 +30,27 @@ Defined in: witness.ts:19
 
 > `optional` **account\_subsidy\_decay?**: `number`
 
-Defined in: witness.ts:20
+Defined in: [witness.ts:20](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/witness.ts#L20)
+
+***
+
+### hbd\_exchange\_rate?
+
+> `optional` **hbd\_exchange\_rate?**: [`PriceType`](../../../../type-aliases/PriceType.md)
+
+Defined in: [witness.ts:29](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/witness.ts#L29)
+
+Same as `pxs_exchange_rate`, under the node's name.
+
+***
+
+### hbd\_interest\_rate?
+
+> `optional` **hbd\_interest\_rate?**: `number`
+
+Defined in: [witness.ts:31](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/witness.ts#L31)
+
+Same as `pxs_interest_rate`, under the node's name.
 
 ***
 
@@ -38,7 +58,7 @@ Defined in: witness.ts:20
 
 > **key**: `string` \| [`PublicKey`](../../../../classes/PublicKey.md)
 
-Defined in: witness.ts:21
+Defined in: [witness.ts:21](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/witness.ts#L21)
 
 ***
 
@@ -46,7 +66,7 @@ Defined in: witness.ts:21
 
 > `optional` **maximum\_block\_size?**: `number`
 
-Defined in: witness.ts:22
+Defined in: [witness.ts:22](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/witness.ts#L22)
 
 ***
 
@@ -54,7 +74,7 @@ Defined in: witness.ts:22
 
 > `optional` **new\_signing\_key?**: `string` \| [`PublicKey`](../../../../classes/PublicKey.md) \| `null`
 
-Defined in: witness.ts:23
+Defined in: [witness.ts:23](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/witness.ts#L23)
 
 ***
 
@@ -62,7 +82,9 @@ Defined in: witness.ts:23
 
 > `optional` **pxs\_exchange\_rate?**: [`PriceType`](../../../../type-aliases/PriceType.md)
 
-Defined in: witness.ts:24
+Defined in: [witness.ts:25](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/witness.ts#L25)
+
+PXS price feed: PXS per PIXA. Written as the node's `hbd_exchange_rate` property.
 
 ***
 
@@ -70,7 +92,9 @@ Defined in: witness.ts:24
 
 > `optional` **pxs\_interest\_rate?**: `number`
 
-Defined in: witness.ts:25
+Defined in: [witness.ts:27](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/witness.ts#L27)
+
+Fixed at 0 on Pixa. Written as the node's `hbd_interest_rate` property.
 
 ***
 
@@ -78,4 +102,4 @@ Defined in: witness.ts:25
 
 > `optional` **url?**: `string`
 
-Defined in: witness.ts:26
+Defined in: [witness.ts:32](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/witness.ts#L32)

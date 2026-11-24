@@ -6,7 +6,7 @@
 
 # Interface: CustomJsonOperation
 
-Defined in: chain/operation.ts:366
+Defined in: [chain/operation.ts:404](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L404)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"custom_json"`
 
-Defined in: chain/operation.ts:367
+Defined in: [chain/operation.ts:405](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L405)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:367
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:368
+Defined in: [chain/operation.ts:406](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L406)
 
 #### id
 

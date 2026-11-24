@@ -45,7 +45,18 @@ export interface SMTAsset {
 /**
  * Asset symbol string.
  */
-export type AssetSymbol = 'HIVE' | 'PXA' | 'PIXA' | 'TESTS' | 'PXP' | 'VESTS' | 'PXS' | 'TBD' | 'STEEM' | 'TPS' | 'SBD' | 'HBD'
+export type AssetSymbol =
+  'HIVE' | 'PXA' | 'PIXA' | 'TESTS' | 'PXP' | 'VESTS' | 'PXS' | 'TBD' | 'STEEM' | 'TPS' | 'SBD' | 'HBD'
+
+/** Symbol of each core asset NAI, as database_api writes amounts on mainnet. */
+const NAI_SYMBOLS: { [nai: string]: AssetSymbol } = {
+  '@@000000013': 'PXS',
+  '@@000000021': 'PIXA',
+  '@@000000037': 'VESTS'
+}
+
+/** Mainnet symbol of a core asset NAI (`@@000000013` is PXS), or undefined. */
+export const symbolOfNai = (nai: string): AssetSymbol | undefined => NAI_SYMBOLS[nai]
 
 /**
  * Class representing a pixa asset, e.g. `1.000 PIXA` or `12.112233 VESTS`.
@@ -79,11 +90,43 @@ export class Asset {
   }
 
   /**
+   * Create an Asset from the form database_api (and HAF) use for amounts,
+   * `{ amount: "5000", precision: 3, nai: "@@000000013" }`: `@@000000021` is PIXA, `@@000000013`
+   * PXS and `@@000000037` VESTS (on a testnet, pass `TESTS` or `TBD` as `symbol`).
+   */
+  public static fromNai(value: SMTAsset, symbol?: AssetSymbol) {
+    const name = symbol || NAI_SYMBOLS[value && value.nai]
+    if (!name) {
+      throw new Error(`Unknown asset NAI: ${value && value.nai}`)
+    }
+    const precision = Number(value.precision)
+    const raw = String(value.amount)
+    if (!/^-?\d+$/.test(raw) || !Number.isInteger(precision) || precision < 0 || precision > 12) {
+      throw new Error(`Invalid NAI asset ${JSON.stringify(value)}`)
+    }
+    const negative = raw.startsWith('-')
+    const digits = raw.replace('-', '').padStart(precision + 1, '0')
+    const text = precision > 0
+      ? `${digits.slice(0, digits.length - precision)}.${digits.slice(digits.length - precision)}`
+      : digits
+    return new Asset(Number.parseFloat((negative ? '-' : '') + text), name)
+  }
+
+  /**
    * Convenience to create new Asset.
+   * @param value  An Asset, a string such as `"42.000 PIXA"`, a number, or an amount in the
+   *               database_api form `{ amount, precision, nai }` (see {@link Asset.fromNai}).
    * @param symbol Symbol to use when created from number. Will also be used to validate
    *               the asset, throws if the passed value has a different symbol than this.
    */
-  public static from(value: string | Asset | number, symbol?: AssetSymbol) {
+  public static from(value: string | Asset | number | SMTAsset, symbol?: AssetSymbol) {
+    if (value && typeof value === 'object' && !(value instanceof Asset) && 'nai' in value) {
+      const asset = Asset.fromNai(value)
+      if (symbol && asset.symbol !== symbol) {
+        throw new Error(`Invalid asset, expected symbol: ${symbol} got: ${asset.symbol}`)
+      }
+      return asset
+    }
     if (value instanceof Asset) {
       if (symbol && value.symbol !== symbol) {
         throw new Error(

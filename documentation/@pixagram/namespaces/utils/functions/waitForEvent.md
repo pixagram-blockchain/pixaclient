@@ -8,7 +8,7 @@
 
 > **waitForEvent**\<`T`\>(`emitter`, `eventName`): `Promise`\<`T`\>
 
-Defined in: utils.ts:57
+Defined in: [utils.ts:60](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/utils.ts#L60)
 
 Return a promise that will resove when a specific event is emitted.
 

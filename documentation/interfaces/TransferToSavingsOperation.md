@@ -6,7 +6,7 @@
 
 # Interface: TransferToSavingsOperation
 
-Defined in: chain/operation.ts:812
+Defined in: [chain/operation.ts:846](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L846)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"transfer_to_savings"`
 
-Defined in: chain/operation.ts:813
+Defined in: [chain/operation.ts:847](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L847)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:813
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:814
+Defined in: [chain/operation.ts:848](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L848)
 
 #### amount
 

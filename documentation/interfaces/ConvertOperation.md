@@ -6,7 +6,7 @@
 
 # Interface: ConvertOperation
 
-Defined in: chain/operation.ts:316
+Defined in: [chain/operation.ts:354](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L354)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"convert"`
 
-Defined in: chain/operation.ts:317
+Defined in: [chain/operation.ts:355](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L355)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:317
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:318
+Defined in: [chain/operation.ts:356](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L356)
 
 #### amount
 

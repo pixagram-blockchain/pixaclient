@@ -6,7 +6,7 @@
 
 # Class: Authority
 
-Defined in: chain/account.ts:47
+Defined in: [chain/account.ts:47](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/account.ts#L47)
 
 ## Implements
 
@@ -18,7 +18,7 @@ Defined in: chain/account.ts:47
 
 > **new Authority**(`__namedParameters`): `Authority`
 
-Defined in: chain/account.ts:52
+Defined in: [chain/account.ts:52](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/account.ts#L52)
 
 #### Parameters
 
@@ -36,7 +36,7 @@ Defined in: chain/account.ts:52
 
 > **account\_auths**: \[`string`, `number`\][]
 
-Defined in: chain/account.ts:49
+Defined in: [chain/account.ts:49](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/account.ts#L49)
 
 #### Implementation of
 
@@ -48,7 +48,7 @@ Defined in: chain/account.ts:49
 
 > **key\_auths**: \[`string` \| [`PublicKey`](PublicKey.md), `number`\][]
 
-Defined in: chain/account.ts:50
+Defined in: [chain/account.ts:50](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/account.ts#L50)
 
 #### Implementation of
 
@@ -60,7 +60,7 @@ Defined in: chain/account.ts:50
 
 > **weight\_threshold**: `number`
 
-Defined in: chain/account.ts:48
+Defined in: [chain/account.ts:48](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/account.ts#L48)
 
 #### Implementation of
 
@@ -72,7 +72,7 @@ Defined in: chain/account.ts:48
 
 > `static` **from**(`value`): `Authority`
 
-Defined in: chain/account.ts:61
+Defined in: [chain/account.ts:61](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/account.ts#L61)
 
 Convenience to create a new instance from PublicKey or authority object.
 

@@ -8,7 +8,7 @@
 
 > **retryingFetch**(`currentAddress`, `allAddresses`, `opts`, `timeout`, `failoverThreshold`, `consoleOnFailover`, `backoff`, `fetchTimeout?`): `Promise`\<\{ `currentAddress`: `string`; `response`: `any`; \}\>
 
-Defined in: utils.ts:204
+Defined in: [utils.ts:207](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/utils.ts#L207)
 
 Fetch API wrapper that retries until timeout is reached.
 
@@ -43,11 +43,11 @@ cross-fetch / node-fetch / whatwg-fetch polyfills.
 
 ### backoff
 
-(`tries`) => `number`
+(`attempt`) => `number`
 
 ### fetchTimeout?
 
-(`tries`) => `number`
+(`attempt`) => `number`
 
 ## Returns
 

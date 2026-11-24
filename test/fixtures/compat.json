@@ -5,6 +5,7 @@
   "Authority",
   "Blockchain",
   "BlockchainMode",
+  "BroadcastAPI",
   "Client",
   "DEFAULT_ADDRESS_PREFIX",
   "DEFAULT_CHAIN_ID",
@@ -12,17 +13,44 @@
   "HexBuffer",
   "Memo",
   "NETWORK_ID",
+  "NFT_ACTION_TAGS",
+  "NFT_BURN_ACCOUNT",
+  "NFT_FIND_LIMIT",
+  "NFT_LATEST_EXPIRATION",
+  "NFT_MAX_EDITIONS",
+  "NFT_MAX_LICENSE_BYTES",
+  "NFT_MAX_ROYALTY",
+  "NFT_MINT_FEE_PER_EDITION",
+  "NFT_NEVER_EXPIRES",
+  "NFT_RESERVE",
+  "NftAPI",
   "PixamindAPI",
   "Price",
   "PrivateKey",
   "PublicKey",
   "RCAPI",
   "Signature",
+  "TransactionStatusAPI",
   "Types",
   "VERSION",
+  "VOTING_MANA_REGENERATION_SECONDS_PRE_HF32",
+  "checkNftMint",
   "cryptoUtils",
+  "formatNftId",
   "getVestingSharePrice",
   "getVests",
+  "getVotingManaRegenerationSeconds",
+  "isNftId",
+  "nftActionName",
+  "nftMintFee",
+  "nftRoyalty",
+  "nftSaleSplit",
+  "normalizeOperation",
+  "normalizeTransaction",
+  "parseNftId",
+  "symbolOfNai",
+  "toNftAction",
+  "utf8ByteLength",
   "utils"
  ],
  "utilsKeys": [
@@ -73,7 +101,7 @@
   "cancel_transfer_from_savings": 34,
   "custom_binary": 35,
   "decline_voting_rights": 36,
-  "reset_account": 37,
+  "nft": 37,
   "set_reset_account": 38,
   "claim_reward_balance": 39,
   "delegate_vesting_shares": 40,
@@ -103,13 +131,17 @@
   "producer_reward": 64,
   "clear_null_account_balance": 65,
   "proposal_pay": 66,
+  "dhf_funding": 67,
   "sps_fund": 67,
+  "hardfork_hive": 68,
   "hardfork_pixa": 68,
+  "hardfork_hive_restore": 69,
   "hardfork_pixa_restore": 69,
   "delayed_voting": 70,
   "consolidate_treasury_balance": 71,
   "effective_comment_vote": 72,
   "ineffective_delete_comment": 73,
+  "dhf_conversion": 74,
   "sps_convert": 74,
   "expired_account_notification": 75,
   "changed_recovery_account": 76,
@@ -120,7 +152,17 @@
   "fill_collateralized_convert_request": 81,
   "system_warning": 82,
   "fill_recurrent_transfer": 83,
-  "failed_recurrent_transfer": 84
+  "failed_recurrent_transfer": 84,
+  "limit_order_cancelled": 85,
+  "producer_missed": 86,
+  "proposal_fee": 87,
+  "collateralized_convert_immediate_conversion": 88,
+  "escrow_approved": 89,
+  "escrow_rejected": 90,
+  "proxy_cleared": 91,
+  "declined_voting_rights": 92,
+  "nft_sold": 93,
+  "nft_royalty": 94
  },
  "DEFAULT_ADDRESS_PREFIX": "PIX",
  "DEFAULT_CHAIN_ID": "706978616772616d000000000000000000000000000000000000000000000000",
@@ -768,6 +810,14 @@
      "b94c0500"
     ],
     [
+     "hbd_exchange_rate",
+     "fa000000000000000354424400000000e8030000000000000354455354530000"
+    ],
+    [
+     "hbd_interest_rate",
+     "e803"
+    ],
+    [
      "key",
      "032e3e27215c327df275af4362fbb32f8ae145008ab51996475d1ac4006b6741a4"
     ],
@@ -778,14 +828,6 @@
     [
      "new_signing_key",
      "03576d504bd25533431f5a525fa5f72f6865b04a45ac9e5be7c913e3850f91718f"
-    ],
-    [
-     "pxs_exchange_rate",
-     "fa000000000000000354424400000000e8030000000000000354455354530000"
-    ],
-    [
-     "pxs_interest_rate",
-     "e803"
     ],
     [
      "url",
@@ -1323,7 +1365,8 @@
            ]
           }
          ]
-        ]
+        ],
+        "percent_hbd": 10000
        }
       ]
      ],
@@ -1356,7 +1399,8 @@
         "props": {
          "account_creation_fee": "3.000 TESTS",
          "maximum_block_size": 65536,
-         "pxs_interest_rate": 0
+         "pxs_interest_rate": 0,
+         "hbd_interest_rate": 0
         },
         "fee": "0.000 TESTS"
        }
@@ -1391,7 +1435,8 @@
         "props": {
          "account_creation_fee": "3.000 TESTS",
          "maximum_block_size": 65536,
-         "pxs_interest_rate": 0
+         "pxs_interest_rate": 0,
+         "hbd_interest_rate": 0
         },
         "fee": "0.000 TESTS"
        }
@@ -1958,7 +2003,9 @@
         "fee": "0.100 TESTS",
         "ratification_deadline": "2026-12-01T00:00:00",
         "escrow_expiration": "2026-12-31T00:00:00",
-        "json_meta": "{}"
+        "json_meta": "{}",
+        "hbd_amount": "1.000 TBD",
+        "hive_amount": "2.000 TESTS"
        }
       ]
      ],
@@ -2055,7 +2102,9 @@
         "receiver": "b",
         "escrow_id": 9,
         "pxs_amount": "1.000 TBD",
-        "pixa_amount": "2.000 TESTS"
+        "pixa_amount": "2.000 TESTS",
+        "hbd_amount": "1.000 TBD",
+        "hive_amount": "2.000 TESTS"
        }
       ]
      ],
@@ -2085,7 +2134,9 @@
         "account": "a",
         "reward_pixa": "0.000 TESTS",
         "reward_pxs": "0.001 TBD",
-        "reward_vests": "1.000000 VESTS"
+        "reward_vests": "1.000000 VESTS",
+        "reward_hive": "0.000 TESTS",
+        "reward_hbd": "0.001 TBD"
        }
       ]
      ],
@@ -2626,9 +2677,9 @@
    "i": 52,
    "name": "witness_set_properties",
    "ok": {
-    "digest": "b8c6204be2cb502f5a7a572237fd8341f4f425506b60a72c551213e4a32cf834",
-    "digestTestnet": "5a8e2ac6e4b4f6fb715548a1e6a3b190851635aa3c7905dceeb4b36b9b483c57",
-    "trxId": "f2888aac9ebad964f8961a6e8404924e8d2c986f",
+    "digest": "e4036d44cdabfdc2800b25aec675415bea6f43fe596b4dbf04b0d64f01f78896",
+    "digestTestnet": "8ff0a11c614d74c693654d97a9a24a2c7251e5ed928009185d81e9b2e586aa3c",
+    "trxId": "49e8a5d581f5796a87ea1a37fa4abcd972e5aea0",
     "signed": {
      "ref_block_num": 1234,
      "ref_block_prefix": 1122334455,
@@ -2654,6 +2705,14 @@
           "b94c0500"
          ],
          [
+          "hbd_exchange_rate",
+          "fa000000000000000354424400000000e8030000000000000354455354530000"
+         ],
+         [
+          "hbd_interest_rate",
+          "e803"
+         ],
+         [
           "key",
           "032e3e27215c327df275af4362fbb32f8ae145008ab51996475d1ac4006b6741a4"
          ],
@@ -2666,14 +2725,6 @@
           "03576d504bd25533431f5a525fa5f72f6865b04a45ac9e5be7c913e3850f91718f"
          ],
          [
-          "pxs_exchange_rate",
-          "fa000000000000000354424400000000e8030000000000000354455354530000"
-         ],
-         [
-          "pxs_interest_rate",
-          "e803"
-         ],
-         [
           "url",
           "1c68747470733a2f2f706978616772616d2e636f6d2f7769746e657373"
          ]
@@ -2682,8 +2733,8 @@
       ]
      ],
      "signatures": [
-      "204899a137a631e645284146b224296ebb798f9ae280b86dadbd4c665b614cc4a9690c9e230ef9ff24944fc25ad0a900330328b8a6ae43c01588e0159f41fa847a",
-      "201aba3196a8d3380c2d8493b3269964b067006ecd5441a655ef4fa1a807b78e925bf98d6ec4ca521f9fc465fd5e266da58d8829b2ad830e1934ddc32fad2445ca"
+      "205172a92d55f2c7d6ef8130c23e01ea928c88127bd90aaf7fa2897c3187218d954209ce964b2cd77458ab271468ca5449c2259c717d2bc733090c0a8c24e26b8d",
+      "206f34637f4c0265bb6d72df6de40c079553f3b8b9baad307b79900d192538fecd36964fdf7919f90e6aeb578a5155ee5c18a948ae9f9aedfc9a55887d5fd43f83"
      ]
     }
    }
@@ -3037,7 +3088,7 @@
   ],
   [
    "18446744073709551615",
-   "2097151"
+   "2147483647"
   ],
   [
    "199284866418737180",
@@ -3339,7 +3390,7 @@
   },
   "sendOps": {
    "ok": {
-    "id": "c6254184c78db2a170969827e64389a497898f2a"
+    "id": "e629bee7d0878ee4fcf881b04d58827aae4e9a82"
    }
   },
   "signOnly": {
@@ -3614,7 +3665,7 @@
     "Accept": "application/json, text/plain, */*",
     "Content-Type": "application/json"
    },
-   "body": "{\"id\":0,\"jsonrpc\":\"2.0\",\"method\":\"condenser_api.broadcast_transaction\",\"params\":[{\"expiration\":\"2026-11-15T12:01:00\",\"extensions\":[],\"operations\":[[\"comment\",{\"parent_author\":\"\",\"parent_permlink\":\"t\",\"author\":\"foo\",\"permlink\":\"p\",\"title\":\"T\",\"body\":\"B\",\"json_metadata\":\"{}\"}],[\"comment_options\",{\"author\":\"foo\",\"permlink\":\"p\",\"max_accepted_payout\":\"1000.000 PXS\",\"percent_pxs\":10000,\"allow_votes\":true,\"allow_curation_rewards\":true,\"extensions\":[]}]],\"ref_block_num\":24910,\"ref_block_prefix\":2584551228,\"signatures\":[\"1f5537b1d4a3680ed2268e9704b27045e4e1ea15d001b246c5565febd8f2cbe5f8453f7e2a9bf609c4c727a27979ec38ddccd8ce57df9294aa7f8d539602d9eef7\"]}]}"
+   "body": "{\"id\":0,\"jsonrpc\":\"2.0\",\"method\":\"condenser_api.broadcast_transaction\",\"params\":[{\"expiration\":\"2026-11-15T12:01:00\",\"extensions\":[],\"operations\":[[\"comment\",{\"parent_author\":\"\",\"parent_permlink\":\"t\",\"author\":\"foo\",\"permlink\":\"p\",\"title\":\"T\",\"body\":\"B\",\"json_metadata\":\"{}\"}],[\"comment_options\",{\"author\":\"foo\",\"permlink\":\"p\",\"max_accepted_payout\":\"1000.000 PXS\",\"percent_pxs\":10000,\"allow_votes\":true,\"allow_curation_rewards\":true,\"extensions\":[],\"percent_hbd\":10000}]],\"ref_block_num\":24910,\"ref_block_prefix\":2584551228,\"signatures\":[\"1f5537b1d4a3680ed2268e9704b27045e4e1ea15d001b246c5565febd8f2cbe5f8453f7e2a9bf609c4c727a27979ec38ddccd8ce57df9294aa7f8d539602d9eef7\"]}]}"
   },
   {
    "url": "https://node.example.com",
@@ -3668,7 +3719,7 @@
     "Accept": "application/json, text/plain, */*",
     "Content-Type": "application/json"
    },
-   "body": "{\"id\":0,\"jsonrpc\":\"2.0\",\"method\":\"condenser_api.broadcast_transaction\",\"params\":[{\"expiration\":\"2026-11-15T12:01:00\",\"extensions\":[],\"operations\":[[\"transfer\",{\"from\":\"a\",\"to\":\"b\",\"amount\":\"1.000 PIXA\",\"memo\":\"hi\"}],[\"custom_json\",{\"required_auths\":[],\"required_posting_auths\":[\"primerz\"],\"id\":\"follow\",\"json\":\"[\\\"follow\\\",{\\\"follower\\\":\\\"a\\\",\\\"following\\\":\\\"b\\\",\\\"what\\\":[\\\"blog\\\"]}]\"}],[\"witness_set_properties\",{\"extensions\":[],\"owner\":\"witness-a\",\"props\":[[\"account_creation_fee\",\"b80b0000000000000354455354530000\"],[\"account_subsidy_budget\",\"1d030000\"],[\"account_subsidy_decay\",\"b94c0500\"],[\"key\",\"032e3e27215c327df275af4362fbb32f8ae145008ab51996475d1ac4006b6741a4\"],[\"maximum_block_size\",\"00000100\"],[\"new_signing_key\",\"03576d504bd25533431f5a525fa5f72f6865b04a45ac9e5be7c913e3850f91718f\"],[\"pxs_exchange_rate\",\"fa000000000000000354424400000000e8030000000000000354455354530000\"],[\"pxs_interest_rate\",\"e803\"],[\"url\",\"1c68747470733a2f2f706978616772616d2e636f6d2f7769746e657373\"]]}]],\"ref_block_num\":24910,\"ref_block_prefix\":2584551228,\"signatures\":[\"1f49a19c900630ad362ea5dc297ce02e0ac754b89cd8bb389900199e275979b6001cc85be6997e730fe612b6f8a22b527f2902736fd9a4d8e8383320e75d0c3dbc\"]}]}"
+   "body": "{\"id\":0,\"jsonrpc\":\"2.0\",\"method\":\"condenser_api.broadcast_transaction\",\"params\":[{\"expiration\":\"2026-11-15T12:01:00\",\"extensions\":[],\"operations\":[[\"transfer\",{\"from\":\"a\",\"to\":\"b\",\"amount\":\"1.000 PIXA\",\"memo\":\"hi\"}],[\"custom_json\",{\"required_auths\":[],\"required_posting_auths\":[\"primerz\"],\"id\":\"follow\",\"json\":\"[\\\"follow\\\",{\\\"follower\\\":\\\"a\\\",\\\"following\\\":\\\"b\\\",\\\"what\\\":[\\\"blog\\\"]}]\"}],[\"witness_set_properties\",{\"extensions\":[],\"owner\":\"witness-a\",\"props\":[[\"account_creation_fee\",\"b80b0000000000000354455354530000\"],[\"account_subsidy_budget\",\"1d030000\"],[\"account_subsidy_decay\",\"b94c0500\"],[\"hbd_exchange_rate\",\"fa000000000000000354424400000000e8030000000000000354455354530000\"],[\"hbd_interest_rate\",\"e803\"],[\"key\",\"032e3e27215c327df275af4362fbb32f8ae145008ab51996475d1ac4006b6741a4\"],[\"maximum_block_size\",\"00000100\"],[\"new_signing_key\",\"03576d504bd25533431f5a525fa5f72f6865b04a45ac9e5be7c913e3850f91718f\"],[\"url\",\"1c68747470733a2f2f706978616772616d2e636f6d2f7769746e657373\"]]}]],\"ref_block_num\":24910,\"ref_block_prefix\":2584551228,\"signatures\":[\"202eee00ff143b20832a5d816009a9ca94b081b212abdf3b5d675270801251dab473ab366d70e7d079c4790239f0b51478b4547d04be2f4bd26601eed45688ef40\"]}]}"
   },
   {
    "url": "https://node.example.com",

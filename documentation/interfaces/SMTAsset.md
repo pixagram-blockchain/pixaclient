@@ -6,7 +6,7 @@
 
 # Interface: SMTAsset
 
-Defined in: chain/asset.ts:39
+Defined in: [chain/asset.ts:39](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L39)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: chain/asset.ts:39
 
 > **amount**: `string` \| `number`
 
-Defined in: chain/asset.ts:40
+Defined in: [chain/asset.ts:40](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L40)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: chain/asset.ts:40
 
 > **nai**: `string`
 
-Defined in: chain/asset.ts:42
+Defined in: [chain/asset.ts:42](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L42)
 
 ***
 
@@ -30,4 +30,4 @@ Defined in: chain/asset.ts:42
 
 > **precision**: `number`
 
-Defined in: chain/asset.ts:41
+Defined in: [chain/asset.ts:41](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/asset.ts#L41)

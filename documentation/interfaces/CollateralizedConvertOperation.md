@@ -6,7 +6,7 @@
 
 # Interface: CollateralizedConvertOperation
 
-Defined in: chain/operation.ts:977
+Defined in: [chain/operation.ts:1011](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L1011)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"collateralized_convert"`
 
-Defined in: chain/operation.ts:978
+Defined in: [chain/operation.ts:1012](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L1012)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:978
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:979
+Defined in: [chain/operation.ts:1013](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L1013)
 
 #### amount
 

@@ -6,7 +6,7 @@
 
 # Interface: RecurrentTransferOperation
 
-Defined in: chain/operation.ts:986
+Defined in: [chain/operation.ts:1020](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L1020)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"recurrent_transfer"`
 
-Defined in: chain/operation.ts:987
+Defined in: [chain/operation.ts:1021](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L1021)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:987
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:988
+Defined in: [chain/operation.ts:1022](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L1022)
 
 #### amount
 

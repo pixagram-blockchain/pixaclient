@@ -6,7 +6,7 @@
 
 # Interface: EventEmitterLike
 
-Defined in: utils.ts:50
+Defined in: [utils.ts:53](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/utils.ts#L53)
 
 Anything with an EventEmitter-style `once()`.
 
@@ -16,7 +16,7 @@ Anything with an EventEmitter-style `once()`.
 
 > **once**(`eventName`, `listener`): `unknown`
 
-Defined in: utils.ts:51
+Defined in: [utils.ts:54](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/utils.ts#L54)
 
 #### Parameters
 

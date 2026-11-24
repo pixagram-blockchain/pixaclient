@@ -6,7 +6,7 @@
 
 # Interface: TransferOperation
 
-Defined in: chain/operation.ts:779
+Defined in: [chain/operation.ts:813](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L813)
 
 Transfers asset from one account to another.
 
@@ -20,7 +20,7 @@ Transfers asset from one account to another.
 
 > **0**: `"transfer"`
 
-Defined in: chain/operation.ts:780
+Defined in: [chain/operation.ts:814](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L814)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:780
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:781
+Defined in: [chain/operation.ts:815](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L815)
 
 #### amount
 

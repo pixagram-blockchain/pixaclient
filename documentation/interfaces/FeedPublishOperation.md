@@ -6,7 +6,7 @@
 
 # Interface: FeedPublishOperation
 
-Defined in: chain/operation.ts:525
+Defined in: [chain/operation.ts:572](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L572)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"feed_publish"`
 
-Defined in: chain/operation.ts:526
+Defined in: [chain/operation.ts:573](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L573)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:526
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:527
+Defined in: [chain/operation.ts:574](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L574)
 
 #### exchange\_rate
 

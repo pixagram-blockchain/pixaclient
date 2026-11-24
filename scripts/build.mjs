@@ -84,7 +84,7 @@ const copyrights = (file) =>
 
 const BANNER =
   `/*! @pixagram/dpixa ${pkg.version} | ${pkg.license} | ${copyrights('LICENSE')} | ` +
-  'https://github.com/pixagram-blockchain/dpixa */'
+  'https://github.com/pixagram-blockchain/pixaclient */'
 
 /** Notice for the MIT-licensed @noble packages inlined into dist/dpixa.js. */
 const NOBLE_NOTICE = ['secp256k1', 'hashes', 'ciphers']

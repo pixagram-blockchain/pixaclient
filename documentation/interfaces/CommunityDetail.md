@@ -6,7 +6,7 @@
 
 # Interface: CommunityDetail
 
-Defined in: chain/pixamind.ts:1
+Defined in: [chain/pixamind.ts:1](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L1)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: chain/pixamind.ts:1
 
 > **about**: `string`
 
-Defined in: chain/pixamind.ts:5
+Defined in: [chain/pixamind.ts:5](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L5)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: chain/pixamind.ts:5
 
 > `optional` **admins?**: `string`[]
 
-Defined in: chain/pixamind.ts:20
+Defined in: [chain/pixamind.ts:20](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L20)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: chain/pixamind.ts:20
 
 > **avatar\_url**: `string`
 
-Defined in: chain/pixamind.ts:14
+Defined in: [chain/pixamind.ts:14](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L14)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: chain/pixamind.ts:14
 
 > **context**: `object`
 
-Defined in: chain/pixamind.ts:15
+Defined in: [chain/pixamind.ts:15](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L15)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: chain/pixamind.ts:15
 
 > **created\_at**: `string`
 
-Defined in: chain/pixamind.ts:13
+Defined in: [chain/pixamind.ts:13](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L13)
 
 ***
 
@@ -54,7 +54,7 @@ Defined in: chain/pixamind.ts:13
 
 > **description**: `string`
 
-Defined in: chain/pixamind.ts:16
+Defined in: [chain/pixamind.ts:16](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L16)
 
 ***
 
@@ -62,7 +62,7 @@ Defined in: chain/pixamind.ts:16
 
 > **flag\_text**: `string`
 
-Defined in: chain/pixamind.ts:17
+Defined in: [chain/pixamind.ts:17](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L17)
 
 ***
 
@@ -70,7 +70,7 @@ Defined in: chain/pixamind.ts:17
 
 > **id**: `number`
 
-Defined in: chain/pixamind.ts:2
+Defined in: [chain/pixamind.ts:2](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L2)
 
 ***
 
@@ -78,7 +78,7 @@ Defined in: chain/pixamind.ts:2
 
 > **is\_nsfw**: `false`
 
-Defined in: chain/pixamind.ts:8
+Defined in: [chain/pixamind.ts:8](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L8)
 
 ***
 
@@ -86,7 +86,7 @@ Defined in: chain/pixamind.ts:8
 
 > **lang**: `string`
 
-Defined in: chain/pixamind.ts:6
+Defined in: [chain/pixamind.ts:6](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L6)
 
 ***
 
@@ -94,7 +94,7 @@ Defined in: chain/pixamind.ts:6
 
 > **name**: `string`
 
-Defined in: chain/pixamind.ts:3
+Defined in: [chain/pixamind.ts:3](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L3)
 
 ***
 
@@ -102,7 +102,7 @@ Defined in: chain/pixamind.ts:3
 
 > **num\_authors**: `number`
 
-Defined in: chain/pixamind.ts:12
+Defined in: [chain/pixamind.ts:12](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L12)
 
 ***
 
@@ -110,7 +110,7 @@ Defined in: chain/pixamind.ts:12
 
 > **num\_pending**: `number`
 
-Defined in: chain/pixamind.ts:11
+Defined in: [chain/pixamind.ts:11](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L11)
 
 ***
 
@@ -118,7 +118,7 @@ Defined in: chain/pixamind.ts:11
 
 > **settings**: `object`
 
-Defined in: chain/pixamind.ts:18
+Defined in: [chain/pixamind.ts:18](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L18)
 
 ***
 
@@ -126,7 +126,7 @@ Defined in: chain/pixamind.ts:18
 
 > **subscribers**: `number`
 
-Defined in: chain/pixamind.ts:9
+Defined in: [chain/pixamind.ts:9](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L9)
 
 ***
 
@@ -134,7 +134,7 @@ Defined in: chain/pixamind.ts:9
 
 > **sum\_pending**: `number`
 
-Defined in: chain/pixamind.ts:10
+Defined in: [chain/pixamind.ts:10](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L10)
 
 ***
 
@@ -142,7 +142,7 @@ Defined in: chain/pixamind.ts:10
 
 > `optional` **team?**: `string`[]
 
-Defined in: chain/pixamind.ts:19
+Defined in: [chain/pixamind.ts:19](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L19)
 
 ***
 
@@ -150,7 +150,7 @@ Defined in: chain/pixamind.ts:19
 
 > **title**: `string`
 
-Defined in: chain/pixamind.ts:4
+Defined in: [chain/pixamind.ts:4](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L4)
 
 ***
 
@@ -158,4 +158,4 @@ Defined in: chain/pixamind.ts:4
 
 > **type\_id**: `number`
 
-Defined in: chain/pixamind.ts:7
+Defined in: [chain/pixamind.ts:7](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/pixamind.ts#L7)

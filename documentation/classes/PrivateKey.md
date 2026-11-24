@@ -6,7 +6,7 @@
 
 # Class: PrivateKey
 
-Defined in: crypto.ts:299
+Defined in: [crypto.ts:300](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L300)
 
 ECDSA (secp256k1) private key.
 
@@ -16,7 +16,7 @@ ECDSA (secp256k1) private key.
 
 > **new PrivateKey**(`key`): `PrivateKey`
 
-Defined in: crypto.ts:302
+Defined in: [crypto.ts:303](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L303)
 
 #### Parameters
 
@@ -34,7 +34,7 @@ Defined in: crypto.ts:302
 
 > **secret**: `BBuffer`
 
-Defined in: crypto.ts:300
+Defined in: [crypto.ts:301](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L301)
 
 ## Methods
 
@@ -42,7 +42,7 @@ Defined in: crypto.ts:300
 
 > **createPublic**(`prefix?`): [`PublicKey`](PublicKey.md)
 
-Defined in: crypto.ts:405
+Defined in: [crypto.ts:406](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L406)
 
 Derive the public key for this private key.
 
@@ -62,7 +62,7 @@ Derive the public key for this private key.
 
 > **get\_shared\_secret**(`public_key`): `BBuffer`
 
-Defined in: crypto.ts:436
+Defined in: [crypto.ts:437](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L437)
 
 Get shared secret for memo cryptography.
 
@@ -90,7 +90,7 @@ that both paths produce byte-for-byte identical output.
 
 > **inspect**(): `string`
 
-Defined in: crypto.ts:420
+Defined in: [crypto.ts:421](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L421)
 
 Used by `utils.inspect` and `console.log` in node.js. Does not show the full key
 to get the full encoded key you need to explicitly call [toString](#tostring).
@@ -105,7 +105,7 @@ to get the full encoded key you need to explicitly call [toString](#tostring).
 
 > **multiply**(`pub`): `BBuffer`
 
-Defined in: crypto.ts:352
+Defined in: [crypto.ts:353](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L353)
 
 Multiply a public key by this private key's scalar. Equivalent to the old
 secp256k1-node `publicKeyTweakMul(pub, secret, compressed=false)`.
@@ -130,7 +130,7 @@ as uncompressed (matching the old `false` compressed flag).
 
 > **sign**(`message`): [`Signature`](Signature.md)
 
-Defined in: crypto.ts:377
+Defined in: [crypto.ts:378](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L378)
 
 Sign message.
 
@@ -167,7 +167,7 @@ otherwise sha256 it a second time.
 
 > **toString**(): `string`
 
-Defined in: crypto.ts:412
+Defined in: [crypto.ts:413](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L413)
 
 Return a WIF-encoded representation of the key.
 
@@ -181,7 +181,7 @@ Return a WIF-encoded representation of the key.
 
 > `static` **from**(`value`): `PrivateKey`
 
-Defined in: crypto.ts:310
+Defined in: [crypto.ts:311](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L311)
 
 Convenience to create a new instance from WIF string or buffer.
 
@@ -201,7 +201,7 @@ Convenience to create a new instance from WIF string or buffer.
 
 > `static` **fromLogin**(`username`, `password`, `role?`): `PrivateKey`
 
-Defined in: crypto.ts:335
+Defined in: [crypto.ts:336](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L336)
 
 Create key from username and password.
 
@@ -229,7 +229,7 @@ Create key from username and password.
 
 > `static` **fromSeed**(`seed`): `PrivateKey`
 
-Defined in: crypto.ts:328
+Defined in: [crypto.ts:329](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L329)
 
 Create a new instance from a seed.
 
@@ -249,7 +249,7 @@ Create a new instance from a seed.
 
 > `static` **fromString**(`wif`): `PrivateKey`
 
-Defined in: crypto.ts:321
+Defined in: [crypto.ts:322](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L322)
 
 Create a new instance from a WIF-encoded key.
 

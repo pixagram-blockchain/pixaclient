@@ -6,7 +6,7 @@
 
 # Interface: BlockHeader
 
-Defined in: chain/block.ts:42
+Defined in: [chain/block.ts:42](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/block.ts#L42)
 
 Unsigned block header.
 
@@ -20,7 +20,7 @@ Unsigned block header.
 
 > **extensions**: `any`[]
 
-Defined in: chain/block.ts:47
+Defined in: [chain/block.ts:47](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/block.ts#L47)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: chain/block.ts:47
 
 > **previous**: `string`
 
-Defined in: chain/block.ts:43
+Defined in: [chain/block.ts:43](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/block.ts#L43)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: chain/block.ts:43
 
 > **timestamp**: `string`
 
-Defined in: chain/block.ts:44
+Defined in: [chain/block.ts:44](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/block.ts#L44)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: chain/block.ts:44
 
 > **transaction\_merkle\_root**: `string`
 
-Defined in: chain/block.ts:46
+Defined in: [chain/block.ts:46](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/block.ts#L46)
 
 ***
 
@@ -52,4 +52,4 @@ Defined in: chain/block.ts:46
 
 > **witness**: `string`
 
-Defined in: chain/block.ts:45
+Defined in: [chain/block.ts:45](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/block.ts#L45)

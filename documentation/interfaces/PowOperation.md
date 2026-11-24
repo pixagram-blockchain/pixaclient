@@ -6,7 +6,7 @@
 
 # Interface: PowOperation
 
-Defined in: chain/operation.ts:578
+Defined in: [chain/operation.ts:625](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L625)
 
 Legacy proof of work operation.
 
@@ -20,7 +20,7 @@ Legacy proof of work operation.
 
 > **0**: `"pow"`
 
-Defined in: chain/operation.ts:579
+Defined in: [chain/operation.ts:626](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L626)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:579
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:580
+Defined in: [chain/operation.ts:627](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L627)
 
 #### block\_id
 

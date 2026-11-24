@@ -6,7 +6,7 @@
 
 # Interface: EscrowTransferOperation
 
-Defined in: chain/operation.ts:509
+Defined in: [chain/operation.ts:552](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L552)
 
 The purpose of this operation is to enable someone to send money contingently to
 another individual. The funds leave the *from* account and go into a temporary balance
@@ -25,6 +25,9 @@ to determine the fee.
 Escrow transactions are uniquely identified by 'from' and 'escrow_id', the 'escrow_id' is defined
 by the sender.
 
+The node names the amounts `hbd_amount` and `hive_amount`; dpixa also accepts `pxs_amount` and
+`pixa_amount` and writes both names when it signs. Give each amount under one of its names.
+
 ## Extends
 
 - [`Operation`](Operation.md)
@@ -35,7 +38,7 @@ by the sender.
 
 > **0**: `"escrow_transfer"`
 
-Defined in: chain/operation.ts:510
+Defined in: [chain/operation.ts:553](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L553)
 
 #### Overrides
 
@@ -47,7 +50,7 @@ Defined in: chain/operation.ts:510
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:511
+Defined in: [chain/operation.ts:554](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L554)
 
 #### agent
 
@@ -69,17 +72,29 @@ Defined in: chain/operation.ts:511
 
 > **from**: `string`
 
+#### hbd\_amount?
+
+> `optional` **hbd\_amount?**: `string` \| [`Asset`](../classes/Asset.md)
+
+#### hive\_amount?
+
+> `optional` **hive\_amount?**: `string` \| [`Asset`](../classes/Asset.md)
+
 #### json\_meta
 
 > **json\_meta**: `string`
 
-#### pixa\_amount
+#### pixa\_amount?
 
-> **pixa\_amount**: `string` \| [`Asset`](../classes/Asset.md)
+> `optional` **pixa\_amount?**: `string` \| [`Asset`](../classes/Asset.md)
 
-#### pxs\_amount
+PIXA held in escrow (node name: `hive_amount`).
 
-> **pxs\_amount**: `string` \| [`Asset`](../classes/Asset.md)
+#### pxs\_amount?
+
+> `optional` **pxs\_amount?**: `string` \| [`Asset`](../classes/Asset.md)
+
+PXS held in escrow (node name: `hbd_amount`).
 
 #### ratification\_deadline
 

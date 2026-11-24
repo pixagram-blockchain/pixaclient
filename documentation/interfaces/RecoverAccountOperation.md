@@ -6,7 +6,7 @@
 
 # Interface: RecoverAccountOperation
 
-Defined in: chain/operation.ts:638
+Defined in: [chain/operation.ts:685](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L685)
 
 Recover an account to a new authority using a previous authority and verification
 of the recovery account as proof of identity. This operation can only succeed
@@ -54,7 +54,7 @@ concern.
 
 > **0**: `"recover_account"`
 
-Defined in: chain/operation.ts:639
+Defined in: [chain/operation.ts:686](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L686)
 
 #### Overrides
 
@@ -66,7 +66,7 @@ Defined in: chain/operation.ts:639
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:640
+Defined in: [chain/operation.ts:687](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L687)
 
 #### account\_to\_recover
 

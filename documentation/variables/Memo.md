@@ -8,7 +8,7 @@
 
 > `const` **Memo**: `object`
 
-Defined in: memo.ts:118
+Defined in: [memo.ts:118](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/memo.ts#L118)
 
 ## Type Declaration
 

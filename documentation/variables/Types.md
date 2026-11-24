@@ -8,7 +8,7 @@
 
 > `const` **Types**: `object`
 
-Defined in: chain/serializer.ts:656
+Defined in: [chain/serializer.ts:757](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/serializer.ts#L757)
 
 ## Type Declaration
 
@@ -46,7 +46,7 @@ Serialize asset.
 
 `void`
 
-#### Note
+#### Remarks
 
 This looses precision for amounts larger than 2^53-1/10^precision.
       Should not be a problem in real-word usage.
@@ -223,15 +223,39 @@ This looses precision for amounts larger than 2^53-1/10^precision.
 
 `void`
 
+### NftAction
+
+> **NftAction**: (`buffer`, `data`) => `void` = `NftActionSerializer`
+
+The action of nft_operation: its tag, then its fields. Takes every form [toNftAction](../functions/toNftAction.md) reads.
+
+#### Parameters
+
+##### buffer
+
+`any`
+
+##### data
+
+[`NftActionInput`](../type-aliases/NftActionInput.md)
+
+#### Returns
+
+`void`
+
 ### Object
 
 > **Object**: (`keySerializers`) => (`buffer`, `data`) => `void` = `ObjectSerializer`
+
+Serializes the fields of an object in order. A field can have a second name, read when the
+first is absent: `[name, serializer, otherName]` (dpixa's Pixa names for the node's
+`percent_hbd`, `reward_hive`, …; see chain/normalize.ts).
 
 #### Parameters
 
 ##### keySerializers
 
-\[`string`, [`Serializer`](../type-aliases/Serializer.md)\][]
+[`FieldDefinition`](../type-aliases/FieldDefinition.md)[]
 
 #### Returns
 

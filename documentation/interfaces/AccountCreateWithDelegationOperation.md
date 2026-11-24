@@ -6,7 +6,7 @@
 
 # Interface: AccountCreateWithDelegationOperation
 
-Defined in: chain/operation.ts:172
+Defined in: [chain/operation.ts:188](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L188)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"account_create_with_delegation"`
 
-Defined in: chain/operation.ts:173
+Defined in: [chain/operation.ts:189](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L189)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:173
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:174
+Defined in: [chain/operation.ts:190](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L190)
 
 #### active
 

@@ -1,6 +1,6 @@
 {
   "name": "@pixagram/dpixa",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Pixa blockchain RPC client library",
   "author": "pixa-blockchain",
   "license": "BSD-3-Clause-No-Military-License",
@@ -62,7 +62,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/pixagram-blockchain/dpixa"
+    "url": "https://github.com/pixagram-blockchain/pixaclient"
   },
   "scripts": {
     "build": "make build",

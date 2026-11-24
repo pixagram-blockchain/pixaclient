@@ -6,7 +6,7 @@
 
 # Interface: SetResetAccountOperation
 
-Defined in: chain/operation.ts:750
+Defined in: [chain/operation.ts:784](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L784)
 
 This operation allows 'account' owner to control which account has the power
 to execute the 'reset_account_operation' after 60 days.
@@ -21,7 +21,7 @@ to execute the 'reset_account_operation' after 60 days.
 
 > **0**: `"set_reset_account"`
 
-Defined in: chain/operation.ts:751
+Defined in: [chain/operation.ts:785](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L785)
 
 #### Overrides
 
@@ -33,7 +33,7 @@ Defined in: chain/operation.ts:751
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:752
+Defined in: [chain/operation.ts:786](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L786)
 
 #### account
 

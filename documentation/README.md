@@ -2,593 +2,85 @@
 
 ***
 
-# [dpixa](https://github.com/pixagram-blockchain/dpixa)
+# [dpixa](https://github.com/pixagram-blockchain/pixaclient)
 
-Robust pixa client library that runs in both node.js and the browser.
+JavaScript and TypeScript client for the [Pixa](https://pixa.org) blockchain: a JSON-RPC client with failover, transaction signing, keys and memo encryption, and helpers for Pixamind, Pixa's social and NFT indexer. It runs in Node.js 20.19 or later and in every browser with `BigInt`.
 
-Needs test net urls, chain id
-
----
-
-**note** As of version 0.7.0 WebSocket support has been removed. The only transport provided now is HTTP(2). For most users the only change required is to swap `wss://` to `https://` in the address. If you run your own full node make sure to set the proper [CORS headers](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) if you plan to access it from a browser.
-
----
-
-## Browser compatibility
-
-[![Build Status](https://saucelabs.com/browser-matrix/feruzm-dpixa.svg)](https://saucelabs.com/open_sauce/user/feruzm-dpixa)
-
-## Installation
-
-### Via npm
-
-For node.js or the browser with [browserify](https://github.com/substack/node-browserify) or [webpack](https://github.com/webpack/webpack).
-
-```
+```bash
 npm install @pixagram/dpixa
 ```
 
-## Bundling
+```js
+import { Client, PrivateKey } from "@pixagram/dpixa";
 
-Bundlers that understand the `exports` field (webpack 5, Vite, Rollup, esbuild, Parcel 2) get ES modules from `@pixagram/dpixa`, so they can tree-shake dpixa and share its `@noble/*` dependencies with your app. No Node polyfills (`buffer`, `crypto`, `stream`, `assert`, …) are needed, and none of the old `core-js` / `whatwg-fetch` polyfills are bundled any more: dpixa runs on any browser with `BigInt` and on Node.js ≥ 20.19.
+const client = new Client("https://api.pixagram.com");
+const [account] = await client.database.getAccounts(["pixagram"]);
+```
 
-The library is split in two halves that can be loaded separately; see [Lite and crypto entry points](#lite-and-crypto-entry-points).
+Pixa's assets, as this library writes them:
 
----
+| Symbol | What it is |
+|---|---|
+| `PIXA` | The chain's token (ticker PIXA; PXA is an alias) |
+| `PXS` | Pixa Supra, the chain's Big Mac referenced supracoin; the witnesses' price feed gives its value in PIXA |
+| `VESTS` | Staked PIXA, shown in apps as Pixa Power (PXP) |
 
-_Share and Enjoy!_
+API reference generated from the source: [HTML](https://pixagram.com/dpixa), built into `docs/`, and [Markdown](https://github.com/pixagram-blockchain/pixaclient/tree/main/documentation), built into `documentation/`. Changes by version: [CHANGELOG.md](https://github.com/pixagram-blockchain/pixaclient/blob/main/CHANGELOG.md).
 
----
+## What's new in 1.7.0
 
-<html><head></head><body><blockquote>
-<p>🚀 A robust Pixa blockchain client library that runs in both Node.js and the browser.</p>
-</blockquote>
-<hr>
-<h2>Table of Contents</h2>
-<ul>
-<li><a href="#installation">Installation</a></li>
-<li><a href="#quick-start">Quick Start</a>
-<ul>
-<li><a href="#browser-usage">Browser Usage</a></li>
-<li><a href="#nodejs-with-es-modules">Node.js with ES Modules</a></li>
-<li><a href="#nodejs-with-commonjs">Node.js with CommonJS</a></li>
-</ul>
-</li>
-<li><a href="#core-concepts">Core Concepts</a>
-<ul>
-<li><a href="#client">Client</a>
-<ul>
-<li><a href="#creating-a-client">Creating a Client</a></li>
-<li><a href="#using-testnet">Using Testnet</a></li>
-<li><a href="#making-raw-rpc-calls">Making Raw RPC Calls</a></li>
-<li><a href="#client-options-reference">Client Options Reference</a></li>
-<li><a href="#client-properties">Client Properties</a></li>
-</ul>
-</li>
-<li><a href="#database-api">Database API</a> — <code>client.database</code>
-<ul>
-<li><a href="#getdynamicglobalproperties"><code>getDynamicGlobalProperties()</code></a> → <a href="#-dynamicglobalproperties-interface"><code>DynamicGlobalProperties</code></a></li>
-<li><a href="#getchainproperties"><code>getChainProperties()</code></a> → <a href="#-chainproperties-interface"><code>ChainProperties</code></a></li>
-<li><a href="#getcurrentmedianhistoryprice"><code>getCurrentMedianHistoryPrice()</code></a> → <a href="#price-class"><code>Price</code></a></li>
-<li><a href="#getconfig"><code>getConfig()</code></a></li>
-<li><a href="#getstatepath"><code>getState(path)</code></a></li>
-<li><a href="#getblockheaderblocknum"><code>getBlockHeader(blockNum)</code></a> → <a href="#-blockheader-interface"><code>BlockHeader</code></a></li>
-<li><a href="#getblockblocknum"><code>getBlock(blockNum)</code></a> → <a href="#-signedblock-interface"><code>SignedBlock</code></a></li>
-<li><a href="#getoperationsblocknum-onlyvirtual"><code>getOperations(blockNum, onlyVirtual?)</code></a> → <a href="#-appliedoperation-interface"><code>AppliedOperation[]</code></a></li>
-<li><a href="#getaccountsusernames"><code>getAccounts(usernames)</code></a> → <a href="#-account-interface"><code>ExtendedAccount[]</code></a></li>
-<li><a href="#getdiscussionsby-query"><code>getDiscussions(by, query)</code></a> → <a href="#-discussion-interface"><code>Discussion[]</code></a></li>
-<li><a href="#gettransactiontxid"><code>getTransaction(txId)</code></a> → <a href="#-transaction-interface"><code>SignedTransaction</code></a></li>
-<li><a href="#getaccounthistoryaccount-from-limit-operation_bitmask"><code>getAccountHistory(account, from, limit, bitmask?)</code></a> → <a href="#-appliedoperation-interface"><code>AppliedOperation[]</code></a></li>
-<li><a href="#getvestingdelegationsaccount-from-limit"><code>getVestingDelegations(account, from?, limit?)</code></a> → <a href="#-vestingdelegation-interface"><code>VestingDelegation[]</code></a></li>
-<li><a href="#verifyauthoritysignedtransaction"><code>verifyAuthority(signedTransaction)</code></a></li>
-<li><a href="#getversion"><code>getVersion()</code></a></li>
-</ul>
-</li>
-<li><a href="#blockchain">Blockchain</a> — <code>client.blockchain</code>
-<ul>
-<li><a href="#getcurrentblocknummode"><code>getCurrentBlockNum(mode?)</code></a></li>
-<li><a href="#getcurrentblockheadermode"><code>getCurrentBlockHeader(mode?)</code></a> → <a href="#-blockheader-interface"><code>BlockHeader</code></a></li>
-<li><a href="#getcurrentblockmode"><code>getCurrentBlock(mode?)</code></a> → <a href="#-signedblock-interface"><code>SignedBlock</code></a></li>
-<li><a href="#getblocknumbersoptions"><code>getBlockNumbers(options?)</code></a></li>
-<li><a href="#getblocksoptions"><code>getBlocks(options?)</code></a> → <a href="#-signedblock-interface"><code>SignedBlock</code></a></li>
-<li><a href="#getoperationsoptions"><code>getOperations(options?)</code></a> → <a href="#-appliedoperation-interface"><code>AppliedOperation</code></a></li>
-<li><a href="#stream-methods-nodejs-streams">Stream Methods (Node.js)</a></li>
-</ul>
-</li>
-<li><a href="#broadcast-api">Broadcast API</a> — <code>client.broadcast</code>
-<ul>
-<li><a href="#voting-on-content">Voting on Content</a> → <a href="#-transaction-interface"><code>TransactionConfirmation</code></a></li>
-<li><a href="#transferring-funds">Transferring Funds</a> → <a href="#-transaction-interface"><code>TransactionConfirmation</code></a></li>
-<li><a href="#creating-posts-and-comments">Creating Posts and Comments</a> → <a href="#-transaction-interface"><code>TransactionConfirmation</code></a></li>
-<li><a href="#custom-json-operations">Custom JSON Operations</a> → <a href="#-transaction-interface"><code>TransactionConfirmation</code></a></li>
-<li><a href="#claiming-rewards">Claiming Rewards</a> → <a href="#-transaction-interface"><code>TransactionConfirmation</code></a></li>
-</ul>
-</li>
-<li><a href="#resource-credits-api">Resource Credits API</a> — <code>client.rc</code>
-<ul>
-<li><a href="#findrcaccountsusernames"><code>findRCAccounts(usernames)</code></a></li>
-<li><a href="#getrcmanausername--getvpmanausername"><code>getRCMana(username)</code> / <code>getVPMana(username)</code></a></li>
-<li><a href="#getresourceparams"><code>getResourceParams()</code></a></li>
-<li><a href="#getresourcepool"><code>getResourcePool()</code></a></li>
-<li><a href="#calculatercmanarc_account"><code>calculateRCMana(rc_account)</code></a></li>
-<li><a href="#calculatevpmanaaccount"><code>calculateVPMana(account)</code></a></li>
-</ul>
-</li>
-<li><a href="#pixamind-api">Pixamind API</a> — <code>client.pixamind</code>
-<ul>
-<li><a href="#getrankedpostsoptions"><code>getRankedPosts(options)</code></a> → <a href="#-discussion-interface"><code>Discussion[]</code></a></li>
-<li><a href="#getaccountpostsoptions"><code>getAccountPosts(options)</code></a> → <a href="#-discussion-interface"><code>Discussion[]</code></a></li>
-<li><a href="#getcommunityoptions"><code>getCommunity(options)</code></a> → <a href="#-communitydetail-interface"><code>CommunityDetail</code></a></li>
-<li><a href="#listcommunitiesoptions"><code>listCommunities(options)</code></a> → <a href="#-communitydetail-interface"><code>CommunityDetail[]</code></a></li>
-<li><a href="#listallsubscriptionsaccount"><code>listAllSubscriptions(account)</code></a></li>
-<li><a href="#getaccountnotificationsoptions"><code>getAccountNotifications(options)</code></a> → <a href="#-notifications-interface"><code>Notifications[]</code></a></li>
-</ul>
-</li>
-<li><a href="#account-by-key-api">Account By Key API</a> — <code>client.keys</code>
-<ul>
-<li><a href="#getkeyreferenceskeys"><code>getKeyReferences(keys)</code></a> → <a href="#-accountsbykey-interface"><code>AccountsByKey</code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#working-with-assets">Working with Assets</a>
-<ul>
-<li><a href="#asset-class">Asset Class</a>
-<ul>
-<li><a href="#creating-assets">Creating Assets</a></li>
-<li><a href="#asset-properties--methods">Asset Properties &amp; Methods</a></li>
-<li><a href="#asset-symbols-reference">Asset Symbols Reference</a></li>
-</ul>
-</li>
-<li><a href="#price-class">Price Class</a></li>
-<li><a href="#helper-functions">Helper Functions</a>
-<ul>
-<li><a href="#getvestingsharepriceprops"><code>getVestingSharePrice(props)</code></a> → <a href="#price-class"><code>Price</code></a></li>
-<li><a href="#getvestsaccount-subtractdelegated-addreceived"><code>getVests(account, subtractDelegated?, addReceived?)</code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#cryptography">Cryptography</a>
-<ul>
-<li><a href="#private-keys">Private Keys</a> — <code>PrivateKey</code>
-<ul>
-<li><a href="#creating-private-keys"><code>PrivateKey.fromLogin(username, password, role)</code></a></li>
-<li><a href="#creating-private-keys"><code>PrivateKey.fromString(wif)</code></a></li>
-<li><a href="#creating-private-keys"><code>PrivateKey.fromSeed(seed)</code></a></li>
-<li><a href="#using-private-keys"><code>privateKey.createPublic()</code></a></li>
-<li><a href="#using-private-keys"><code>privateKey.sign(message)</code></a> → <a href="#signatures"><code>Signature</code></a></li>
-</ul>
-</li>
-<li><a href="#public-keys">Public Keys</a> — <code>PublicKey</code>
-<ul>
-<li><a href="#public-keys"><code>PublicKey.fromString(wif)</code></a></li>
-<li><a href="#public-keys"><code>publicKey.verify(message, signature)</code></a></li>
-</ul>
-</li>
-<li><a href="#signatures">Signatures</a> — <code>Signature</code>
-<ul>
-<li><a href="#signatures"><code>signature.recover(message)</code></a> → <a href="#public-keys"><code>PublicKey</code></a></li>
-</ul>
-</li>
-<li><a href="#memo-encryption">Memo Encryption</a> — <code>Memo</code>
-<ul>
-<li><a href="#memo-encryption"><code>Memo.encode(privateKey, publicKey, message)</code></a></li>
-<li><a href="#memo-encryption"><code>Memo.decode(privateKey, encoded)</code></a></li>
-</ul>
-</li>
-<li><a href="#crypto-utilities">Crypto Utilities</a> — <code>cryptoUtils</code></li>
-</ul>
-</li>
-<li><a href="#building-transactions">Building Transactions</a></li>
-<li><a href="#operations-reference">Operations Reference</a>
-<ul>
-<li><a href="#operations-reference">Transfer Operations</a></li>
-<li><a href="#operations-reference">Content Operations</a></li>
-<li><a href="#operations-reference">Account Operations</a></li>
-<li><a href="#operations-reference">Governance Operations</a></li>
-<li><a href="#operations-reference">Market Operations</a></li>
-<li><a href="#operations-reference">Savings Operations</a></li>
-<li><a href="#operations-reference">Escrow Operations</a></li>
-<li><a href="#operations-reference">Custom Operations</a></li>
-<li><a href="#operations-reference">Virtual Operations (Read-Only)</a></li>
-</ul>
-</li>
-<li><a href="#utilities">Utilities</a> — <code>utils</code>
-<ul>
-<li><a href="#operation-bitmask-filter"><code>utils.operationOrders</code></a></li>
-<li><a href="#operation-bitmask-filter"><code>utils.makeBitMaskFilter(ops)</code></a></li>
-<li><a href="#sleep"><code>utils.sleep(ms)</code></a></li>
-<li><a href="#copy-objects"><code>utils.copy(obj)</code></a></li>
-<li><a href="#iterator-to-stream"><code>utils.iteratorStream(iterator)</code></a></li>
-<li><a href="#build-witness-update"><code>utils.buildWitnessUpdateOp(owner, props)</code></a></li>
-<li><a href="#wait-for-event"><code>utils.waitForEvent(emitter, event)</code></a></li>
-<li><a href="#retrying-fetch"><code>utils.retryingFetch(...)</code></a></li>
-</ul>
-</li>
-<li><a href="#serialization">Serialization</a> — <code>Types</code></li>
-<li><a href="#error-handling">Error Handling</a></li>
-<li><a href="#types--interfaces">Types &amp; Interfaces</a>
-<ul>
-<li><a href="#-account-interface"><code>Account</code></a> / <a href="#-account-interface"><code>ExtendedAccount</code></a></li>
-<li><a href="#-appliedoperation-interface"><code>AppliedOperation</code></a></li>
-<li><a href="#-authority-interface"><code>Authority</code> / <code>AuthorityType</code></a></li>
-<li><a href="#-blockheader-interface"><code>BlockHeader</code></a> / <a href="#-signedblock-interface"><code>SignedBlock</code></a></li>
-<li><a href="#-chainproperties-interface"><code>ChainProperties</code></a></li>
-<li><a href="#-communitydetail-interface"><code>CommunityDetail</code></a></li>
-<li><a href="#-discussion-interface"><code>Discussion</code></a> / <a href="#-discussion-interface"><code>Comment</code></a></li>
-<li><a href="#-dynamicglobalproperties-interface"><code>DynamicGlobalProperties</code></a></li>
-<li><a href="#-disqussionquery-interface"><code>DisqussionQuery</code></a></li>
-<li><a href="#-hexbuffer-class"><code>HexBuffer</code></a></li>
-<li><a href="#-notifications-interface"><code>Notifications</code></a></li>
-<li><a href="#-transaction-interface"><code>Transaction</code> / <code>SignedTransaction</code> / <code>TransactionConfirmation</code></a></li>
-<li><a href="#-vestingdelegation-interface"><code>VestingDelegation</code></a></li>
-<li><a href="#-accountsbykey-interface"><code>AccountsByKey</code></a></li>
-<li><a href="#-operation-interfaces">Operation Interfaces (full list)</a></li>
-</ul>
-</li>
-<li><a href="#enumerations">Enumerations</a>
-<ul>
-<li><a href="#enumerations"><code>BlockchainMode</code></a></li>
-<li><a href="#asset-symbols-reference"><code>AssetSymbol</code></a></li>
-<li><a href="#discussion-query-categories"><code>DiscussionQueryCategory</code></a></li>
-<li><a href="#key-roles-reference"><code>KeyRole</code></a></li>
-<li><a href="#-operation-interfaces"><code>OperationName</code></a></li>
-<li><a href="#virtual-operations-read-only"><code>VirtualOperationName</code></a></li>
-</ul>
-</li>
-<li><a href="#constants">Constants</a></li>
-<li><a href="#advanced-usage">Advanced Usage</a></li>
-</ul>
-<hr>
-<h2>Installation</h2>
-<h3>Via npm</h3>
-<pre><code class="language-bash">npm install @pixagram/dpixa
-</code></pre>
-<h3>Via yarn</h3>
-<pre><code class="language-bash">yarn add @pixagram/dpixa
-</code></pre>
-<h3>Via CDN</h3>
-<pre><code class="language-html">&lt;script src="https://unpkg.com/@pixagram/dpixa@latest/dist/dpixa.js"&gt;&lt;/script&gt;
-</code></pre>
-<h3>Self-hosted</h3>
-<p>Download <code>dist/dpixa.js</code> from the repository and include it in your HTML:</p>
-<pre><code class="language-html">&lt;script src="dpixa.js"&gt;&lt;/script&gt;
-</code></pre>
-<hr>
-<h2>Quick Start</h2>
-<h3>Browser Usage</h3>
-<pre><code class="language-html">&lt;script src="https://unpkg.com/@pixagram/dpixa@latest/dist/dpixa.js"&gt;&lt;/script&gt;
-&lt;script&gt;
-  const client = new dpixa.Client([
-    "https://api.pixagram.io",
-    "https://api.hivekings.com",
-    "https://anyx.io"
-  ]);
+Version 1.7.0 supports chain hardfork 32 and Pixamind's new methods:
 
-client.database
-.getDiscussions("trending", { tag: "writing", limit: 5 })
-.then(function(discussions) {
-discussions.forEach(post =&gt; {
-console.log(`${post.title} by @${post.author}`);
-});
-});
-&lt;/script&gt;
-</code></pre>
-<h3>Node.js with ES Modules</h3>
-<pre><code class="language-js">import { Client } from "@pixagram/dpixa";
-
-const client = new Client([
-  "https://api.pixagram.io",
-  "https://api.hivekings.com"
-]);
-
-async function main() {
-  const props = await client.database.getDynamicGlobalProperties();
-  console.log(`Current block: ${props.head_block_number}`);
-}
-
-main();
-</code></pre>
-<h3>Node.js with CommonJS</h3>
-<pre><code class="language-js">const { Client, PrivateKey } = require("@pixagram/dpixa");
-
-const client = new Client(["https://api.pixagram.io"]);
-
-// Vote on a post
-const key = PrivateKey.fromLogin("username", "password", "posting");
-
-client.broadcast
-  .vote(
-    {
-      voter: "username",
-      author: "almost-digital",
-      permlink: "dpixa-is-the-best",
-      weight: 10000
-    },
-    key
-  )
-  .then(result =&gt; {
-    console.log(`Included in block: ${result.block_num}`);
-  });
-</code></pre>
-<hr>
-<h2>Core Concepts</h2>
-<h3>Client</h3>
-<p>The <code>Client</code> class is your main entry point to interact with the Pixa blockchain. It manages RPC connections, provides access to various APIs, and handles failover between multiple nodes.</p>
-<h4>Creating a Client</h4>
-<pre><code class="language-js">import { Client } from "@pixagram/dpixa";
-
-// Basic initialization with multiple nodes for failover
-const client = new Client([
-"https://api.pixagram.io",
-"https://api.hivekings.com",
-"https://anyx.io",
-"https://api.openhive.network"
-]);
-
-// With custom options
-const clientWithOptions = new Client(["https://api.pixagram.io"], {
-timeout: 30000,              // Request timeout in ms (default: 60000)
-failoverThreshold: 3,        // Retry rounds before giving up
-consoleOnFailover: true,     // Log when failing over to another node
-addressPrefix: "PIX",        // Network address prefix
-chainId: "your-chain-id"    // Custom chain ID
-});
-</code></pre>
-<h4>Using Testnet</h4>
-<pre><code class="language-js">// Create a client configured for testnet
-const testClient = Client.testnet();
-</code></pre>
-<h4>Making Raw RPC Calls</h4>
-<pre><code class="language-js">// Direct RPC call to any API
-const result = await client.call("database_api", "get_dynamic_global_properties", []);
-</code></pre>
-&lt;details&gt;
-&lt;summary&gt;&lt;strong&gt;📋 Client Options Reference&lt;/strong&gt;&lt;/summary&gt;
-
-Option | Type | Default | Description
--- | -- | -- | --
-timeout | number | 60000 | Request timeout in milliseconds. Set to 0 to retry forever.
-failoverThreshold | number | 3 | Number of retry rounds across all URLs before failing. Set to 0 for infinite retries.
-consoleOnFailover | boolean | false | Log failover events to console
-addressPrefix | string | "PIX" | Network address prefix for key encoding
-chainId | string | Main chain ID | Blockchain chain ID (32-byte hex string)
-agent | http.Agent | https.globalAgent | Custom HTTP agent for keep-alive connections
-backoff | (tries: number) => number | Default backoff | Custom retry backoff function returning milliseconds
-
-&lt;/details&gt;
-<hr>
-<h2>Enumerations</h2>
-<pre><code class="language-js">import { BlockchainMode } from "@pixagram/dpixa";
-
-// BlockchainMode
-BlockchainMode.Irreversible  // 0 — Only confirmed blocks (default)
-BlockchainMode.Latest        // 1 — Head block (may be reversed on fork)
-</code></pre>
-<p>See also: <a href="#asset-symbols-reference">Asset Symbols</a>, <a href="#discussion-query-categories">Discussion Query Categories</a>, <a href="#key-roles-reference">Key Roles</a></p>
-<hr>
-<h2>Constants</h2>
-<pre><code class="language-js">import { 
-  VERSION,
-  DEFAULT_ADDRESS_PREFIX,
-  DEFAULT_CHAIN_ID,
-  NETWORK_ID
-} from "@pixagram/dpixa";
-
-console.log(VERSION);                // Library version string
-console.log(DEFAULT_ADDRESS_PREFIX); // "PIX"
-console.log(DEFAULT_CHAIN_ID);       // Buffer (32 bytes)
-console.log(NETWORK_ID);             // Buffer (network ID for WIF)
-</code></pre>
-<hr>
-<h2>Advanced Usage</h2>
-<h3>Custom Backoff Strategy</h3>
-<pre><code class="language-js">const client = new Client(["https://api.pixagram.io"], {
-  backoff: (tries) =&gt; {
-    // Exponential backoff with jitter
-    const base = Math.min(1000 * Math.pow(2, tries), 30000);
-    const jitter = Math.random() * 1000;
-    return base + jitter;
-  }
-});
-</code></pre>
-<h3>Connection Pooling (Node.js)</h3>
-<pre><code class="language-js">const https = require("https");
-
-const agent = new https.Agent({
-keepAlive: true,
-maxSockets: 10
-});
-
-const client = new Client(["https://api.pixagram.io"], {
-agent: agent
-});
-</code></pre>
-<h3>Building a Vote Bot</h3>
-<pre><code class="language-js">async function autoVoter(authors, weight = 10000) {
-  const postingKey = PrivateKey.fromLogin("mybot", "password", "posting");
-  
-  for await (const op of client.blockchain.getOperations()) {
-    const [opType, opData] = op.op;
-    
-    if (opType === "comment" &amp;&amp; 
-        opData.parent_author === "" &amp;&amp;  // Root post only
-        authors.includes(opData.author)) {
-      
-      try {
-        await client.broadcast.vote({
-          voter: "mybot",
-          author: opData.author,
-          permlink: opData.permlink,
-          weight: weight
-        }, postingKey);
-        
-        console.log(`Voted on @${opData.author}/${opData.permlink}`);
-      } catch (error) {
-        console.error(`Vote failed: ${error.message}`);
-      }
-    }
-  }
-}
-
-autoVoter(["favorite-author1", "favorite-author2"]);
-</code></pre>
-<hr>
-<h2>Important Notes</h2>
-<blockquote>
-<p>⚠️ <strong>WebSocket Removed</strong>: As of v0.7.0, WebSocket support has been removed. Use HTTP(S) URLs.</p>
-</blockquote>
-<blockquote>
-<p>💡 <strong>CORS</strong>: If running your own node, configure proper CORS headers for browser access.</p>
-</blockquote>
-<blockquote>
-<p>🔐 <strong>Security</strong>: Never expose private keys in client-side code. Use minimum required key level.</p>
-</blockquote>
-<blockquote>
-<p>📡 <strong>Node Selection</strong>: Use multiple RPC nodes for reliability with automatic failover.</p>
-</blockquote>
-<hr>
-<h2>License</h2>
-<p>MIT</p>
-<hr>
-<p><em>Share and Enjoy!</em> 🚀</p></body></html>> 🚀 A robust Pixa blockchain client library that runs in both Node.js and the browser.
-
----
+- **NFTs**: the `nft` operation (37) with its five actions, checked byte for byte against the node; `client.nft` to mint, offer, buy, give and burn copies and to read them from the chain; Pixamind's NFT pages, market, history and license text in `client.pixamind`. See [NFTs](#nfts-hardfork-32).
+- **The reserve**: every copy that never left its author, offered at one price in one action (`client.nft.offerReserve`, `buyFromReserve`).
+- **The voting bar**: a 100% vote now costs 3% of the bar and the bar refills 15% a day. `client.rc` reads the refill time from the chain and computes what a vote costs. See [Voting bar](#voting-bar-hardfork-32).
+- **Promoted posts**: `client.broadcast.promote` burns PXS for a post; `client.pixamind.getPromotedPosts` reads the promoted feed. See [Promoted posts](#promoted-posts).
+- **Post metadata and history**: `client.pixamind.getContentMetadata` and `getPostHistory`.
+- **New home**: dpixa lives in the [pixaclient](https://github.com/pixagram-blockchain/pixaclient) repository, with the history of `pixagram-blockchain/dpixa`. The npm package keeps its name, `@pixagram/dpixa`.
+- **pixacore 1.32.0**: the node of hardfork 32 uses Pixa's names in its JSON and still reads Hive's; dpixa works with it and with earlier nodes. See [Pixa names and node names](#pixa-names-and-node-names).
+- **Fixes**: operation 37 is `nft`, no longer `reset_account`. Witness properties named `pxs_*` are now written under the names the node reads. Payout and reward fields are written under both of their names, so the node always reads the value that was signed (see [Pixa names and node names](#pixa-names-and-node-names)). `client.broadcast.claimRewardBalance` exists, as this README already documented. The serializer test vectors are corrected. The lint gate (`npm test`) passes.
 
 ## Table of Contents
 
-- [[Installation](#installation)](#installation)
-    - [Lite and crypto entry points](#lite-and-crypto-entry-points)
-- [[Quick Start](#quick-start)](#quick-start)
-    - [[Browser Usage](#browser-usage)](#browser-usage)
-    - [[Node.js with ES Modules](#nodejs-with-es-modules)](#nodejs-with-es-modules)
-    - [[Node.js with CommonJS](#nodejs-with-commonjs)](#nodejs-with-commonjs)
-- [[Core Concepts](#core-concepts)](#core-concepts)
-    - [[Client](#client)](#client)
-        - [[Creating a Client](#creating-a-client)](#creating-a-client)
-        - [[Using Testnet](#using-testnet)](#using-testnet)
-        - [[Making Raw RPC Calls](#making-raw-rpc-calls)](#making-raw-rpc-calls)
-        - [[Client Options Reference](#client-options-reference)](#client-options-reference)
-        - [[Client Properties](#client-properties)](#client-properties)
-    - [[Database API](#database-api)](#database-api) — `client.database`
-        - [`[getDynamicGlobalProperties()](#getdynamicglobalproperties)`](#getdynamicglobalproperties) → [`[DynamicGlobalProperties](#-dynamicglobalproperties-interface)`](#-dynamicglobalproperties-interface)
-        - [`[getChainProperties()](#getchainproperties)`](#getchainproperties) → [`[ChainProperties](#-chainproperties-interface)`](#-chainproperties-interface)
-        - [`[getCurrentMedianHistoryPrice()](#getcurrentmedianhistoryprice)`](#getcurrentmedianhistoryprice) → [`[Price](#price-class)`](#price-class)
-        - [`[getConfig()](#getconfig)`](#getconfig)
-        - [`[getState(path)](#getstatepath)`](#getstatepath)
-        - [`[getBlockHeader(blockNum)](#getblockheaderblocknum)`](#getblockheaderblocknum) → [`[BlockHeader](#-blockheader-interface)`](#-blockheader-interface)
-        - [`[getBlock(blockNum)](#getblockblocknum)`](#getblockblocknum) → [`[SignedBlock](#-signedblock-interface)`](#-signedblock-interface)
-        - [`[getOperations(blockNum, onlyVirtual?)](#getoperationsblocknum-onlyvirtual)`](#getoperationsblocknum-onlyvirtual) → [`[AppliedOperation[]](#-appliedoperation-interface)`](#-appliedoperation-interface)
-        - [`[getAccounts(usernames)](#getaccountsusernames)`](#getaccountsusernames) → [`[ExtendedAccount[]](#-account-interface)`](#-account-interface)
-        - [`[getDiscussions(by, query)](#getdiscussionsby-query)`](#getdiscussionsby-query) → [`[Discussion[]](#-discussion-interface)`](#-discussion-interface)
-        - [`[getTransaction(txId)](#gettransactiontxid)`](#gettransactiontxid) → [`[SignedTransaction](#-transaction-interface)`](#-transaction-interface)
-        - [`[getAccountHistory(account, from, limit, bitmask?)](#getaccounthistoryaccount-from-limit-operation_bitmask)`](#getaccounthistoryaccount-from-limit-operation_bitmask) → [`[AppliedOperation[]](#-appliedoperation-interface)`](#-appliedoperation-interface)
-        - [`[getVestingDelegations(account, from?, limit?)](#getvestingdelegationsaccount-from-limit)`](#getvestingdelegationsaccount-from-limit) → [`[VestingDelegation[]](#-vestingdelegation-interface)`](#-vestingdelegation-interface)
-        - [`[verifyAuthority(signedTransaction)](#verifyauthoritysignedtransaction)`](#verifyauthoritysignedtransaction)
-        - [`[getVersion()](#getversion)`](#getversion)
-    - [[Blockchain](#blockchain)](#blockchain) — `client.blockchain`
-        - [`[getCurrentBlockNum(mode?)](#getcurrentblocknummode)`](#getcurrentblocknummode)
-        - [`[getCurrentBlockHeader(mode?)](#getcurrentblockheadermode)`](#getcurrentblockheadermode) → [`[BlockHeader](#-blockheader-interface)`](#-blockheader-interface)
-        - [`[getCurrentBlock(mode?)](#getcurrentblockmode)`](#getcurrentblockmode) → [`[SignedBlock](#-signedblock-interface)`](#-signedblock-interface)
-        - [`[getBlockNumbers(options?)](#getblocknumbersoptions)`](#getblocknumbersoptions)
-        - [`[getBlocks(options?)](#getblocksoptions)`](#getblocksoptions) → [`[SignedBlock](#-signedblock-interface)`](#-signedblock-interface)
-        - [`[getOperations(options?)](#getoperationsoptions)`](#getoperationsoptions) → [`[AppliedOperation](#-appliedoperation-interface)`](#-appliedoperation-interface)
-        - [[Stream Methods (Node.js)](#stream-methods-nodejs-streams)](#stream-methods-nodejs-streams)
-    - [[Broadcast API](#broadcast-api)](#broadcast-api) — `client.broadcast`
-        - [[Voting on Content](#voting-on-content)](#voting-on-content) → [`[TransactionConfirmation](#-transaction-interface)`](#-transaction-interface)
-        - [[Transferring Funds](#transferring-funds)](#transferring-funds) → [`[TransactionConfirmation](#-transaction-interface)`](#-transaction-interface)
-        - [[Creating Posts and Comments](#creating-posts-and-comments)](#creating-posts-and-comments) → [`[TransactionConfirmation](#-transaction-interface)`](#-transaction-interface)
-        - [[Custom JSON Operations](#custom-json-operations)](#custom-json-operations) → [`[TransactionConfirmation](#-transaction-interface)`](#-transaction-interface)
-        - [[Claiming Rewards](#claiming-rewards)](#claiming-rewards) → [`[TransactionConfirmation](#-transaction-interface)`](#-transaction-interface)
-    - [[Resource Credits API](#resource-credits-api)](#resource-credits-api) — `client.rc`
-        - [`[findRCAccounts(usernames)](#findrcaccountsusernames)`](#findrcaccountsusernames)
-        - [`getRCMana(username)` / `getVPMana(username)`](#getrcmanausername--getvpmanausername)
-        - [`[getResourceParams()](#getresourceparams)`](#getresourceparams)
-        - [`[getResourcePool()](#getresourcepool)`](#getresourcepool)
-        - [`[calculateRCMana(rc_account)](#calculatercmanarc_account)`](#calculatercmanarc_account)
-        - [`[calculateVPMana(account)](#calculatevpmanaaccount)`](#calculatevpmanaaccount)
-    - [[Pixamind API](#pixamind-api)](#pixamind-api) — `client.pixamind`
-        - [`[getRankedPosts(options)](#getrankedpostsoptions)`](#getrankedpostsoptions) → [`[Discussion[]](#-discussion-interface)`](#-discussion-interface)
-        - [`[getAccountPosts(options)](#getaccountpostsoptions)`](#getaccountpostsoptions) → [`[Discussion[]](#-discussion-interface)`](#-discussion-interface)
-        - [`[getCommunity(options)](#getcommunityoptions)`](#getcommunityoptions) → [`[CommunityDetail](#-communitydetail-interface)`](#-communitydetail-interface)
-        - [`[listCommunities(options)](#listcommunitiesoptions)`](#listcommunitiesoptions) → [`[CommunityDetail[]](#-communitydetail-interface)`](#-communitydetail-interface)
-        - [`[listAllSubscriptions(account)](#listallsubscriptionsaccount)`](#listallsubscriptionsaccount)
-        - [`[getAccountNotifications(options)](#getaccountnotificationsoptions)`](#getaccountnotificationsoptions) → [`[Notifications[]](#-notifications-interface)`](#-notifications-interface)
-    - [[Account By Key API](#account-by-key-api)](#account-by-key-api) — `client.keys`
-        - [`[getKeyReferences(keys)](#getkeyreferenceskeys)`](#getkeyreferenceskeys) → [`[AccountsByKey](#-accountsbykey-interface)`](#-accountsbykey-interface)
-- [[Working with Assets](#working-with-assets)](#working-with-assets)
-    - [[Asset Class](#asset-class)](#asset-class)
-        - [[Creating Assets](#creating-assets)](#creating-assets)
-        - [[Asset Properties & Methods](#asset-properties--methods)](#asset-properties--methods)
-        - [[Asset Symbols Reference](#asset-symbols-reference)](#asset-symbols-reference)
-    - [[Price Class](#price-class)](#price-class)
-    - [[Helper Functions](#helper-functions)](#helper-functions)
-        - [`[getVestingSharePrice(props)](#getvestingsharepriceprops)`](#getvestingsharepriceprops) → [`[Price](#price-class)`](#price-class)
-        - [`[getVests(account, subtractDelegated?, addReceived?)](#getvestsaccount-subtractdelegated-addreceived)`](#getvestsaccount-subtractdelegated-addreceived)
-- [[Cryptography](#cryptography)](#cryptography)
-    - [[Private Keys](#private-keys)](#private-keys) — `PrivateKey`
-        - [`[PrivateKey.fromLogin(username, password, role)](#creating-private-keys)`](#creating-private-keys)
-        - [`[PrivateKey.fromString(wif)](#creating-private-keys)`](#creating-private-keys)
-        - [`[PrivateKey.fromSeed(seed)](#creating-private-keys)`](#creating-private-keys)
-        - [`[privateKey.createPublic()](#using-private-keys)`](#using-private-keys)
-        - [`[privateKey.sign(message)](#using-private-keys)`](#using-private-keys) → [`[Signature](#signatures)`](#signatures)
-    - [[Public Keys](#public-keys)](#public-keys) — `PublicKey`
-        - [`[PublicKey.fromString(wif)](#public-keys)`](#public-keys)
-        - [`[publicKey.verify(message, signature)](#public-keys)`](#public-keys)
-    - [[Signatures](#signatures)](#signatures) — `Signature`
-        - [`[signature.recover(message)](#signatures)`](#signatures) → [`[PublicKey](#public-keys)`](#public-keys)
-    - [[Memo Encryption](#memo-encryption)](#memo-encryption) — `Memo`
-        - [`[Memo.encode(privateKey, publicKey, message)](#memo-encryption)`](#memo-encryption)
-        - [`[Memo.decode(privateKey, encoded)](#memo-encryption)`](#memo-encryption)
-    - [[Crypto Utilities](#crypto-utilities)](#crypto-utilities) — `cryptoUtils`
-- [[Building Transactions](#building-transactions)](#building-transactions)
-- [[Operations Reference](#operations-reference)](#operations-reference)
-    - [[Transfer Operations](#operations-reference)](#operations-reference)
-    - [[Content Operations](#operations-reference)](#operations-reference)
-    - [[Account Operations](#operations-reference)](#operations-reference)
-    - [[Governance Operations](#operations-reference)](#operations-reference)
-    - [[Market Operations](#operations-reference)](#operations-reference)
-    - [[Savings Operations](#operations-reference)](#operations-reference)
-    - [[Escrow Operations](#operations-reference)](#operations-reference)
-    - [[Custom Operations](#operations-reference)](#operations-reference)
-    - [[Virtual Operations (Read-Only)](#operations-reference)](#operations-reference)
-- [[Utilities](#utilities)](#utilities) — `utils`
-    - [`[utils.operationOrders](#operation-bitmask-filter)`](#operation-bitmask-filter)
-    - [`[utils.makeBitMaskFilter(ops)](#operation-bitmask-filter)`](#operation-bitmask-filter)
-    - [`[utils.sleep(ms)](#sleep)`](#sleep)
-    - [`[utils.copy(obj)](#copy-objects)`](#copy-objects)
-    - [`[utils.iteratorStream(iterator)](#iterator-to-stream)`](#iterator-to-stream)
-    - [`[utils.buildWitnessUpdateOp(owner, props)](#build-witness-update)`](#build-witness-update)
-    - [`[utils.waitForEvent(emitter, event)](#wait-for-event)`](#wait-for-event)
-    - [`[utils.retryingFetch(...)](#retrying-fetch)`](#retrying-fetch)
-- [[Serialization](#serialization)](#serialization) — `Types`
-- [[Error Handling](#error-handling)](#error-handling)
-- [[Types & Interfaces](#types--interfaces)](#types--interfaces)
-    - [`[Account](#-account-interface)`](#-account-interface) / [`[ExtendedAccount](#-account-interface)`](#-account-interface)
-    - [`[AppliedOperation](#-appliedoperation-interface)`](#-appliedoperation-interface)
-    - [`Authority` / `AuthorityType`](#-authority-interface)
-    - [`[BlockHeader](#-blockheader-interface)`](#-blockheader-interface) / [`[SignedBlock](#-signedblock-interface)`](#-signedblock-interface)
-    - [`[ChainProperties](#-chainproperties-interface)`](#-chainproperties-interface)
-    - [`[CommunityDetail](#-communitydetail-interface)`](#-communitydetail-interface)
-    - [`[Discussion](#-discussion-interface)`](#-discussion-interface) / [`[Comment](#-discussion-interface)`](#-discussion-interface)
-    - [`[DynamicGlobalProperties](#-dynamicglobalproperties-interface)`](#-dynamicglobalproperties-interface)
-    - [`[DisqussionQuery](#-disqussionquery-interface)`](#-disqussionquery-interface)
-    - [`[HexBuffer](#-hexbuffer-class)`](#-hexbuffer-class)
-    - [`[Notifications](#-notifications-interface)`](#-notifications-interface)
-    - [`Transaction` / `SignedTransaction` / `TransactionConfirmation`](#-transaction-interface)
-    - [`VestingDelegation`](#-vestingdelegation-interface)
-    - [`AccountsByKey`](#-accountsbykey-interface)
-    - [Operation Interfaces (full list)](#-operation-interfaces)
+- [What's new in 1.7.0](#whats-new-in-170)
+- [Installation](#installation)
+  - [Lite and crypto entry points](#lite-and-crypto-entry-points)
+- [Quick Start](#quick-start)
+- [Core Concepts](#core-concepts)
+  - [Client](#client)
+  - [Database API](#database-api) — `client.database`
+  - [Blockchain](#blockchain) — `client.blockchain`
+  - [Broadcast API](#broadcast-api) — `client.broadcast`
+  - [Resource Credits API](#resource-credits-api) — `client.rc`
+  - [Pixamind API](#pixamind-api) — `client.pixamind`
+  - [Account By Key API](#account-by-key-api) — `client.keys`
+  - [Transaction Status API](#transaction-status-api) — `client.transaction`
+- [NFTs (hardfork 32)](#nfts-hardfork-32) — `client.nft`
+  - [Minting](#minting)
+  - [Selling and buying a copy](#selling-and-buying-a-copy)
+  - [The reserve: every untouched copy at one price](#the-reserve-every-untouched-copy-at-one-price)
+  - [Gifts and burns](#gifts-and-burns)
+  - [Reading NFTs](#reading-nfts)
+  - [NFT helpers](#nft-helpers)
+  - [The nft operation](#the-nft-operation)
+- [Voting bar (hardfork 32)](#voting-bar-hardfork-32)
+- [Promoted posts](#promoted-posts)
+- [Post metadata and history](#post-metadata-and-history)
+- [Pixa names and node names](#pixa-names-and-node-names)
+- [Working with Assets](#working-with-assets)
+- [Cryptography](#cryptography)
+- [Building Transactions](#building-transactions)
+- [Operations Reference](#operations-reference)
+- [Utilities](#utilities)
+- [Serialization](#serialization)
+- [Error Handling](#error-handling)
+- [Types & Interfaces](#types--interfaces)
 - [Enumerations](#enumerations)
-    - [`BlockchainMode`](#enumerations)
-    - [`AssetSymbol`](#asset-symbols-reference)
-    - [`DiscussionQueryCategory`](#discussion-query-categories)
-    - [`KeyRole`](#key-roles-reference)
-    - [`OperationName`](#-operation-interfaces)
-    - [`VirtualOperationName`](#virtual-operations-read-only)
 - [Constants](#constants)
 - [Advanced Usage](#advanced-usage)
+- [Testing](#testing)
+- [Important Notes](#important-notes)
+- [License](#license)
 
 ---
 
@@ -626,7 +118,7 @@ Reading from the chain only needs the JSON-RPC client. Keys, signatures, transac
 
 | Import | Contains |
 | --- | --- |
-| `@pixagram/dpixa/lite` | `Client` (database, rc, pixamind, blockchain, keys, transaction, broadcast), `Asset`, `Price`, `Authority`, `HexBuffer`, `utils`, chain types — no cryptography |
+| `@pixagram/dpixa/lite` | `Client` (database, rc, pixamind, nft, blockchain, keys, transaction, broadcast), `Asset`, `Price`, `Authority`, `HexBuffer`, `utils`, NFT helpers, chain types — no cryptography |
 | `@pixagram/dpixa/crypto` | `PrivateKey`, `PublicKey`, `Signature`, `cryptoUtils`, `Memo`, `Types`, `NETWORK_ID` |
 | `@pixagram/dpixa` | everything (lite + crypto), same API as before |
 
@@ -650,8 +142,8 @@ Prebuilt standalone bundles (global `dpixa`, no dependencies) are in `dist/`:
 
 | File | Size (min / gzip) |
 | --- | --- |
-| `dist/dpixa-lite.js` | ~24 kB / ~9 kB — lite only |
-| `dist/dpixa.js` | ~75 kB / ~28 kB — full (1.5.x was ~1.1 MB / ~240 kB) |
+| `dist/dpixa-lite.js` | ~38 kB / ~13 kB — lite only |
+| `dist/dpixa.js` | ~91 kB / ~33 kB — full (1.5.x was ~1.1 MB / ~240 kB) |
 
 `utils.iteratorStream()` and the `get*Stream()` methods return real Node.js streams under Node. In browsers they now return a small built-in stream (`on('data' | 'end' | 'error')`, `pipe`, `pause`/`resume`, `for await`) instead of bundling the `stream` polyfill; prefer the async iterators (`getBlocks()`, `getOperations()`, …) in new browser code.
 
@@ -664,14 +156,10 @@ Prebuilt standalone bundles (global `dpixa`, no dependencies) are in `dist/`:
 ```html
 <script src="https://unpkg.com/@pixagram/dpixa@latest/dist/dpixa.js"></script>
 <script>
-  const client = new dpixa.Client([
-    "https://api.pixagram.io",
-    "https://api.hivekings.com",
-    "https://anyx.io"
-  ]);
+  const client = new dpixa.Client("https://api.pixagram.com");
 
   client.database
-    .getDiscussions("trending", { tag: "writing", limit: 5 })
+    .getDiscussions("trending", { tag: "pixelart", limit: 5 })
     .then(function(discussions) {
       discussions.forEach(post => {
         console.log(`${post.title} by @${post.author}`);
@@ -685,10 +173,7 @@ Prebuilt standalone bundles (global `dpixa`, no dependencies) are in `dist/`:
 ```js
 import { Client } from "@pixagram/dpixa";
 
-const client = new Client([
-  "https://api.pixagram.io",
-  "https://api.hivekings.com"
-]);
+const client = new Client("https://api.pixagram.com");
 
 async function main() {
   const props = await client.database.getDynamicGlobalProperties();
@@ -703,7 +188,7 @@ main();
 ```js
 const { Client, PrivateKey } = require("@pixagram/dpixa");
 
-const client = new Client(["https://api.pixagram.io"]);
+const client = new Client(["https://api.pixagram.com"]);
 
 // Vote on a post
 const key = PrivateKey.fromLogin("username", "password", "posting");
@@ -712,14 +197,14 @@ client.broadcast
   .vote(
     {
       voter: "username",
-      author: "almost-digital",
-      permlink: "dpixa-is-the-best",
+      author: "pixagram",
+      permlink: "hello-pixa",
       weight: 10000
     },
     key
   )
   .then(result => {
-    console.log(`Included in block: ${result.block_num}`);
+    console.log(`Sent: transaction ${result.id}`);
   });
 ```
 
@@ -736,16 +221,12 @@ The `Client` class is your main entry point to interact with the Pixa blockchain
 ```js
 import { Client } from "@pixagram/dpixa";
 
-// Basic initialization with multiple nodes for failover
-const client = new Client([
-  "https://api.pixagram.io",
-  "https://api.hivekings.com",
-  "https://anyx.io",
-  "https://api.openhive.network"
-]);
+// One node, or several for failover: requests move to the next address when one fails
+const client = new Client("https://api.pixagram.com");
+const withFailover = new Client(["https://api.pixagram.com", "https://your-own-node.example"]);
 
 // With custom options
-const clientWithOptions = new Client(["https://api.pixagram.io"], {
+const clientWithOptions = new Client(["https://api.pixagram.com"], {
   timeout: 30000,              // Request timeout in ms (default: 60000)
   failoverThreshold: 3,        // Retry rounds before giving up
   consoleOnFailover: true,     // Log when failing over to another node
@@ -792,7 +273,8 @@ client.broadcast  // BroadcastAPI - Send transactions
 client.blockchain // Blockchain - Stream blocks and operations
 client.rc         // RCAPI - Resource credits
 client.keys       // AccountByKeyAPI - Find accounts by key
-client.pixamind   // PixamindAPI - Community features
+client.pixamind   // PixamindAPI - Communities, NFT pages, promoted feed, post metadata
+client.nft        // NftAPI - NFTs: chain reads and actions (hardfork 32)
 client.transaction // TransactionStatusAPI - Check transaction status
 
 // Network configuration (read-only)
@@ -939,7 +421,7 @@ const price = await client.database.getCurrentMedianHistoryPrice();
 </details>
 
 **Use Cases:**
-- Calculate USD value of PIXA (PXS is pegged to USD)
+- Value PIXA in PXS at the witnesses' median feed
 - Estimate post payouts
 
 ```js
@@ -1331,7 +813,7 @@ const page2 = await client.database.getDiscussions("trending", {
 ```
 
 <details>
-<summary><strong>📋 Discussion Query Categories</strong></summary>
+<summary><strong>📋 <a id="discussion-query-categories"></a>Discussion Query Categories</strong></summary>
 
 | Category | Description | Tag Usage |
 |----------|-------------|-----------|
@@ -1795,12 +1277,11 @@ The broadcast API sends transactions to the blockchain and returns a `Transactio
 
 ```js
 {
-  id: "trx123abc...",     // Transaction ID
-  block_num: 12345678,    // Block number where included
-  trx_num: 5,             // Transaction index in block
-  expired: false          // Whether transaction expired
+  id: "6fd7c2b7a1e1b2e5b0a3f1c9d4e8a7b6c5d4e3f2"   // transaction id
 }
 ```
+
+The node answers once it has accepted the transaction, before it is in a block; [`client.transaction.findTransaction(id)`](#transaction-status-api) tells when it is in one.
 
 </details>
 
@@ -1811,7 +1292,7 @@ The broadcast API sends transactions to the blockchain and returns a `Transactio
 ```js
 import { Client, PrivateKey } from "@pixagram/dpixa";
 
-const client = new Client(["https://api.pixagram.io"]);
+const client = new Client(["https://api.pixagram.com"]);
 const postingKey = PrivateKey.fromLogin("myuser", "mypassword", "posting");
 
 // Upvote 100%
@@ -1822,7 +1303,7 @@ const result = await client.broadcast.vote({
   weight: 10000  // 100% = 10000
 }, postingKey);
 
-console.log(`Vote included in block ${result.block_num}`);
+console.log(`Vote sent: transaction ${result.id}`);
 ```
 
 **Vote Weight Guide:**
@@ -1922,7 +1403,7 @@ await client.broadcast.comment({
 
 ```js
 // Follow a user
-await client.broadcast.customJson({
+await client.broadcast.json({
   required_auths: [],
   required_posting_auths: ["myuser"],
   id: "follow",
@@ -1937,7 +1418,7 @@ await client.broadcast.customJson({
 }, postingKey);
 
 // Reblog/Resteem a post
-await client.broadcast.customJson({
+await client.broadcast.json({
   required_auths: [],
   required_posting_auths: ["myuser"],
   id: "follow",
@@ -1967,7 +1448,7 @@ console.log(`  PIXA: ${account.reward_pixa_balance}`);
 console.log(`  PXS: ${account.reward_pxs_balance}`);
 console.log(`  VESTS: ${account.reward_vesting_balance}`);
 
-// Claim all rewards
+// Claim all rewards (posting key)
 await client.broadcast.claimRewardBalance({
   account: "myuser",
   reward_pixa: account.reward_pixa_balance,
@@ -1975,6 +1456,19 @@ await client.broadcast.claimRewardBalance({
   reward_vests: account.reward_vesting_balance
 }, postingKey);
 ```
+
+#### Promoting a Post
+
+```js
+// Burns 1.5 PXS for @alice/cat: a transfer to null with the memo "@alice/cat" (active key)
+await client.broadcast.promote({ from: "carol", author: "alice", permlink: "cat", amount: "1.500 PXS" }, activeKey);
+```
+
+See [Promoted posts](#promoted-posts).
+
+#### NFT Actions
+
+`client.broadcast.nft({ account, action }, activeKey)` sends one `nft` operation; `client.nft` builds and checks each action (mint, list, unlist, buy, transfer, burn, the reserve). See [NFTs](#nfts-hardfork-32).
 
 ---
 
@@ -2011,9 +1505,13 @@ Get calculated mana (regenerated to current time).
 const rcMana = await client.rc.getRCMana("alice");
 console.log(`RC: ${rcMana.current_mana} / ${rcMana.max_mana} (${rcMana.percentage}%)`);
 
-// Get Voting Power mana
+// Get Voting Power mana, refilled with the chain's refill time
 const vpMana = await client.rc.getVPMana("alice");
-console.log(`VP: ${vpMana.percentage}%`);
+console.log(`VP: ${vpMana.percentage / 100}%`);   // percentage is in basis points
+
+// Downvote mana, and what a vote costs (hardfork 32: 3% of the bar for a 100% vote)
+const downMana = await client.rc.getDownvoteMana("alice");
+const cost = await client.rc.getVoteCost("alice", 10000);
 ```
 
 <details>
@@ -2021,9 +1519,9 @@ console.log(`VP: ${vpMana.percentage}%`);
 
 ```js
 {
-  current_mana: "9500000000000",
-  max_mana: "10000000000000",
-  percentage: 95  // 95% mana remaining
+  current_mana: 9500000000000,
+  max_mana: 10000000000000,
+  percentage: 9500  // basis points: 95% of the bar
 }
 ```
 
@@ -2077,23 +1575,27 @@ console.log(`RC: ${mana.percentage}%`);
 
 ---
 
-#### `calculateVPMana(account)`
+#### `calculateVPMana(account, props?)`
 
-Calculates the current voting power mana from a standard account object (as returned by `getAccounts()`). Regenerates mana to the current time.
+Calculates the current voting power mana from a standard account object (as returned by `getAccounts()`). Regenerates mana to the current time, with the refill time in `props`.
 
 **Parameters:**
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `account` | [`Account`](#-account-interface) | Account object from `getAccounts()` |
+| `props` | [`DynamicGlobalProperties`](#-dynamicglobalproperties-interface) | Optional. Its `voting_mana_regeneration_seconds` is the refill time (576,000 s from hardfork 32); without it, the 432,000 s of earlier hardforks |
 
 **Returns:** `Manabar`
 
 ```js
 const [account] = await client.database.getAccounts(["alice"]);
-const vp = client.rc.calculateVPMana(account);
-console.log(`Voting Power: ${vp.percentage}%`);
+const props = await client.database.getDynamicGlobalProperties();
+const vp = client.rc.calculateVPMana(account, props);
+console.log(`Voting Power: ${vp.percentage / 100}%`);
 ```
+
+`calculateDownvoteMana(account, props)`, `calculateVoteCost(account, weight, props)`, `getDownvoteMana(username)` and `getVoteCost(username, weight)` are described in [Voting bar](#voting-bar-hardfork-32).
 
 ---
 
@@ -2127,7 +1629,7 @@ Get community details.
 
 ```js
 const community = await client.pixamind.getCommunity({
-  name: "hive-123456"
+  name: "portal-123456"
 });
 ```
 
@@ -2137,7 +1639,7 @@ const community = await client.pixamind.getCommunity({
 ```js
 {
   id: 1234,
-  name: "hive-123456",
+  name: "portal-123456",
   title: "Photography Lovers",
   about: "A community for photography enthusiasts",
   lang: "en",
@@ -2282,6 +1784,27 @@ const notifications = await client.pixamind.getAccountNotifications({
 
 ---
 
+#### NFTs, promotion, metadata
+
+| Method | Pixamind method | See |
+|--------|-----------------|-----|
+| `getNft(author, permlink)`, `getNfts(ids)` | `pixamind_nft.get_nfts` | [Reading NFTs](#reading-nfts) |
+| `listNftEditions(query)` | `pixamind_nft.list_editions` | [Reading NFTs](#reading-nfts) |
+| `listCreatedNfts(account, options)` | `pixamind_nft.list_created` | [Reading NFTs](#reading-nfts) |
+| `listOwnedNfts(account, options)` | `pixamind_nft.list_owned` | [Reading NFTs](#reading-nfts) |
+| `listNftMarket(query)` | `pixamind_nft.list_market` | [Reading NFTs](#reading-nfts) |
+| `getNftHistory(query)` | `pixamind_nft.get_history` | [Reading NFTs](#reading-nfts) |
+| `getNftLicense(id)` | `pixamind_nft.get_license` | [Reading NFTs](#reading-nfts) |
+| `getPromotedPosts(query)` | `bridge.get_ranked_posts`, sort `promoted` | [Promoted posts](#promoted-posts) |
+| `getPromotions(author, permlink)`, `getPromotionsBySender(sender)` | `pixamind_feed.get_promotions` | [Promoted posts](#promoted-posts) |
+| `getContentMetadata(author, permlink)`, `getContentMetadataBatch(posts)` | `pixamind_content.get_content_metadata` | [Post metadata and history](#post-metadata-and-history) |
+| `getPostHistory(author, permlink, options)` | `pixamind_content.get_post_history` | [Post metadata and history](#post-metadata-and-history) |
+| `getPost(author, permlink, observer?)` | `bridge.get_post` | |
+| `getInfo()` | `pixamind_api.get_info` | |
+| `callNamespace(namespace, method, params)` | any other method | |
+
+---
+
 ### Account By Key API
 
 Find accounts associated with a public key.
@@ -2322,6 +1845,367 @@ if (accounts[0].length > 0) {
   console.log("Key not found on any account");
 }
 ```
+
+---
+
+### Transaction Status API
+
+`client.broadcast` sends transactions with `condenser_api.broadcast_transaction`, which answers as soon as the node has accepted the transaction, before it is in a block: the confirmation holds the transaction `id`. To know when it is in a block:
+
+```js
+const { id } = await client.broadcast.vote({ voter: "alice", author: "bob", permlink: "art", weight: 10000 }, postingKey);
+
+const { status, block_num } = await client.transaction.findTransaction(id);
+// status: "within_mempool", "within_reversible_block", "within_irreversible_block",
+//         "expired_reversible", "expired_irreversible", "too_old" or "unknown"
+```
+
+Pass the transaction's `expiration` as a second argument to tell an expired transaction from an unknown one.
+
+---
+
+## NFTs (hardfork 32)
+
+From hardfork 32 an author can mint one of their root posts as an NFT, in 1 to 10,000 copies. Each copy has one owner at a time and can be offered at a fixed price, bought, given away or burned. All of this is one operation, `nft` (37), signed with the active key of the account that acts: the author who mints, the owner who offers, withdraws or gives a copy, or the buyer.
+
+| | |
+|---|---|
+| Ids | `@author/permlink/0` is the NFT; `@author/permlink/N` is its copy N (1 to 10,000) |
+| Currency | Prices, royalties and the mint fee are in PXS |
+| Mint fee | 1.000 PXS per copy, burned |
+| Royalty | 0 to 25% of each later sale, paid to the author when someone else sells; fixed at mint |
+| License | The full text of the terms, UTF-8, up to 72 KiB, fixed at mint; the chain keeps its SHA-256 |
+| A minted post | Can no longer be edited or deleted |
+| Gift | A transfer of a copy: no payment, so no royalty |
+| Burn | A transfer to `null`, for good; the copy keeps its number |
+| Reserve | The copies that never left the author and have no offer of their own; copy 0 stands for it in offers and purchases |
+
+`client.nft` signs and sends the actions, and reads what the chain holds at head block, which is what a purchase is checked against. The market summary of an NFT page, its history and the lists by creator, owner and price come from Pixamind, through `client.pixamind` ([Reading NFTs](#reading-nfts)).
+
+Every `client.nft` action returns a [`TransactionConfirmation`](#-transaction-interface) and needs the crypto module ([Lite and crypto entry points](#lite-and-crypto-entry-points)).
+
+### Minting
+
+```js
+import { Client, PrivateKey } from "@pixagram/dpixa";
+
+const client = new Client("https://api.pixagram.com");
+const activeKey = PrivateKey.fromString(activeWif);
+
+await client.nft.mint({
+  account: "alice",             // the author; the post is a root post of hers
+  permlink: "my-artwork",
+  editions: 5,                  // 1 to 10,000 copies
+  royalty: 1000,                // basis points: 10% of each later sale
+  license: "Licence « tous droits réservés » …"
+  // fee: "5.000 PXS"           // optional: the copies times the fee per copy in force
+}, activeKey);
+```
+
+Before signing, `mint` runs [`checkNftMint`](#nft-helpers) and throws if the chain would refuse the copies, royalty, license or fee. When `fee` is left out it reads the fee per copy from `database_api.get_nft_params`. The chain also checks that the post is a root post of the minter, that it was not minted before, and that the minter holds the fee in liquid PXS. All copies start with the author.
+
+### Selling and buying a copy
+
+```js
+// The owner offers copy 3 at 50 PXS. Without expiration the offer never expires.
+await client.nft.list({ account: "bob", nft: "@alice/my-artwork/3", price: "50.000 PXS" }, bobKey);
+
+// …until 1 February 2027 (UTC), or with the copy given by its parts:
+await client.nft.list({
+  account: "bob", author: "alice", permlink: "my-artwork", edition: 3,
+  price: "50.000 PXS", expiration: "2027-02-01T00:00:00"
+}, bobKey);
+
+// The owner withdraws the offer.
+await client.nft.unlist({ account: "bob", nft: "@alice/my-artwork/3" }, bobKey);
+
+// A buyer takes the offer. The price must equal the asking price; left out, it is read from the chain first.
+await client.nft.buy({ account: "dave", nft: "@alice/my-artwork/3" }, daveKey);
+await client.nft.buy({ account: "dave", nft: "@alice/my-artwork/3", price: "50.000 PXS" }, daveKey);
+```
+
+A buyer pays the price, the author receives the royalty unless the author is the seller, and the seller receives the rest. Because the price signed must equal the asking price, a buyer never pays a price changed after signing: if the offer changes or is withdrawn before the transaction is included, the purchase fails and nothing is paid. `nftSaleSplit(price, royalty, sellerIsCreator)` shows how a price will be shared.
+
+An expiration is at most `2038-01-19T03:14:07`: the node refuses later times in the JSON it receives, so dpixa refuses them before signing. Leave `expiration` out for an offer that never expires; the node then records `2106-02-07T06:28:15` (`NFT_NEVER_EXPIRES`) and returns that time in what it answers.
+
+A copy that never left its author leaves the reserve when the author offers it on its own, and goes back to the reserve when the author withdraws that offer.
+
+### The reserve: every untouched copy at one price
+
+The author can offer every copy that never left them, at one price, in one action. Each buyer gets the lowest-numbered copy still in the reserve, and the author receives the whole price. The offer ends by itself when the reserve runs out.
+
+```js
+// The author offers the reserve at 5 PXS a copy (expiration optional).
+await client.nft.offerReserve({ account: "carol", permlink: "drop", price: "5.000 PXS" }, carolKey);
+
+// A buyer takes the next copy; the price is read from the chain when left out.
+await client.nft.buyFromReserve({ account: "erin", author: "carol", permlink: "drop" }, erinKey);
+
+// The author withdraws the reserve offer.
+await client.nft.withdrawReserve({ account: "carol", permlink: "drop" }, carolKey);
+```
+
+On chain this is `nft_list`, `nft_buy` and `nft_unlist` of copy 0. The `nft_sold` virtual operation of a purchase names the copy the buyer got. `client.nft.getNft(author, permlink)` tells how many copies are in the reserve (`reserve`), whether it can be bought now (`reserve_listed`), at what price (`reserve_price`) and which copy comes next (`reserve_next`).
+
+### Gifts and burns
+
+```js
+// Give copy 2 to frank: no payment, no royalty. Ends any offer of the copy.
+await client.nft.transfer({ account: "alice", nft: "@alice/my-artwork/2", to: "frank" }, aliceKey);
+
+// Burn copy 4: it goes to null for good, keeps its number and still counts among the copies.
+await client.nft.burn({ account: "alice", nft: "@alice/my-artwork/4" }, aliceKey);
+```
+
+### Reading NFTs
+
+What the chain holds at head block, from `client.nft` (`database_api`):
+
+| Method | Returns |
+|---|---|
+| `getParams()` | The fee per copy (`mint_fee_per_edition`, an `Asset`), `max_editions`, `max_royalty`, `max_license_length` and `price_symbols` (`['PXS']`) |
+| `find(ids)` | Up to 100 ids: `{ nfts, editions }`. Ids that name nothing are left out |
+| `getNft(author, permlink)` | The NFT, or `undefined` when the post is not minted: `editions`, `royalty`, `license_size`, `license_sha256`, `reserve`, `reserve_next`, `reserve_listed`, `reserve_price`, `reserve_expiration` |
+| `getEdition("@author/permlink/N")` | One copy: `owner`, `burned`, `acquired`, `listed`, `price`, `expiration` |
+| `areMinted(posts)` | One boolean per post, `[author, permlink]` or `{ author, permlink }`, any number of posts |
+| `listByCreator(creator, { after, limit })` | NFTs a creator minted, by permlink |
+| `listEditions("@author/permlink/0", { from, limit })` | Copies in number order, each copy whether or not it ever moved |
+| `listByOwner(owner, { after, limit })` | Copies an account owns that were offered or moved at least once |
+| `askingPrice(author, permlink, edition)` | The price a copy, or the reserve (edition 0), can be bought at now; throws when it is not for sale |
+
+Prices are `Asset` instances, read from the `{ amount, precision, nai }` form database_api answers in. A price or expiration is meaningful only while `listed` (or `reserve_listed`) is true.
+
+What an NFT page or a market needs, from Pixamind (`client.pixamind`, namespace `pixamind_nft`):
+
+| Method | Returns |
+|---|---|
+| `getNft(author, permlink)` | The NFT with its terms and market summary, or `undefined` |
+| `getNfts(ids)` | Up to 100 ids: for `…/0` the NFT with its summary, for `…/N` the copy with the terms of its NFT under `nft` |
+| `listNftEditions({ nft, sort, owner, limit, start })` | The copies of one NFT: `sort: "number"` lists every copy, those of the reserve with `reserve: true`; `sort: "price"` lists what can be bought now, cheapest first, the offered reserve as one entry (copy 0) |
+| `listCreatedNfts(account, { limit, start })` | NFTs an account minted, newest first, with their summary and `total` |
+| `listOwnedNfts(account, { acquired_only, limit, start })` | NFTs an account holds copies of: the terms, `held`, `listed` and `acquired` |
+| `listNftMarket({ sort, creator, limit, start })` | What can be bought now: copies offered on their own and offered reserves (copy 0, `reserve: true`, `copies`, `next`) |
+| `getNftHistory({ nft } or { account }, limit, start)` | Mints, offers, sales, gifts and burns, newest first |
+| `getNftLicense(id)` | The full license text with `license_size` and `license_sha256`, or `undefined` |
+
+The market summary that `getNft` returns:
+
+| Field | Meaning |
+|---|---|
+| `copies` | Number of copies |
+| `for_sale` | Copies that can be bought now: each copy offered on its own, plus the whole reserve while it is offered |
+| `listed` | Copies offered on their own |
+| `reserve` | Copies in the reserve |
+| `reserve_offer` | The reserve offer, when copy 0 can be bought now: `price`, `copies`, `next` (the copy the next buyer gets), `expiration` |
+| `floor` | The lowest price a copy can be bought at now: `price`, `copies` (how many sell at it) and `nft_ids` (the ids to buy them with; `…/0` is the reserve) |
+| `held_by_creator`, `burned` | Copies the creator still holds; copies given to `null` |
+| `sales`, `volume`, `royalties`, `last_sale` | Sales of all copies, what they paid, what the creator received, the latest one |
+
+```js
+const nft = await client.pixamind.getNft("carol", "drop");
+if (nft && nft.floor) {
+  console.log(`${nft.for_sale} of ${nft.copies} for sale from ${nft.floor.price}`);
+  // buy the cheapest: an id of floor.nft_ids, "@carol/drop/0" being the reserve
+  await client.nft.buy({ account: "erin", nft: nft.floor.nft_ids[0], price: nft.floor.price }, erinKey);
+}
+```
+
+Pixamind lists return `next_start` and `has_more`: pass `next_start` back as `start` for the next page. Every post Pixamind returns (`getRankedPosts`, `getAccountPosts`, `getPost`, `database.getDiscussions` on a Pixamind node) carries `nft_minted`, `true` or `false`.
+
+To check that a license text is the one minted, compare the `license_sha256` of `client.pixamind.getNftLicense(id)` with the chain's, from `client.nft.getNft(author, permlink)`.
+
+### NFT helpers
+
+```js
+import {
+  parseNftId, formatNftId, isNftId,
+  nftMintFee, nftRoyalty, nftSaleSplit, checkNftMint, utf8ByteLength,
+  NFT_MAX_EDITIONS, NFT_MAX_ROYALTY, NFT_MAX_LICENSE_BYTES, NFT_RESERVE, NFT_LATEST_EXPIRATION
+} from "@pixagram/dpixa";
+
+parseNftId("@alice/my-artwork/3");      // { author: "alice", permlink: "my-artwork", edition: 3 }
+formatNftId("alice", "my-artwork");     // "@alice/my-artwork/0"
+isNftId("@alice/my-artwork/03");        // false: no leading zeros, as the node reads ids
+
+nftMintFee(5).toString();                       // "5.000 PXS"
+nftRoyalty("300.000 PXS", 1000).toString();     // "30.000 PXS", rounded down to 0.001 as the node does
+nftSaleSplit("300.000 PXS", 1000);              // { royalty: 30.000 PXS, seller: 270.000 PXS }
+nftSaleSplit("300.000 PXS", 1000, true);        // the creator sells: { royalty: 0.000 PXS, seller: 300.000 PXS }
+
+checkNftMint({ permlink: "p", editions: 5, royalty: 3000, license: "…", fee: "5.000 PXS" });
+// ["royalty: 0 to 2500 basis points (25%)"]  (empty when the chain would accept these values)
+
+utf8ByteLength("Licence « tous droits réservés »");   // 36: the unit of the 72 KiB license limit
+```
+
+| Constant | Value |
+|---|---|
+| `NFT_MAX_EDITIONS` | 10,000 copies |
+| `NFT_MAX_ROYALTY` | 2500 basis points (25%) |
+| `NFT_MAX_LICENSE_BYTES` | 73,728 bytes (72 KiB) |
+| `NFT_MINT_FEE_PER_EDITION` | `"1.000 PXS"` |
+| `NFT_RESERVE` | 0, the edition number of the reserve |
+| `NFT_NEVER_EXPIRES` | `"2106-02-07T06:28:15"`, the expiration the node returns for an offer that never expires; to make one, leave `expiration` out |
+| `NFT_LATEST_EXPIRATION` | `"2038-01-19T03:14:07"`, the latest expiration the node reads |
+| `NFT_BURN_ACCOUNT` | `"null"` |
+| `NFT_FIND_LIMIT` | 100 ids per `find` or `getNfts` call |
+
+### The nft operation
+
+`client.nft` builds the operation; `client.broadcast.nft(data, activeKey)` sends one you build yourself, and `client.broadcast.sendOperations` sends it with others in one transaction.
+
+```js
+["nft", {
+  account: "alice",                      // the actor
+  action: [0, {                          // [tag, payload]
+    permlink: "my-artwork",
+    editions: 5,
+    royalty: 1000,
+    license: "PIXA_LICENSE/1.0",
+    fee: "5.000 PXS",
+    extensions: []
+  }],
+  extensions: []
+}]
+```
+
+| Tag | Action | Payload |
+|---|---|---|
+| 0 | `nft_mint` | `permlink`, `editions`, `royalty`, `license`, `fee` |
+| 1 | `nft_list` | `author`, `permlink`, `edition` (0 = the reserve), `price`, `expiration` (optional) |
+| 2 | `nft_unlist` | `author`, `permlink`, `edition` (0 = the reserve) |
+| 3 | `nft_buy` | `author`, `permlink`, `edition` (0 = the next copy of the reserve), `price` |
+| 4 | `nft_transfer` | `author`, `permlink`, `edition` (1 or more), `to` (`null` burns) |
+
+The action can also be written `["nft_mint", {...}]` or `{ type: "nft_mint", value: {...} }`, the form database_api and HAF use. `extensions` can be left out. When dpixa signs, it writes the action as `[tag, payload]`, the form condenser_api reads, with `extensions: []`; an offer given the never-expiring time is sent without `expiration`, which the node reads as the same time. The digest does not change. Fed through the node's own JSON parser in condenser_api mode, every action dpixa sends gives back the bytes dpixa signed.
+
+A purchase produces two virtual operations:
+
+| Id | Name | Fields |
+|---|---|---|
+| 93 | `nft_sold` | `seller`, `buyer`, `author`, `permlink`, `edition` (the copy sold; for a purchase from the reserve, the copy the buyer got), `price`, `royalty` (zero when the creator sold) |
+| 94 | `nft_royalty` | `creator`, `seller`, `buyer`, `permlink`, `edition`, `royalty`; only when a royalty was paid |
+
+An account's NFT activity, from its history:
+
+```js
+const op = utils.operationOrders;
+const nftOnly = utils.makeBitMaskFilter([op.nft, op.nft_sold, op.nft_royalty]);
+const history = await client.database.getAccountHistory("alice", -1, 100, nftOnly);
+```
+
+---
+
+## Voting bar (hardfork 32)
+
+Hardfork 32 makes each vote weigh more on the voting bar, so that a curator who votes a few times a day with care keeps up with an account voting all the time:
+
+| | Before hardfork 32 | From hardfork 32 |
+|---|---|---|
+| A 100% vote costs | 2% of a full bar | 3% of a full bar |
+| The bar refills | 20% a day (5 days from empty) | 15% a day (6 days 16 hours from empty) |
+| `vote_power_reserve_rate` | 10 | 5 |
+| `voting_mana_regeneration_seconds` | 432,000 (not returned by older nodes) | 576,000 |
+| Vesting shares taken back from a delegation are usable again after | 5 days | 7 days (`delegation_return_period`) |
+
+The downvote bar refills at the same rate. Both values are global properties, returned by `client.database.getDynamicGlobalProperties()`, and `client.rc` reads them:
+
+```js
+// Mana, refilled to now with the refill time the chain has (percentage: basis points, 10000 = full)
+const vp = await client.rc.getVPMana("alice");
+console.log(`Voting bar: ${(vp.percentage / 100).toFixed(2)}%`);
+
+const down = await client.rc.getDownvoteMana("alice");
+
+// What a vote costs: mana (millionths of VESTS), its share of a full bar, and a 100% vote's share
+const cost = await client.rc.getVoteCost("alice", 5000);   // a 50% vote
+console.log(`${cost.percentage}% of the bar; a full vote costs ${cost.full_vote_percentage}%`); // 1.5, 3
+
+// Without extra requests, from objects you already have:
+const props = await client.database.getDynamicGlobalProperties();
+const [account] = await client.database.getAccounts(["alice"]);
+client.rc.calculateVPMana(account, props);
+client.rc.calculateDownvoteMana(account, props);
+client.rc.calculateVoteCost(account, 10000, props);
+```
+
+`calculateVoteCost` follows the node exactly: `ceil(floor(effective VESTS × |weight| × 86400 / 10000) / (vote_power_reserve_rate × voting_mana_regeneration_seconds))`, the effective VESTS being the account's own, minus those it delegated, plus those it received, minus its next weekly power-down. A downvote is paid from the downvote bar first. `calculateVPMana(account)` without `props` keeps the 5-day refill of earlier versions; `getVotingManaRegenerationSeconds(props)` returns the refill time a node reports, or 432,000 when it reports none.
+
+---
+
+## Promoted posts
+
+Anyone can push a post up the promoted feed by burning PXS for it: a transfer to `null` with the memo `@author/permlink`. Pixamind adds the amount to the post's promoted total.
+
+```js
+await client.broadcast.promote(
+  { from: "carol", author: "alice", permlink: "cat", amount: "1.500 PXS" },
+  carolActiveKey
+);
+// the same as client.broadcast.transfer({ from: "carol", to: "null", amount: "1.500 PXS", memo: "@alice/cat" }, carolActiveKey)
+```
+
+| Rule | |
+|---|---|
+| Asset | PXS only; `promote` refuses anything else. PIXA sent to `null` burns without promoting |
+| Target | A root post that exists when the transfer is made; a reply cannot be promoted |
+| Memo | Exactly `@author/permlink`, which `promote` writes |
+| Amount | From 0.001 PXS; payments from any account add up |
+| Ranking | Highest total first, while the post awaits its payout (7 days); it keeps its total afterwards |
+| Refund | None: the PXS is burned whatever happens to the post |
+
+Reading it:
+
+```js
+// The promoted feed: all posts, a tag, a community, or "my" (the observer's communities)
+const posts = await client.pixamind.getPromotedPosts({ tag: "my", observer: "dave", limit: 20 });
+posts.forEach((post) => console.log(post.promoted, post.title)); // "1.750 PXS"
+
+// The payments behind a post, and what an account spent
+const { promoted, promotions } = await client.pixamind.getPromotions("alice", "cat");
+const spending = await client.pixamind.getPromotionsBySender("carol", 50);
+```
+
+Every post Pixamind returns carries `promoted`, `"0.000 PXS"` when nothing was burned for it. `client.pixamind.getRankedPosts({ sort: "promoted", … })` and `client.database.getDiscussions("promoted", …)` read the same feed.
+
+## Post metadata and history
+
+```js
+// Format, tags, license, picture size; and when they apply: promoted, versions (recorded edits), nft
+const meta = await client.pixamind.getContentMetadata("alice", "cat");
+console.log(meta.content.image.width, meta.content.image.height, meta.promoted, meta.versions, meta.nft?.floor);
+
+// Up to 100 posts in one call; null for a post that does not exist
+const many = await client.pixamind.getContentMetadataBatch([["alice", "cat"], ["bob", "dog"]]);
+
+// Every recorded version of a post or comment, oldest first: the creation, then each edit
+const history = await client.pixamind.getPostHistory("bob", "blog-1", { limit: 20, bodies: false });
+history.versions.forEach((v) => console.log(v.version, v.timestamp, v.changed));
+```
+
+`getContentMetadata` reads the picture's size from the header of the image in the post body, so a feed can reserve the space before loading it. `client.pixamind.getInfo()` tells which of these features a Pixamind node runs (`features.nfts`, `features.promotions`, `features.post_history`).
+
+## Pixa names and node names
+
+dpixa has always used Pixa names for these fields. Nodes before pixacore 1.32.0 read only Hive's names; [pixacore](https://github.com/pixagram-blockchain/pixacore) 1.32.0, the node of hardfork 32, writes Pixa's names and reads both:
+
+| Operation | dpixa name | Nodes before pixacore 1.32.0 | pixacore 1.32.0 |
+|---|---|---|---|
+| `comment_options` | `percent_pxs` | `percent_hbd` | `percent_pxs`, or `percent_hbd` |
+| `claim_reward_balance` | `reward_pixa`, `reward_pxs` | `reward_hive`, `reward_hbd` | either pair |
+| `escrow_transfer`, `escrow_release` | `pxs_amount`, `pixa_amount` | `hbd_amount`, `hive_amount` | either pair |
+| `witness_update` (`props`) | `pxs_interest_rate` | `hbd_interest_rate` | either name |
+| `witness_set_properties` (`utils.buildWitnessUpdateOp`) | `pxs_exchange_rate`, `pxs_interest_rate` | `hbd_exchange_rate`, `hbd_interest_rate` | `hbd_exchange_rate`, `hbd_interest_rate`: these keys are signed data and keep their names on every node |
+
+pixacore 1.32.0 also answers with Pixa's names (`pxs_balance`, `reward_pixa_balance`, `total_vesting_fund_pixa`, `percent_pxs`, ...). The account, post and global-properties types of dpixa declare both names where they differ, so the same code reads either node.
+
+A signature covers the binary form of the transaction, which the node rebuilds from the JSON it receives. A field under a name the node does not read is skipped and replaced by its default value, so the transaction the node checks differs from the one that was signed, and is rejected for a missing authority. Up to 1.6.0, a node reading the Hive names rejected any transaction in which such a field held something other than its default, for example `percent_pxs: 0`. `api.pixagram.com` renames these fields before they reach its node, so 1.6.0 worked through it; a node reached directly, such as a witness's own node or a testnet, did not. A pixacore 1.32.0 node reads both names, so no renaming is needed. From 1.7.0:
+
+- Give each field under either name. dpixa signs the same bytes for both.
+- When it signs, `cryptoUtils.signTransaction` writes the value under both names, so the API node reads what was signed whichever names it uses. `client.broadcast.send` does the same for a transaction signed elsewhere. `normalizeTransaction(tx)` and `normalizeOperation(op)` are the functions they use. The digest never changes.
+- Two names holding different values are refused before signing.
+- `utils.buildWitnessUpdateOp` writes witness properties under the names the node looks up, `hbd_exchange_rate` and `hbd_interest_rate`. Here the names are part of the signed data: a node reached directly ignored `pxs_exchange_rate`, so a price feed published that way never took effect, and `api.pixagram.com` rewrote the name after it was signed, so the node refused the signature.
+- Reading: `getVestingSharePrice` takes `total_vesting_fund_pixa` or `total_vesting_fund_hive`, and the account, post and global-properties types declare both names where they differ.
 
 ---
 
@@ -2378,15 +2262,15 @@ asset.toJSON();    // "123.456 PIXA"
 ```
 
 <details>
-<summary><strong>📋 Asset Symbols Reference</strong></summary>
+<summary><strong>📋 <a id="asset-symbols-reference"></a>Asset Symbols Reference</strong></summary>
 
 | Symbol | Description | Precision | Example |
 |--------|-------------|-----------|---------|
 | `PIXA` | Main token | 3 | `"100.000 PIXA"` |
-| `PXS` | Pixa Dollar (stablecoin) | 3 | `"50.500 PXS"` |
+| `PXS` | Pixa Supra, the Big Mac referenced supracoin | 3 | `"50.500 PXS"` |
 | `VESTS` | Vesting shares (Pixa Power) | 6 | `"1000000.000000 VESTS"` |
 | `TESTS` | Testnet main token | 3 | `"100.000 TESTS"` |
-| `TPS` | Testnet dollar | 3 | `"50.000 TPS"` |
+| `TBD` | Testnet PXS | 3 | `"50.000 TBD"` |
 
 </details>
 
@@ -2493,7 +2377,7 @@ const bufferKey = PrivateKey.from(someBuffer);
 ```
 
 <details>
-<summary><strong>📋 Key Roles Reference</strong></summary>
+<summary><strong>📋 <a id="key-roles-reference"></a>Key Roles Reference</strong></summary>
 
 | Role | Usage | Required For |
 |------|-------|--------------|
@@ -2647,7 +2531,7 @@ For advanced use cases, you can build and sign transactions manually.
 ```js
 import { Client, PrivateKey, cryptoUtils } from "@pixagram/dpixa";
 
-const client = new Client(["https://api.pixagram.io"]);
+const client = new Client(["https://api.pixagram.com"]);
 
 // Get reference block info
 const props = await client.database.getDynamicGlobalProperties();
@@ -3181,6 +3065,27 @@ console.log(`Transaction ID: ${result.id}`);
 </details>
 
 <details>
+<summary><strong>📋 NFT Operation (hardfork 32)</strong></summary>
+
+### `nft`
+```js
+["nft", {
+  account: "alice",          // the actor, active key
+  action: [0, {              // 0 mint, 1 list, 2 unlist, 3 buy, 4 transfer
+    permlink: "my-artwork",
+    editions: 5,
+    royalty: 1000,
+    license: "PIXA_LICENSE/1.0",
+    fee: "5.000 PXS"
+  }]
+}]
+```
+
+See [The nft operation](#the-nft-operation) for every action.
+
+</details>
+
+<details>
 <summary><strong>📋 Virtual Operations (Read-Only)</strong></summary>
 
 | Operation | Description |
@@ -3194,6 +3099,8 @@ console.log(`Transaction ID: ${result.id}`);
 | `producer_reward` | Witness block reward |
 | `interest` | PXS interest payment |
 | `return_vesting_delegation` | Delegation returned |
+| `nft_sold` | A copy of an NFT was bought (93) |
+| `nft_royalty` | The royalty of that sale, when not zero (94) |
 
 </details>
 
@@ -3243,15 +3150,15 @@ stream.on("data", (block) => console.log(block));
 
 ```js
 const witnessOp = utils.buildWitnessUpdateOp("mywitness", {
-  key: publicKey,
+  key: publicKey,                          // the current signing key, required
   account_creation_fee: "3.000 PIXA",
   maximum_block_size: 65536,
-  pxs_interest_rate: 1000,
+  pxs_exchange_rate: { base: "0.250 PXS", quote: "1.000 PIXA" },  // written as hbd_exchange_rate
   url: "https://mywitness.com"
 });
 ```
 
-**Returns:** [`WitnessSetPropertiesOperation`](#-operation-interfaces) — ready to broadcast
+**Returns:** [`WitnessSetPropertiesOperation`](#-operation-interfaces) — ready to broadcast. `pxs_exchange_rate` and `pxs_interest_rate` are written under the names the node reads, `hbd_exchange_rate` and `hbd_interest_rate`; the interest rate is fixed at 0 on Pixa.
 
 ---
 
@@ -3402,7 +3309,10 @@ interface DynamicGlobalProperties {
   recent_slots_filled: string;
   participation_count: number;
   last_irreversible_block_num: number;
-  vote_power_reserve_rate: number;
+  vote_power_reserve_rate: number;            // 5 from hardfork 32 (a full vote: 3% of the bar)
+  voting_mana_regeneration_seconds?: number;  // 576000 from hardfork 32 (15% a day)
+  delegation_return_period?: number;          // 604800 from hardfork 32 (7 days)
+  downvote_pool_percent?: number;
   current_reserve_ratio: number;
 }
 ```
@@ -3535,7 +3445,7 @@ interface SignedBlock extends BlockHeader {
 </details>
 
 <details>
-<summary><strong>📋 <a id="-transaction-interface"></a>[Transaction / SignedTransaction / TransactionConfirmation](#-transaction-interface) Interfaces</strong></summary>
+<summary><strong>📋 <a id="-transaction-interface"></a>Transaction / SignedTransaction / TransactionConfirmation Interfaces</strong></summary>
 
 Returned by: [`database.getTransaction()`](#gettransactiontxid) (SignedTransaction), all `broadcast.*` methods (TransactionConfirmation)
 
@@ -3553,10 +3463,10 @@ interface SignedTransaction extends Transaction {
 }
 
 interface TransactionConfirmation {
-  id: string;
-  block_num: number;
-  trx_num: number;
-  expired: boolean;
+  id: string;           // what client.broadcast returns
+  block_num?: number;   // only from broadcast_transaction_synchronous, called directly
+  trx_num?: number;
+  expired?: boolean;
 }
 ```
 
@@ -3645,6 +3555,8 @@ interface Discussion extends Comment {
   pending_payout_value: string | Asset;
   url: string;
   root_title: string;
+  promoted: string | Asset;     // PXS burned to promote the post (Pixamind)
+  nft_minted?: boolean;         // the post is minted as an NFT (Pixamind, hardfork 32)
   first_reblogged_by?: any;
   first_reblogged_on?: any;
 }
@@ -3675,7 +3587,7 @@ interface DisqussionQuery {
 </details>
 
 <details>
-<summary><strong>📋 <a id="-vestingdelegation-interface"></a>[VestingDelegation](#-vestingdelegation-interface) Interface</strong></summary>
+<summary><strong>📋 <a id="-vestingdelegation-interface"></a>VestingDelegation Interface</strong></summary>
 
 Returned by: [`database.getVestingDelegations()`](#getvestingdelegationsaccount-from-limit)
 
@@ -3740,7 +3652,7 @@ interface Notifications {
 </details>
 
 <details>
-<summary><strong>📋 <a id="-accountsbykey-interface"></a>[AccountsByKey](#-accountsbykey-interface) Interface</strong></summary>
+<summary><strong>📋 <a id="-accountsbykey-interface"></a>AccountsByKey Interface</strong></summary>
 
 Returned by: [`keys.getKeyReferences()`](#getkeyreferenceskeys)
 
@@ -3823,7 +3735,7 @@ hex.buffer;            // <Buffer de ad be ef>
 </details>
 
 <details>
-<summary><strong>📋 <a id="-operation-interfaces"></a>[Operation Interfaces (full list)](#-operation-interfaces)</strong></summary>
+<summary><strong>📋 <a id="-operation-interfaces"></a>Operation Interfaces (full list)</strong></summary>
 
 All operations follow the tuple pattern `[OperationName, { ...params }]`.
 
@@ -3842,7 +3754,7 @@ type OperationName =
   | "escrow_transfer" | "escrow_dispute" | "escrow_release" | "pow2"
   | "escrow_approve" | "transfer_to_savings" | "transfer_from_savings"
   | "cancel_transfer_from_savings" | "custom_binary" | "decline_voting_rights"
-  | "reset_account" | "set_reset_account" | "claim_reward_balance"
+  | "nft" | "set_reset_account" | "claim_reward_balance"
   | "delegate_vesting_shares" | "account_create_with_delegation"
   | "witness_set_properties" | "account_update2" | "create_proposal"
   | "update_proposal_votes" | "remove_proposal" | "update_proposal"
@@ -3855,7 +3767,12 @@ type VirtualOperationName =
   | "comment_benefactor_reward" | "clear_null_account_balance"
   | "sps_fund" | "sps_convert" | "changed_recovery_account"
   | "transfer_to_vesting_completed" | "account_created"
-  | "vesting_shares_split" | "system_warning" | "shutdown_witness";
+  | "vesting_shares_split" | "system_warning" | "shutdown_witness"
+  | "dhf_funding" | "dhf_conversion" | "hardfork_hive" | "hardfork_hive_restore"
+  | "limit_order_cancelled" | "producer_missed" | "proposal_fee"
+  | "collateralized_convert_immediate_conversion" | "escrow_approved" | "escrow_rejected"
+  | "proxy_cleared" | "declined_voting_rights" | "nft_sold" | "nft_royalty"
+  // … the full list, with numbers: utils.operationOrders
 ```
 
 **Individual operation interfaces** — each extends `Operation` with typed `[0]` (name) and `[1]` (params):
@@ -3907,8 +3824,10 @@ type VirtualOperationName =
 | `RecoverAccountOperation` | `recover_account` |
 | `ChangeRecoveryAccountOperation` | `change_recovery_account` |
 | `DeclineVotingRightsOperation` | `decline_voting_rights` |
-| `ResetAccountOperation` | `reset_account` |
 | `SetResetAccountOperation` | `set_reset_account` |
+| `NftOperation` | `nft` (actions `NftMint`, `NftList`, `NftUnlist`, `NftBuy`, `NftTransfer`) |
+| `NftSoldOperation` | `nft_sold` (virtual) |
+| `NftRoyaltyOperation` | `nft_royalty` (virtual) |
 | `ReportOverProductionOperation` | `report_over_production` |
 | `PowOperation` | `pow` |
 | `Pow2Operation` | `pow2` |
@@ -3917,10 +3836,10 @@ type VirtualOperationName =
 
 ---
 
-## [Enumerations](#enumerations)
+## Enumerations
 
 ```js
-import { [BlockchainMode](#enumerations) } from "@pixagram/dpixa";
+import { BlockchainMode } from "@pixagram/dpixa";
 
 // BlockchainMode
 BlockchainMode.Irreversible  // 0 — Only confirmed blocks (default)
@@ -3931,7 +3850,7 @@ See also: [Asset Symbols](#asset-symbols-reference), [Discussion Query Categorie
 
 ---
 
-## [Constants](#constants)
+## Constants
 
 ```js
 import { 
@@ -3949,12 +3868,12 @@ console.log(NETWORK_ID);             // Buffer (network ID for WIF)
 
 ---
 
-## [Advanced Usage](#advanced-usage)
+## Advanced Usage
 
 ### Custom Backoff Strategy
 
 ```js
-const client = new Client(["https://api.pixagram.io"], {
+const client = new Client(["https://api.pixagram.com"], {
   backoff: (tries) => {
     // Exponential backoff with jitter
     const base = Math.min(1000 * Math.pow(2, tries), 30000);
@@ -3974,7 +3893,7 @@ const agent = new https.Agent({
   maxSockets: 10
 });
 
-const client = new Client(["https://api.pixagram.io"], {
+const client = new Client(["https://api.pixagram.com"], {
   agent: agent
 });
 ```
@@ -4013,6 +3932,19 @@ autoVoter(["favorite-author1", "favorite-author2"]);
 
 ---
 
+## Testing
+
+```bash
+npm ci
+npm test              # lint gate (eslint), as CI runs it
+npm run test:unit     # offline suite: crypto, serializers, assets, memos, compat snapshot, NFTs, hardfork 32
+make test             # everything, including the tests that need a live node (TEST_NODE=https://… make test)
+```
+
+`test/nft.ts` checks the NFT operation against bytes printed by the node itself (a probe built against the node's headers, fc::raw::pack in the legacy pack mode that signatures cover). `test/hf32.ts` checks `client.nft`, the Pixamind additions, the promotion and claim helpers and the voting bar against a mocked node. `test/compat.ts` compares keys, signatures, digests and RPC request bodies with `test/fixtures/compat.json`; `test/compat-cases.js` lists the differences 1.7.0 made to it on purpose.
+
+---
+
 ## Important Notes
 
 > ⚠️ **WebSocket Removed**: As of v0.7.0, WebSocket support has been removed. Use HTTP(S) URLs.
@@ -4027,7 +3959,7 @@ autoVoter(["favorite-author1", "favorite-author2"]);
 
 ## License
 
-MIT
+BSD 3-Clause with a no-military-use clause (`BSD-3-Clause-No-Military-License`), see [LICENSE](https://github.com/pixagram-blockchain/pixaclient/blob/main/LICENSE). dpixa started as a fork of [dhive](https://gitlab.syncad.com/hive/dhive), itself from dsteem by Johan Nordberg.
 
 ---
 

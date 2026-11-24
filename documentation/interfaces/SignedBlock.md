@@ -6,7 +6,7 @@
 
 # Interface: SignedBlock
 
-Defined in: chain/block.ts:60
+Defined in: [chain/block.ts:60](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/block.ts#L60)
 
 Full signed block.
 
@@ -20,7 +20,7 @@ Full signed block.
 
 > **block\_id**: `string`
 
-Defined in: chain/block.ts:61
+Defined in: [chain/block.ts:61](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/block.ts#L61)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: chain/block.ts:61
 
 > **extensions**: `any`[]
 
-Defined in: chain/block.ts:47
+Defined in: [chain/block.ts:47](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/block.ts#L47)
 
 #### Inherited from
 
@@ -40,7 +40,7 @@ Defined in: chain/block.ts:47
 
 > **previous**: `string`
 
-Defined in: chain/block.ts:43
+Defined in: [chain/block.ts:43](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/block.ts#L43)
 
 #### Inherited from
 
@@ -52,7 +52,7 @@ Defined in: chain/block.ts:43
 
 > **signing\_key**: `string`
 
-Defined in: chain/block.ts:62
+Defined in: [chain/block.ts:62](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/block.ts#L62)
 
 ***
 
@@ -60,7 +60,7 @@ Defined in: chain/block.ts:62
 
 > **timestamp**: `string`
 
-Defined in: chain/block.ts:44
+Defined in: [chain/block.ts:44](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/block.ts#L44)
 
 #### Inherited from
 
@@ -72,7 +72,7 @@ Defined in: chain/block.ts:44
 
 > **transaction\_ids**: `string`[]
 
-Defined in: chain/block.ts:63
+Defined in: [chain/block.ts:63](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/block.ts#L63)
 
 ***
 
@@ -80,7 +80,7 @@ Defined in: chain/block.ts:63
 
 > **transaction\_merkle\_root**: `string`
 
-Defined in: chain/block.ts:46
+Defined in: [chain/block.ts:46](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/block.ts#L46)
 
 #### Inherited from
 
@@ -92,7 +92,7 @@ Defined in: chain/block.ts:46
 
 > **transactions**: [`Transaction`](Transaction.md)[]
 
-Defined in: chain/block.ts:64
+Defined in: [chain/block.ts:64](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/block.ts#L64)
 
 ***
 
@@ -100,7 +100,7 @@ Defined in: chain/block.ts:64
 
 > **witness**: `string`
 
-Defined in: chain/block.ts:45
+Defined in: [chain/block.ts:45](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/block.ts#L45)
 
 #### Inherited from
 
@@ -112,7 +112,7 @@ Defined in: chain/block.ts:45
 
 > **witness\_signature**: `string`
 
-Defined in: chain/block.ts:54
+Defined in: [chain/block.ts:54](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/block.ts#L54)
 
 #### Inherited from
 

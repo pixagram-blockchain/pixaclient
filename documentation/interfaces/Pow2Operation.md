@@ -6,7 +6,7 @@
 
 # Interface: Pow2Operation
 
-Defined in: chain/operation.ts:592
+Defined in: [chain/operation.ts:639](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L639)
 
 Legacy equihash proof of work operation.
 
@@ -20,7 +20,7 @@ Legacy equihash proof of work operation.
 
 > **0**: `"pow2"`
 
-Defined in: chain/operation.ts:593
+Defined in: [chain/operation.ts:640](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L640)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:593
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:594
+Defined in: [chain/operation.ts:641](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L641)
 
 #### new\_owner\_key?
 

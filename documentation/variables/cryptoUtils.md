@@ -8,7 +8,7 @@
 
 > `const` **cryptoUtils**: `object`
 
-Defined in: crypto.ts:579
+Defined in: [crypto.ts:585](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/crypto.ts#L585)
 
 Misc crypto utility functions.
 
@@ -175,6 +175,10 @@ wrap that in `Buffer.from(...)` for `.slice()` / `.toString('hex')` users.
 
 Return copy of transaction with signature appended to signatures array.
 
+The copy has its operations in the form the node reads (see chain/normalize.ts): fields that
+dpixa accepts under a Pixa name (`percent_pxs`, `reward_pixa`, …) are written under the node's
+name too, and an NFT action is written `[tag, payload]`. This never changes what is signed.
+
 #### Parameters
 
 ##### transaction
@@ -192,6 +196,8 @@ Key(s) to sign transaction with.
 ##### chainId?
 
 `BBuffer` = `DEFAULT_CHAIN_ID`
+
+The chain id, [Client.chainId](../classes/Client.md#chainid); the main network's by default.
 
 #### Returns
 

@@ -8,6 +8,6 @@
 
 > `const` **DEFAULT\_CHAIN\_ID**: `BBuffer`
 
-Defined in: client.ts:68
+Defined in: [client.ts:69](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/client.ts#L69)
 
 Main Pixa network chain id.

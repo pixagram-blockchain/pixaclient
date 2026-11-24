@@ -6,7 +6,7 @@
 
 # Interface: CreateProposalOperation
 
-Defined in: chain/operation.ts:932
+Defined in: [chain/operation.ts:966](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L966)
 
 Generic operation.
 
@@ -20,7 +20,7 @@ Generic operation.
 
 > **0**: `"create_proposal"`
 
-Defined in: chain/operation.ts:933
+Defined in: [chain/operation.ts:967](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L967)
 
 #### Overrides
 
@@ -32,7 +32,7 @@ Defined in: chain/operation.ts:933
 
 > **1**: `object`
 
-Defined in: chain/operation.ts:934
+Defined in: [chain/operation.ts:968](https://github.com/pixagram-blockchain/pixaclient/blob/main/src/chain/operation.ts#L968)
 
 #### creator
 
